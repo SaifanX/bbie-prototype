@@ -1,3 +1,4 @@
+export {};
 require('dotenv').config({ path: '.env.local' });
 const { createClient } = require('@supabase/supabase-js');
 const { GoogleGenerativeAI } = require("@google/generative-ai");
@@ -44,7 +45,8 @@ async function run() {
   console.log("✨ Seeding Golden Registry...");
   for (const b of MASTER_REGISTRY) {
     console.log(`📡 Vectorizing: ${b.name}`);
-    const embedding = await generateEmbedding(`${b.name} ${b.address}`);
+    const denseString = `${b.name} | ${b.address}`;
+    const embedding = await generateEmbedding(denseString);
     await supabase.from('businesses').insert({
       primary_name: b.name,
       registered_address: b.address,
@@ -65,7 +67,29 @@ async function run() {
     });
   }
 
-  console.log("⭐ Database is now PRISTINE and ready for demo!");
+  console.log("📡 Seeding Deterministic Activity Events...");
+  // Fetch the businesses we just created to get their real IDs
+  const { data: createdBiz } = await supabase.from('businesses').select('id, ubid');
+  
+  if (createdBiz) {
+    for (const biz of createdBiz) {
+      if (biz.ubid === 'UBID-KA-001') {
+        // Active: Recent filings
+        await supabase.from('activity_events').insert([
+          { business_id: biz.id, event_type: 'GST_FILING', event_date: new Date().toISOString(), description: 'Monthly GST-3B return filed successfully.' },
+          { business_id: biz.id, event_type: 'INSPECTION', event_date: new Date(Date.now() - 30 * 86400000).toISOString(), description: 'Routine safety audit completed - No violations.' }
+        ]);
+      } else if (biz.ubid === 'UBID-KA-002') {
+        // Dormant: One old event
+        await supabase.from('activity_events').insert([
+          { business_id: biz.id, event_type: 'LICENSE_RENEWAL', event_date: new Date(Date.now() - 400 * 86400000).toISOString(), description: 'Annual trade license renewal.' }
+        ]);
+      }
+      // UBID-KA-003 stays at 0 events -> Closed
+    }
+  }
+
+  console.log("⭐ Database is now PRISTINE and FORENSICALLY SOUND!");
 }
 
 run();

@@ -26,14 +26,14 @@ export async function processRecord(recordId: string): Promise<ResolutionResult>
     throw new Error(`Record ${recordId} not found`);
   }
 
-  // 2. Generate Semantic Embedding
-  const embedding = await generateEmbedding(record.entity_name);
+  // 2. Generate Dense Semantic Embedding (Name + Address + Pincode)
+  const denseString = `${record.entity_name} | ${record.address || ''} | ${record.pincode || ''}`;
+  const embedding = await generateEmbedding(denseString);
 
   // 3. Perform Vector Similarity Search
-  // We call the RPC function we created in the migration
   const { data: matches, error: matchError } = await supabase.rpc('match_businesses', {
     query_embedding: embedding,
-    match_threshold: 0.5, // 50% semantic similarity threshold
+    match_threshold: 0.8, // 80% semantic similarity threshold (Sniper Scope)
     match_count: 5
   });
 
@@ -41,18 +41,30 @@ export async function processRecord(recordId: string): Promise<ResolutionResult>
   let highestScore = 0;
 
   if (matches && matches.length > 0) {
-    // 4. Perform Detailed Multi-Factor Matching on candidates
-    for (const candidate of matches) {
-      const { data: business } = await supabase
-        .from('businesses')
-        .select('*')
-        .eq('id', candidate.id)
-        .single();
+    // 4. BATCH FETCH CANDIDATES: Solve N+1 Scalability Trap
+    const candidateIds = matches.map((m: any) => m.id);
+    const { data: candidateBusinesses } = await supabase
+      .from('businesses')
+      .select('*')
+      .in('id', candidateIds);
 
-      if (business) {
+    if (candidateBusinesses) {
+      for (const business of candidateBusinesses) {
         const result = calculateMatch(
-          { primary_name: record.entity_name, registered_address: record.address },
-          { primary_name: business.primary_name, registered_address: business.registered_address }
+          { 
+            primary_name: record.entity_name, 
+            registered_address: record.address,
+            pan: record.pan,
+            gstin: record.gstin,
+            pincode: record.pincode
+          },
+          { 
+            primary_name: business.primary_name, 
+            registered_address: business.registered_address,
+            pan: business.pan,
+            gstin: business.gstin,
+            pincode: business.pincode
+          }
         );
 
         if (result.score > highestScore) {

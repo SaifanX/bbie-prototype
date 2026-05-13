@@ -11,7 +11,7 @@ export default async function IntelligencePage() {
   // 1. Fetch all businesses and their last activity
   const { data: businesses } = await supabase
     .from('businesses')
-    .select('id, activity_status, last_activity_at');
+    .select('id, primary_name, activity_status, last_activity_at');
 
   // 2. Fetch recent events for status distribution
   const { data: recentEvents } = await supabase
@@ -42,8 +42,17 @@ export default async function IntelligencePage() {
 
   // Accuracy calculation
   const highConfidence = resolutions?.filter(r => r.match_score >= 0.9).length || 0;
+  const idMatchCount = resolutions?.filter(r => r.match_score === 1.0).length || 0;
+  const fuzzyMatchCount = (resolutions?.filter(r => r.match_score < 1.0 && r.match_score >= 0.6).length || 0);
+  
   const totalResolutions = resolutions?.length || 1;
   const accuracyRaw = Math.round((highConfidence / totalResolutions) * 100);
+
+  const matchBreakdown = {
+    idPercent: Math.round((idMatchCount / totalResolutions) * 100),
+    fuzzyPercent: Math.round((fuzzyMatchCount / totalResolutions) * 100),
+    unresolvedPercent: 100 - Math.round(((idMatchCount + fuzzyMatchCount) / totalResolutions) * 100)
+  };
 
   // 5. Run Anomaly Detection (Sample/Summary)
   const { data: allBiz } = await supabase.from('businesses').select('id');
@@ -64,6 +73,18 @@ export default async function IntelligencePage() {
     }
   }
 
+  // 6. Generate Dynamic Graph Data
+  const { data: allSourceRecords } = await supabase.from('source_records').select('id, entity_name, business_id');
+  
+  const graphNodes = [
+    ...(businesses?.map(b => ({ id: b.id, name: b.primary_name, group: 'business' })) || []),
+    ...(allSourceRecords?.map(s => ({ id: s.id, name: s.entity_name, group: 'source' })) || [])
+  ];
+
+  const graphLinks = allSourceRecords
+    ?.filter(s => s.business_id)
+    .map(s => ({ source: s.id, target: s.business_id })) || [];
+
   // Final distribution
   const stats = {
     total: total,
@@ -73,7 +94,12 @@ export default async function IntelligencePage() {
     accuracy: accuracyRaw > 0 ? accuracyRaw : 92,
     recentEvents: recentEvents?.slice(0, 5) || [],
     deptStats,
-    anomalyStats
+    anomalyStats,
+    matchBreakdown,
+    graphData: {
+      nodes: graphNodes,
+      links: graphLinks
+    }
   };
 
   return <IntelligenceClient stats={stats} />;

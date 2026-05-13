@@ -16,21 +16,7 @@ function cn(...inputs: ClassValue[]) {
 export default function IntelligenceClient({ stats }: any) {
   const [activeTab, setActiveTab] = useState<'overview' | 'anomalies' | 'graph'>('overview');
 
-  const graphData = {
-    nodes: [
-      { id: 'B1', name: 'Karnataka Consulting', group: 'business' },
-      { id: 'B2', name: 'Cauvery Software', group: 'business' },
-      { id: 'S1', name: 'MCA Filing A', group: 'source' },
-      { id: 'S2', name: 'GST Portal B', group: 'source' },
-      { id: 'S3', name: 'Labour Dept C', group: 'source' },
-    ],
-    links: [
-      { source: 'S1', target: 'B1' },
-      { source: 'S2', target: 'B1' },
-      { source: 'S3', target: 'B2' },
-      { source: 'S2', target: 'B2' }, // Shared Source Link
-    ]
-  };
+  const graphData = stats.graphData || { nodes: [], links: [] };
 
   return (
     <div className="p-10 space-y-10 min-h-screen relative overflow-y-auto">
@@ -109,9 +95,9 @@ export default function IntelligenceClient({ stats }: any) {
             </div>
 
             <div className="w-full space-y-4">
-              <LegendItem color="bg-indigo-500" label="IDENTIFIER MATCHES" value="82%" />
-              <LegendItem color="bg-emerald-500" label="FUZZY MATCHES" value="14%" />
-              <LegendItem color="bg-amber-500" label="UNRESOLVED" value="4%" />
+              <LegendItem color="bg-indigo-500" label="IDENTIFIER MATCHES" value={`${stats.matchBreakdown?.idPercent || 0}%`} />
+              <LegendItem color="bg-emerald-500" label="FUZZY MATCHES" value={`${stats.matchBreakdown?.fuzzyPercent || 0}%`} />
+              <LegendItem color="bg-amber-500" label="UNRESOLVED" value={`${stats.matchBreakdown?.unresolvedPercent || 0}%`} />
             </div>
           </motion.div>
 

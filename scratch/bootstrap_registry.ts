@@ -1,3 +1,4 @@
+export {};
 require('dotenv').config({ path: '.env.local' });
 const { createClient } = require('@supabase/supabase-js');
 const { GoogleGenerativeAI } = require("@google/generative-ai");
@@ -31,7 +32,8 @@ async function bootstrap() {
 
   for (const b of MASTER_BUSINESSES) {
     console.log(`📡 Generating 3072-dim embedding for: ${b.name}`);
-    const embedding = await generateEmbedding(`${b.name} ${b.address}`);
+    const denseString = `${b.name} | ${b.address}`;
+    const embedding = await generateEmbedding(denseString);
     
     const { error } = await supabase.from('businesses').upsert({
       primary_name: b.name,

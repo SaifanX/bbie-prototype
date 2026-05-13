@@ -11,7 +11,7 @@ export async function approveMerge(eventId: string, sourceRecordId: string, targ
   // 1. Fetch current source record details for batch matching
   const { data: currentSource } = await supabase
     .from('source_records')
-    .select('entity_name, raw_data')
+    .select('entity_name, pincode, raw_data')
     .eq('id', sourceRecordId)
     .single();
 
@@ -58,9 +58,10 @@ export async function approveMerge(eventId: string, sourceRecordId: string, targ
       const siblingSourceIds = siblingEvents.map(e => e.source_record_id);
       const { data: siblingSources } = await supabase
         .from('source_records')
-        .select('id, entity_name')
+        .select('id, entity_name, pincode')
         .in('id', siblingSourceIds)
-        .eq('entity_name', currentSource.entity_name);
+        .eq('entity_name', currentSource.entity_name)
+        .eq('pincode', currentSource.pincode || ''); // Multi-factor anchor
 
       if (siblingSources && siblingSources.length > 0) {
         const matchingSourceIds = siblingSources.map(s => s.id);
@@ -81,29 +82,37 @@ export async function approveMerge(eventId: string, sourceRecordId: string, targ
     }
   }
 
-  // 4. SELF-HEALING: Link activity events
-  const { data: randomEvents } = await supabase
-    .from('activity_events')
-    .select('*')
-    .is('business_id', null)
-    .limit(Math.floor(3 + Math.random() * 5));
+  // 4. DETERMINISTIC HARVESTING: Link activity events by PAN/GSTIN
+  const { data: business } = await supabase
+    .from('businesses')
+    .select('pan, gstin')
+    .eq('id', targetBusinessId)
+    .single();
 
-  if (randomEvents && randomEvents.length > 0) {
-    const eventIds = randomEvents.map(e => e.id);
-    await supabase
+  if (business) {
+    const { data: linkedEvents } = await supabase
       .from('activity_events')
-      .update({ business_id: targetBusinessId })
-      .in('id', eventIds);
-    
-    const health = inferStatus(randomEvents);
-    await supabase
-      .from('businesses')
-      .update({ 
-        activity_status: health.status,
-        confidence_score: 1.0, 
-        last_activity_at: randomEvents[0].event_date 
-      })
-      .eq('id', targetBusinessId)
+      .select('*')
+      .or(`pan.eq.${business.pan},gstin.eq.${business.gstin}`)
+      .is('business_id', null);
+
+    if (linkedEvents && linkedEvents.length > 0) {
+      const eventIds = linkedEvents.map(e => e.id);
+      await supabase
+        .from('activity_events')
+        .update({ business_id: targetBusinessId })
+        .in('id', eventIds);
+      
+      const health = inferStatus(linkedEvents);
+      await supabase
+        .from('businesses')
+        .update({ 
+          activity_status: health.status,
+          confidence_score: 1.0, 
+          last_activity_at: linkedEvents[0].event_date 
+        })
+        .eq('id', targetBusinessId)
+    }
   }
 
   revalidatePath('/review')
@@ -125,11 +134,12 @@ export async function createNewEntity(eventId: string, sourceRecordId: string, s
     
   if (error || !newBusiness) throw new Error('Failed to create new entity')
 
-  // BATCH RESOLUTION
+  // BATCH RESOLUTION: Only auto-resolve if Name AND Pincode match
   const { data: similarRecords } = await supabase
     .from('source_records')
     .select('id')
     .eq('entity_name', sourceName)
+    .eq('pincode', newBusiness.pincode || '') // Multi-factor anchor
     .is('business_id', null);
 
   if (similarRecords && similarRecords.length > 0) {
@@ -142,36 +152,38 @@ export async function createNewEntity(eventId: string, sourceRecordId: string, s
     await supabase
       .from('resolution_events')
       .update({ 
-        status: 'approved', // Using 'approved' as it is a valid enum value
+        status: 'approved',
         resolved_at: new Date().toISOString(), 
         resolved_by: 'batch_resolver' 
       })
       .in('source_record_id', ids);
   }
 
-  // SELF-HEALING
-  const { data: randomEvents } = await supabase
-    .from('activity_events')
-    .select('*')
-    .is('business_id', null)
-    .limit(Math.floor(3 + Math.random() * 8));
-
-  if (randomEvents && randomEvents.length > 0) {
-    const eventIds = randomEvents.map(e => e.id);
-    await supabase
+  // DETERMINISTIC HARVESTING: Link activity events by PAN/GSTIN
+  if (newBusiness.pan || newBusiness.gstin) {
+    const { data: linkedEvents } = await supabase
       .from('activity_events')
-      .update({ business_id: newBusiness.id })
-      .in('id', eventIds);
-    
-    const health = inferStatus(randomEvents);
-    await supabase
-      .from('businesses')
-      .update({ 
-        activity_status: health.status,
-        last_activity_at: randomEvents[0].event_date,
-        confidence_score: 1.0
-      })
-      .eq('id', newBusiness.id);
+      .select('*')
+      .or(`pan.eq.${newBusiness.pan},gstin.eq.${newBusiness.gstin}`)
+      .is('business_id', null);
+
+    if (linkedEvents && linkedEvents.length > 0) {
+      const eventIds = linkedEvents.map(e => e.id);
+      await supabase
+        .from('activity_events')
+        .update({ business_id: newBusiness.id })
+        .in('id', eventIds);
+      
+      const health = inferStatus(linkedEvents);
+      await supabase
+        .from('businesses')
+        .update({ 
+          activity_status: health.status,
+          last_activity_at: linkedEvents[0].event_date,
+          confidence_score: 1.0
+        })
+        .eq('id', newBusiness.id);
+    }
   }
 
   revalidatePath('/review')
