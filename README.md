@@ -1,36 +1,59 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 💎 BBIE: Bharat Business Intelligence Engine
+### Theme 1: AI for Bharat — Unified Business Identifier (UBID) + Active Intelligence
 
-## Getting Started
+BBIE is a high-trust, non-intrusive intelligence layer designed to resolve fragmented business identities across siloed government department systems. It leverages **Semantic Entity Resolution**, **Vector Similarity Search**, and **LLM-based Reasoning** to create a canonical "Golden Record" for every business in the ecosystem.
 
-First, run the development server:
+---
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+## 🏛️ Repository Structure
+
+```text
+bbie-prototype/
+├── docs/                   # Strategic Documentation & Schema
+│   ├── SCHEMA.md           # Database architecture & Resolution logic
+│   ├── RUN_INSTRUCTIONS.md # Deployment & Local setup guide
+│   └── AGENTS.md           # AI Agent interaction protocols
+├── public/                 # Static Assets & Branding
+├── src/                    # Core Source Code
+│   ├── app/                # Next.js App Router (Dashboard, Search, Simulator)
+│   ├── components/         # Premium UI Components (Framer Motion + GSAP)
+│   └── utils/              # Intelligence Engine (Normalization, Similarity, Confidence)
+├── .env.local              # Environment Power Source (Gemini + Supabase)
+├── next.config.ts          # Next.js Configuration
+├── tsconfig.json           # TypeScript Configuration
+└── package.json            # High-performance Dependencies
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+---
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 🚀 The "Winning" Technology Stack
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+*   **Frontend**: Next.js 16 (App Router), TypeScript, Tailwind CSS 4.
+*   **Intelligence**: 
+    *   **Gemini Pro API**: For Semantic Arbitration and Forensic Narrative generation.
+    *   **Supabase (PostgreSQL)**: Leveraging `pgvector` for semantic business search.
+    *   **Similarity Engine**: Custom hybrid weighted scoring (Levenshtein + Word Overlap).
+*   **Aesthetics**: Framer Motion & GSAP for cinematic data-clustering visualizations.
 
-## Learn More
+---
 
-To learn more about Next.js, take a look at the following resources:
+## 🛡️ Core Features (First-Place Spec)
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+1.  **Unified Business Identifier (UBID)**: Automated 1:N record matching.
+2.  **Forensic Reasoning**: AI-generated verdicts for ambiguous identity matches.
+3.  **Active Intelligence**: Cross-system activity analysis to detect "Zombie" vs "Active" states.
+4.  **Anomaly Detection**: Flagging identity collision and potential regulatory fraud.
+5.  **Transparent Audit**: Every decision is explainable, traceable, and reversible.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+---
 
-## Deploy on Vercel
+## 🛠️ Getting Started
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+1. Clone the repo.
+2. Run `npm install`.
+3. Configure `.env.local` with your Supabase and Gemini credentials.
+4. Run `npm run dev`.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+---
+
+**Built for the AI for Bharat Hackathon 2026**
