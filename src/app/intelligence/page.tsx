@@ -1,5 +1,6 @@
 import { supabase } from '@/utils/supabase';
 import IntelligenceClient from './IntelligenceClient';
+import { detectAnomalies } from '@/utils/anomaly';
 import { inferStatus } from '@/utils/inference';
 
 export const dynamic = 'force-dynamic';
@@ -33,8 +34,8 @@ export default async function IntelligencePage() {
     return acc;
   }, {}) || {};
 
-  // Calculate Real Metrics with Case-Insensitive fallback
-  const total = businesses?.length || 100; // Use 100 as fallback for demo UI if empty
+  // 4. Calculate Real Metrics
+  const total = businesses?.length || 0;
   const activeCount = businesses?.filter(b => b.activity_status?.toLowerCase() === 'active').length || 0;
   const dormantCount = businesses?.filter(b => b.activity_status?.toLowerCase() === 'dormant').length || 0;
   const closedCount = businesses?.filter(b => b.activity_status?.toLowerCase() === 'closed').length || 0;
@@ -44,15 +45,35 @@ export default async function IntelligencePage() {
   const totalResolutions = resolutions?.length || 1;
   const accuracyRaw = Math.round((highConfidence / totalResolutions) * 100);
 
-  // Final distribution (ensure it's never all zeros for the demo)
+  // 5. Run Anomaly Detection (Sample/Summary)
+  const { data: allBiz } = await supabase.from('businesses').select('id');
+  let anomalyStats = {
+    address_mismatch: 0,
+    suspicious_inactivity: 0,
+    identifier_collision: 0
+  };
+
+  if (allBiz) {
+    for (const b of allBiz) {
+      const anomalies = await detectAnomalies(b.id);
+      anomalies.forEach(a => {
+        if (a.type === 'INCONSISTENT_ADDRESS') anomalyStats.address_mismatch++;
+        if (a.type === 'SUSPICIOUS_INACTIVITY') anomalyStats.suspicious_inactivity++;
+        if (a.type === 'IDENTIFIER_COLLISION') anomalyStats.identifier_collision++;
+      });
+    }
+  }
+
+  // Final distribution
   const stats = {
     total: total,
-    active: activeCount || 90,
-    dormant: dormantCount || 10,
-    closed: closedCount || 0,
+    active: activeCount,
+    dormant: dormantCount,
+    closed: closedCount,
     accuracy: accuracyRaw > 0 ? accuracyRaw : 92,
     recentEvents: recentEvents?.slice(0, 5) || [],
-    deptStats
+    deptStats,
+    anomalyStats
   };
 
   return <IntelligenceClient stats={stats} />;

@@ -69,13 +69,19 @@ export function calculateConfidence(input: ConfidenceInput): ConfidenceBreakdown
   if (pincodeScore > 0) reasoning.push('Pincode Verified');
 
   // 6. Overall Calculation
-  const overall = (0.5 * nameSim) + (0.2 * addrSim) + (0.2 * idScore) + (0.1 * pincodeScore);
+  let overall = (0.5 * nameSim) + (0.2 * addrSim) + (0.2 * idScore) + (0.1 * pincodeScore);
+
+  // DETERMINISTIC OVERRIDE: 
+  // If unique Government IDs match exactly, this is a 100% match regardless of other variations.
+  if (idScore === 1.0) {
+    overall = 1.0;
+  }
 
   return {
     overall: parseFloat(overall.toFixed(2)),
     nameScore: parseFloat((nameSim * 0.5).toFixed(2)),
     addressScore: parseFloat((addrSim * 0.2).toFixed(2)),
-    idScore: parseFloat((idScore * 0.2).toFixed(2)),
+    idScore: idScore === 1.0 ? 0.2 : parseFloat((idScore * 0.2).toFixed(2)), // Keep breakdown for UI
     pincodeScore: parseFloat((pincodeScore * 0.1).toFixed(2)),
     reasoning
   };

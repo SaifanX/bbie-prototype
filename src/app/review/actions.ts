@@ -23,8 +23,27 @@ export async function approveMerge(eventId: string, sourceRecordId: string, targ
 
   await supabase
     .from('source_records')
-    .update({ business_id: targetBusinessId })
+    .update({ business_id: targetBusinessId, resolved: true })
     .eq('id', sourceRecordId)
+
+  // 2.5 MASTER DATA ENRICHMENT: Update business if source has more info
+  if (currentSource && currentSource.raw_data) {
+    const { data: currentBusiness } = await supabase
+      .from('businesses')
+      .select('pan, gstin')
+      .eq('id', targetBusinessId)
+      .single();
+
+    if (currentBusiness) {
+      const updates: any = {};
+      if (!currentBusiness.pan && currentSource.raw_data.pan) updates.pan = currentSource.raw_data.pan;
+      if (!currentBusiness.gstin && currentSource.raw_data.gstin) updates.gstin = currentSource.raw_data.gstin;
+      
+      if (Object.keys(updates).length > 0) {
+        await supabase.from('businesses').update(updates).eq('id', targetBusinessId);
+      }
+    }
+  }
 
   // 3. BATCH RESOLUTION: Find other pending events with EXACT same name and suggested target
   if (currentSource) {
@@ -117,7 +136,7 @@ export async function createNewEntity(eventId: string, sourceRecordId: string, s
     const ids = similarRecords.map(r => r.id);
     await supabase
       .from('source_records')
-      .update({ business_id: newBusiness.id })
+      .update({ business_id: newBusiness.id, resolved: true })
       .in('id', ids);
 
     await supabase

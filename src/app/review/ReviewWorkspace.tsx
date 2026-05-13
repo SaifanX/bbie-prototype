@@ -315,6 +315,7 @@ export default function ReviewWorkspace({
                      <DataField 
                         label="Entity Name (Dirty)" 
                         value={selectedEvent.source.entity_name} 
+                        compareValue={selectedEvent.target?.primary_name}
                         isMismatched={!selectedEvent.matched_fields.includes('Name')}
                         color="amber"
                      />
@@ -329,6 +330,7 @@ export default function ReviewWorkspace({
                      <DataField 
                         label="Reported Address" 
                         value={selectedEvent.source.address} 
+                        compareValue={selectedEvent.target?.address}
                         isMismatched={!selectedEvent.matched_fields.includes('Address')}
                         color="amber"
                      />
@@ -368,6 +370,7 @@ export default function ReviewWorkspace({
                         <DataField 
                             label="Registry Name (Legal)" 
                             value={selectedEvent.target.primary_name} 
+                            compareValue={selectedEvent.source.entity_name}
                             isMismatched={!selectedEvent.matched_fields.includes('Name')}
                         />
                          <div className="grid grid-cols-2 gap-8">
@@ -381,6 +384,7 @@ export default function ReviewWorkspace({
                         <DataField 
                             label="Registered Location" 
                             value={selectedEvent.target.address} 
+                            compareValue={selectedEvent.source.address}
                             isMismatched={!selectedEvent.matched_fields.includes('Address')}
                         />
                       </>
@@ -500,25 +504,46 @@ function FilterTab({ active, label, count, onClick }: any) {
   )
 }
 
-function DataField({ label, value, isMismatched = false, mono = false, color = "indigo" }: any) {
+function DataField({ label, value, compareValue, isMismatched = false, mono = false, color = "indigo" }: any) {
+  const renderHighlighted = (val: string, comp: string) => {
+    if (!isMismatched || !comp) return val;
+    
+    // Simple character-level diff for visual effect
+    const chars = val.split('');
+    const compChars = comp.split('');
+    
+    return chars.map((char, i) => {
+      const isDiff = char.toLowerCase() !== compChars[i]?.toLowerCase();
+      return (
+        <span key={i} className={isDiff ? "text-rose-500 underline decoration-rose-500/50 underline-offset-4" : ""}>
+          {char}
+        </span>
+      );
+    });
+  };
+
   return (
     <div className="space-y-2">
       <div className="flex items-center justify-between">
         <label className="text-[9px] font-black text-slate-500 uppercase tracking-[0.2em]">{label}</label>
         {isMismatched && (
-            <div className="flex items-center gap-1 text-[8px] font-black text-rose-500 uppercase tracking-widest">
+            <motion.div 
+              initial={{ opacity: 0, x: 10 }}
+              animate={{ opacity: 1, x: 0 }}
+              className="flex items-center gap-1 text-[8px] font-black text-rose-500 uppercase tracking-widest"
+            >
                 <AlertTriangle size={10} /> Conflict Detected
-            </div>
+            </motion.div>
         )}
       </div>
       <div className={cn(
         "text-lg font-black tracking-tighter transition-all",
-        isMismatched ? "text-rose-400 bg-rose-400/5 p-2 -m-2 rounded-lg" : "text-white",
+        isMismatched ? "bg-rose-400/5 p-2 -m-2 rounded-lg" : "text-white",
         mono && "font-mono text-base tracking-normal",
         color === "amber" && !isMismatched && "group-hover:text-amber-400",
         color === "indigo" && !isMismatched && "group-hover:text-indigo-400"
       )}>
-        {value}
+        {renderHighlighted(value, compareValue)}
       </div>
     </div>
   )
