@@ -29,12 +29,7 @@ export default function DashboardClient({
   const [isSystemInitialized, setIsSystemInitialized] = useState(false);
   const [visibleCount, setVisibleCount] = useState(30);
 
-  // Fallback for demo if DB is empty
-  const DISPLAY_DIRTY = dirtyRecords?.length > 0 ? dirtyRecords : [
-    { id: '1', entity_name: 'KERUNADU CUNSULTING LIMITED', department: 'POLLUTION_CONTROL' },
-    { id: '2', entity_name: 'SILICUN ELECTRONICS LLP', department: 'SHOPS_ESTABLISHMENT' },
-    { id: '3', entity_name: 'KEVERI SUFTWARE LLP', department: 'FACTORIES' },
-  ];
+  const DISPLAY_DIRTY = dirtyRecords || [];
 
   return (
     <div className="p-10 space-y-10 min-h-screen relative overflow-y-auto">
