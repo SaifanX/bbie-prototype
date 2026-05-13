@@ -1,13 +1,11 @@
-import { createClient } from '@supabase/supabase-js';
+import { supabase } from '@/utils/supabase';
 import IntelligenceClient from './IntelligenceClient';
 import { inferStatus } from '@/utils/inference';
 
 export const dynamic = 'force-dynamic';
 
 export default async function IntelligencePage() {
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-  const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
-  const supabase = createClient(supabaseUrl, supabaseKey);
+
 
   // 1. Fetch all businesses and their last activity
   const { data: businesses } = await supabase

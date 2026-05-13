@@ -1,14 +1,12 @@
 import { Users, AlertOctagon, ShieldAlert, Cpu } from 'lucide-react';
-import { createClient } from '@supabase/supabase-js';
+import { supabase } from '@/utils/supabase';
 import ReviewWorkspace from './ReviewWorkspace';
 import { calculateMatch } from '@/utils/matcher';
 
 export const dynamic = 'force-dynamic';
 
 export default async function HumanReviewPage() {
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-  const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
-  const supabase = createClient(supabaseUrl, supabaseKey);
+
 
   const { data: rawEvents, error } = await supabase
     .from('resolution_events')

@@ -1,9 +1,7 @@
 import { Search, Filter, ArrowUpDown, MoreVertical, ShieldCheck, Globe, Fingerprint, Database, AlertTriangle } from 'lucide-react';
-import { createClient } from '@supabase/supabase-js';
+import { supabase } from '@/utils/supabase';
 
 export const dynamic = 'force-dynamic';
-
-const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!);
 
 export default async function EntitySearchPage({ searchParams }: { searchParams: Promise<{ q?: string, filter?: string }> }) {
   const resolvedParams = await searchParams;
