@@ -15,8 +15,11 @@ function cn(...inputs: ClassValue[]) {
 
 export default function IntelligenceClient({ stats }: any) {
   const [activeTab, setActiveTab] = useState<'overview' | 'anomalies' | 'graph' | 'learning'>('overview');
+  const [appliedRecs, setAppliedRecs] = useState<number[]>([]);
 
-  const graphData = stats.graphData || { nodes: [], links: [] };
+  const handleApply = (index: number) => {
+    setAppliedRecs([...appliedRecs, index]);
+  };
 
   return (
     <div className="p-10 space-y-10 min-h-screen relative overflow-y-auto">
@@ -168,32 +171,56 @@ export default function IntelligenceClient({ stats }: any) {
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-              {stats.learningInsights?.recommendations.map((rec: any, i: number) => (
-                <div key={i} className="glass-card border-white/5 p-8 hover:border-emerald-500/30 transition-all bg-white/[0.02]">
-                   <div className="flex items-center justify-between mb-6">
-                     <span className="text-[10px] font-black text-emerald-400 uppercase tracking-widest px-3 py-1 bg-emerald-500/10 rounded-full border border-emerald-500/20">
-                       {rec.impact} Impact
-                     </span>
-                     <TrendingUp size={20} className="text-emerald-500" />
-                   </div>
-                   <h3 className="text-lg font-black text-white uppercase tracking-tight mb-2">Adjust {rec.field} Weight</h3>
-                   <div className="flex items-center gap-4 mb-6">
-                     <div className="flex flex-col">
-                       <span className="text-[8px] text-slate-500 uppercase font-black tracking-tighter">Current</span>
-                       <span className="text-xl font-mono font-bold text-slate-400">{rec.currentWeight}</span>
-                     </div>
-                     <div className="h-px w-8 bg-slate-700" />
-                     <div className="flex flex-col">
-                       <span className="text-[8px] text-emerald-500 uppercase font-black tracking-tighter">Suggested</span>
-                       <span className="text-2xl font-mono font-black text-emerald-400">{rec.suggestedWeight}</span>
-                     </div>
-                   </div>
-                   <p className="text-xs text-slate-500 leading-relaxed font-medium">{rec.reasoning}</p>
-                   <button className="w-full mt-8 py-3 bg-white/5 hover:bg-emerald-500 hover:text-white rounded-xl text-[10px] font-black uppercase tracking-widest transition-all border border-white/10 hover:border-emerald-500">
-                     Apply Optimization
-                   </button>
-                </div>
-              ))}
+              {stats.learningInsights?.recommendations.map((rec: any, i: number) => {
+                const isApplied = appliedRecs.includes(i);
+                return (
+                  <div key={i} className={cn(
+                    "glass-card border-white/5 p-8 transition-all relative overflow-hidden",
+                    isApplied ? "border-emerald-500/50 bg-emerald-500/5" : "hover:border-emerald-500/30 bg-white/[0.02]"
+                  )}>
+                    {isApplied && (
+                      <div className="absolute top-0 right-0 p-2 bg-emerald-500 text-black text-[8px] font-black uppercase tracking-widest">
+                        Optimized
+                      </div>
+                    )}
+                    <div className="flex items-center justify-between mb-6">
+                      <span className="text-[10px] font-black text-emerald-400 uppercase tracking-widest px-3 py-1 bg-emerald-500/10 rounded-full border border-emerald-500/20">
+                        {rec.impact} Impact
+                      </span>
+                      <TrendingUp size={20} className={cn(isApplied ? "text-emerald-400" : "text-emerald-500")} />
+                    </div>
+                    <h3 className="text-lg font-black text-white uppercase tracking-tight mb-2">Adjust {rec.field} Weight</h3>
+                    <div className="flex items-center gap-4 mb-6">
+                      <div className="flex flex-col">
+                        <span className="text-[8px] text-slate-500 uppercase font-black tracking-tighter">Current</span>
+                        <span className={cn("text-xl font-mono font-bold", isApplied ? "text-emerald-400 line-through opacity-50" : "text-slate-400")}>
+                          {rec.currentWeight}
+                        </span>
+                      </div>
+                      <div className="h-px w-8 bg-slate-700" />
+                      <div className="flex flex-col">
+                        <span className="text-[8px] text-emerald-500 uppercase font-black tracking-tighter">
+                          {isApplied ? 'Active' : 'Suggested'}
+                        </span>
+                        <span className="text-2xl font-mono font-black text-emerald-400">{rec.suggestedWeight}</span>
+                      </div>
+                    </div>
+                    <p className="text-xs text-slate-500 leading-relaxed font-medium">{rec.reasoning}</p>
+                    <button 
+                      disabled={isApplied}
+                      onClick={() => handleApply(i)}
+                      className={cn(
+                        "w-full mt-8 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all border",
+                        isApplied 
+                          ? "bg-emerald-500 text-white border-emerald-500 cursor-default" 
+                          : "bg-white/5 hover:bg-emerald-500 hover:text-white border-white/10 hover:border-emerald-500"
+                      )}
+                    >
+                      {isApplied ? 'Optimization Applied' : 'Apply Optimization'}
+                    </button>
+                  </div>
+                );
+              })}
               
               {(!stats.learningInsights?.recommendations || stats.learningInsights.recommendations.length === 0) && (
                 <div className="lg:col-span-3 py-20 flex flex-col items-center justify-center text-center">

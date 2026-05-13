@@ -73,7 +73,15 @@ export function extractDigits(input: string): string {
 /**
  * Normalizes alphanumeric identifiers (PAN/GSTIN)
  */
-export function normalizeIdentifier(id: string): string {
-  if (!id) return '';
-  return id.toUpperCase().replace(/[^A-Z0-9]/g, '').trim();
+export function normalizeIdentifier(id: string | null | undefined): string | null {
+  if (!id) return null;
+  const stripped = id.toUpperCase().replace(/[^A-Z0-9]/g, '').trim();
+  
+  // PAN must be 10, GSTIN must be 15.
+  // Anything else is likely a placeholder (e.g., "NA", "PENDING", "0")
+  if (stripped.length === 10 || stripped.length === 15) {
+    return stripped;
+  }
+  
+  return null;
 }

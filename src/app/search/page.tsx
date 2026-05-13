@@ -1,5 +1,7 @@
-import { Search, Filter, ArrowUpDown, MoreVertical, ShieldCheck, Globe, Fingerprint, Database, AlertTriangle } from 'lucide-react';
+import { Search, Filter, ArrowUpDown, MoreVertical, ShieldCheck, Globe, Fingerprint, Database, AlertTriangle, ArrowRight } from 'lucide-react';
 import { supabase } from '@/utils/supabase';
+import { generateEmbedding } from '@/utils/gemini';
+import Link from 'next/link';
 
 export const dynamic = 'force-dynamic';
 
@@ -13,40 +15,45 @@ export default async function EntitySearchPage({ searchParams }: { searchParams:
   // But for the search page, we'll show results but add a clear "Verified" label.
   
   let results: any[] = [];
-
   console.log(`[SEARCH_QUERY] View: ${filter}, Term: "${query}"`);
 
   if (filter === 'resolved') {
-    let dbQuery = supabase
-      .from('businesses')
-      .select(`
-        id, 
-        ubid, 
-        primary_name, 
-        registered_address,
-        activity_status, 
-        source_records(department)
-      `)
-      .limit(50);
-
     if (query) {
-      dbQuery = dbQuery.or(`primary_name.ilike.%${query}%,ubid.ilike.%${query}%`);
-    }
+      // 1. Generate Embedding for the Search Term
+      const embedding = await generateEmbedding(query);
+      
+      // 2. Perform Vector Search (The Sniper Engine)
+      const { data: vectorMatches, error: vError } = await supabase.rpc('match_businesses', {
+        query_embedding: embedding,
+        match_threshold: 0.1, // Lower threshold for general search to show more results
+        match_count: 50
+      });
 
-    const { data, error } = await dbQuery;
-    if (error) console.error("[SEARCH_ERROR] Resolved View:", error);
-    results = data || [];
+      if (vError) console.error("[VECTOR_SEARCH_ERROR]", vError);
+      
+      if (vectorMatches && vectorMatches.length > 0) {
+        const ids = vectorMatches.map((m: any) => m.id);
+        const { data: businessData } = await supabase
+          .from('businesses')
+          .select(`id, ubid, primary_name, registered_address, activity_status, source_records(department)`)
+          .in('id', ids);
+        
+        // Maintain vector ranking
+        results = ids.map(id => businessData?.find(b => b.id === id)).filter(Boolean);
+      }
+    } else {
+      // Default view: Show latest resolved
+      const { data } = await supabase
+        .from('businesses')
+        .select(`id, ubid, primary_name, registered_address, activity_status, source_records(department)`)
+        .limit(50);
+      results = data || [];
+    }
   } else {
-    // Unresolved data comes from source_records where business_id is null
+    // Unresolved data search (Source Records)
     let dbQuery = supabase
       .from('source_records')
-      .select(`
-        id,
-        entity_name,
-        department,
-        raw_data,
-        created_at
-      `)
+      .select(`id, entity_name, department, raw_data, created_at`)
       .is('business_id', null)
       .limit(50);
 
@@ -54,8 +61,7 @@ export default async function EntitySearchPage({ searchParams }: { searchParams:
       dbQuery = dbQuery.ilike('entity_name', `%${query}%`);
     }
 
-    const { data, error } = await dbQuery;
-    if (error) console.error("[SEARCH_ERROR] Unresolved View:", error);
+    const { data } = await dbQuery;
     results = data || [];
   }
 
@@ -204,9 +210,12 @@ export default async function EntitySearchPage({ searchParams }: { searchParams:
                           </div>
                         </td>
                         <td className="p-6 text-right">
-                          <button className="p-2 text-slate-600 hover:text-white hover:bg-white/5 rounded-lg transition-all">
-                            <MoreVertical size={16} />
-                          </button>
+                          <Link 
+                            href={`/business/${biz.ubid}`}
+                            className="px-4 py-2 bg-indigo-500/10 border border-indigo-500/20 text-[10px] font-black text-indigo-400 uppercase tracking-widest rounded-lg hover:bg-indigo-500 hover:text-white transition-all active:scale-95 flex items-center gap-2 justify-end w-fit ml-auto"
+                          >
+                             Inspect Profile <ArrowRight size={12} />
+                          </Link>
                         </td>
                       </tr>
                     );
@@ -246,9 +255,12 @@ export default async function EntitySearchPage({ searchParams }: { searchParams:
                           </div>
                         </td>
                         <td className="p-6 text-right">
-                          <button className="p-2 text-slate-600 hover:text-white hover:bg-white/5 rounded-lg transition-all">
-                            <MoreVertical size={16} />
-                          </button>
+                          <Link 
+                            href="/review"
+                            className="px-4 py-2 bg-amber-500/10 border border-amber-500/20 text-[10px] font-black text-amber-500 uppercase tracking-widest rounded-lg hover:bg-amber-500 hover:text-white transition-all active:scale-95 flex items-center gap-2 justify-end w-fit ml-auto"
+                          >
+                             Resolve Identity <ArrowRight size={12} />
+                          </Link>
                         </td>
                       </tr>
                     );

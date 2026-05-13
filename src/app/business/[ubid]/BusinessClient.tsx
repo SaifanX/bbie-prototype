@@ -22,6 +22,8 @@ import Link from 'next/link';
 import { clsx, type ClassValue } from 'clsx'
 import { twMerge } from 'tailwind-merge'
 import ActivityTimeline from '@/components/ActivityTimeline';
+import ForensicTimeline from '@/components/ForensicTimeline';
+import RelationshipGraph from '@/components/RelationshipGraph';
 
 function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -42,23 +44,36 @@ export default function BusinessClient({
 }: BusinessClientProps) {
   
   const score = resolution ? Math.round(resolution.match_score * 100) : 0;
+
+  // Prepare graph data for this specific business
+  const graphData = {
+    nodes: [
+      { id: business.id, name: business.primary_name, group: 'business' },
+      ...linkedRecords.map(r => ({ id: r.id, name: r.entity_name, group: 'source' }))
+    ],
+    links: linkedRecords.map(r => ({ source: r.id, target: business.id }))
+  };
+  
+  const handleExport = () => {
+    window.print();
+  };
   
   return (
-    <div className="p-10 space-y-10 min-h-screen relative overflow-y-auto">
+    <div className="p-10 space-y-10 min-h-screen relative overflow-y-auto print:p-0 print:bg-white print:text-black">
       
-      {/* Cinematic Background Element */}
-      <div className="absolute top-0 right-0 p-20 opacity-5 pointer-events-none">
+      {/* Cinematic Background Element - Hide on print */}
+      <div className="absolute top-0 right-0 p-20 opacity-5 pointer-events-none print:hidden">
         <Building2 size={400} className="text-indigo-500" />
       </div>
 
-      {/* Navigation & Breadcrumbs */}
+      {/* Navigation - Hide on print */}
       <motion.div 
         initial={{ opacity: 0, x: -20 }}
         animate={{ opacity: 1, x: 0 }}
-        className="flex items-center gap-4 z-10 relative"
+        className="flex items-center gap-4 z-10 relative print:hidden"
       >
         <Link 
-          href="/"
+          href="/search"
           className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-slate-400 hover:text-white hover:bg-white/10 transition-all active:scale-95"
         >
           <ArrowLeft size={18} />
@@ -69,6 +84,13 @@ export default function BusinessClient({
         </div>
       </motion.div>
 
+      {/* Print Header - Show only on print */}
+      <div className="hidden print:block border-b-2 border-black pb-8 mb-10">
+        <h1 className="text-4xl font-bold uppercase tracking-tighter">Bharat Business Intelligence Engine</h1>
+        <p className="text-sm font-bold uppercase tracking-widest mt-2">Forensic Identity Audit Report - {business.ubid}</p>
+        <div className="mt-4 text-xs font-mono">Issued: {new Date().toLocaleString()} | Forensic Integrity Verified</div>
+      </div>
+
       {/* Main Profile Header */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 z-10 relative">
         <motion.div 
@@ -77,7 +99,7 @@ export default function BusinessClient({
           className="lg:col-span-2 space-y-6"
         >
           <div className="flex flex-col gap-4">
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-3 print:hidden">
               <div className="px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 flex items-center gap-2">
                 <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-[0_0_8px_#10b981]" />
                 <span className="text-[10px] font-black text-emerald-500 uppercase tracking-widest">Verified Identity</span>
@@ -89,13 +111,13 @@ export default function BusinessClient({
                 </div>
               )}
             </div>
-            <h1 className="text-6xl font-black text-white uppercase tracking-tighter leading-[0.9]">
-              {business.entity_name}
+            <h1 className="text-6xl font-black text-white print:text-black uppercase tracking-tighter leading-[0.9]">
+              {business.primary_name}
             </h1>
-            <div className="flex flex-wrap items-center gap-6 text-slate-400 font-medium">
+            <div className="flex flex-wrap items-center gap-6 text-slate-400 print:text-black font-medium">
               <div className="flex items-center gap-2">
                 <MapPin size={18} className="text-indigo-400" />
-                <span>{business.address || 'Address Not Provided'}</span>
+                <span>{business.registered_address || 'Address Not Provided'}</span>
               </div>
               <div className="flex items-center gap-2">
                 <Fingerprint size={18} className="text-indigo-400" />
@@ -104,7 +126,7 @@ export default function BusinessClient({
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-4 print:grid-cols-3">
             <QuickInfoCard icon={<Database size={18} />} label="Total Sources" value={linkedRecords.length} />
             <QuickInfoCard icon={<History size={18} />} label="Events Logged" value={activityEvents.length} />
             <QuickInfoCard icon={<Zap size={18} />} label="Last Updated" value={new Date(business.updated_at).toLocaleDateString()} />
@@ -116,16 +138,16 @@ export default function BusinessClient({
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ delay: 0.2 }}
-          className="glass-card p-8 flex flex-col items-center justify-center text-center relative overflow-hidden group"
+          className="glass-card p-8 flex flex-col items-center justify-center text-center relative overflow-hidden group print:border-2 print:border-black"
         >
-          <div className="absolute inset-0 bg-indigo-500/5 group-hover:bg-indigo-500/10 transition-colors pointer-events-none" />
+          <div className="absolute inset-0 bg-indigo-500/5 group-hover:bg-indigo-500/10 transition-colors pointer-events-none print:hidden" />
           <div className="relative w-40 h-40 rounded-full flex items-center justify-center mb-6">
             <svg className="w-full h-full -rotate-90 transform">
-              <circle cx="80" cy="80" r="70" fill="transparent" stroke="rgba(255,255,255,0.05)" strokeWidth="8" />
+              <circle cx="80" cy="80" r="70" fill="transparent" stroke="rgba(0,0,0,0.05)" strokeWidth="8" />
               <motion.circle 
                 cx="80" cy="80" r="70" 
                 fill="transparent" 
-                stroke="#6366f1" 
+                stroke={score > 80 ? "#10b981" : "#6366f1"} 
                 strokeWidth="8" 
                 strokeDasharray="440" 
                 initial={{ strokeDashoffset: 440 }}
@@ -135,25 +157,44 @@ export default function BusinessClient({
               />
             </svg>
             <div className="absolute inset-0 flex flex-col items-center justify-center">
-              <span className="text-4xl font-black text-white tracking-tighter">{score}%</span>
+              <span className="text-4xl font-black text-white print:text-black tracking-tighter">{score}%</span>
               <span className="text-[10px] text-slate-500 font-black uppercase tracking-widest">Match Score</span>
             </div>
           </div>
-          <h3 className="text-sm font-black text-white uppercase tracking-widest mb-2">Identity Confidence</h3>
-          <p className="text-xs text-slate-500 font-medium">Resolution based on {linkedRecords.length} distinct government data signals.</p>
+          <h3 className="text-sm font-black text-white print:text-black uppercase tracking-widest mb-2">Identity Confidence</h3>
+          <p className="text-xs text-slate-500 font-medium">Resolution based on {linkedRecords.length} government data signals.</p>
         </motion.div>
       </div>
 
+      {/* Forensic Intelligence Row */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 z-10 relative">
+        <div className="space-y-6">
+          <h2 className="text-xl font-black text-white print:text-black uppercase tracking-tighter flex items-center gap-3">
+             <Fingerprint size={24} className="text-indigo-500" /> Forensic Trail
+          </h2>
+          <div className="glass-card p-8 border-white/5 print:border-black print:border-2">
+             <ForensicTimeline events={resolution ? [resolution] : []} />
+          </div>
+        </div>
+        <div className="space-y-6">
+          <h2 className="text-xl font-black text-white print:text-black uppercase tracking-tighter flex items-center gap-3">
+             <Layers size={24} className="text-indigo-500" /> Relational Web
+          </h2>
+          <div className="glass-card h-[400px] border-white/5 relative overflow-hidden print:border-black print:border-2 print:h-[300px]">
+             <RelationshipGraph data={graphData} />
+          </div>
+        </div>
+      </div>
+
       {/* Detailed Content Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 z-10 relative">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 z-10 relative print:block">
         
         {/* Linked Records - 7 Cols */}
-        <div className="lg:col-span-7 space-y-6">
+        <div className="lg:col-span-7 space-y-6 print:mt-10">
           <div className="flex items-center justify-between">
-            <h2 className="text-xl font-black text-white uppercase tracking-tighter flex items-center gap-3">
+            <h2 className="text-xl font-black text-white print:text-black uppercase tracking-tighter flex items-center gap-3">
               <Layers size={24} className="text-indigo-500" /> Source Lineage
             </h2>
-            <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Linked Records</span>
           </div>
           
           <div className="grid grid-cols-1 gap-4">
@@ -163,26 +204,20 @@ export default function BusinessClient({
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: i * 0.1 }}
-                className="glass-card p-6 flex items-center justify-between group hover:bg-white/[0.04] transition-all"
+                className="glass-card p-6 flex items-center justify-between group hover:bg-white/[0.04] transition-all print:border-black print:border print:bg-transparent"
               >
                 <div className="flex items-center gap-5">
-                  <div className="w-12 h-12 rounded-xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-indigo-400 group-hover:scale-110 transition-transform">
+                  <div className="w-12 h-12 rounded-xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-indigo-400 print:text-black">
                     <Database size={20} />
                   </div>
                   <div className="flex flex-col">
-                    <span className="text-[10px] font-black text-indigo-400 uppercase tracking-[0.2em]">Source Record</span>
-                    <h4 className="text-sm font-black text-white uppercase tracking-tight mt-0.5">{record.entity_name}</h4>
+                    <span className="text-[10px] font-black text-indigo-400 print:text-black uppercase tracking-[0.2em]">Source Record</span>
+                    <h4 className="text-sm font-black text-white print:text-black uppercase tracking-tight mt-0.5">{record.entity_name}</h4>
                     <div className="flex items-center gap-2 mt-1">
-                      <span className="text-[9px] font-bold px-2 py-0.5 rounded bg-white/5 text-slate-500 uppercase">{record.department.replace('_', ' ')}</span>
+                      <span className="text-[9px] font-bold px-2 py-0.5 rounded bg-white/5 text-slate-500 print:text-black border border-white/5 print:border-black uppercase">{record.department.replace('_', ' ')}</span>
                       <span className="text-[9px] font-mono text-slate-600">ID: {record.source_id}</span>
                     </div>
                   </div>
-                </div>
-                <div className="flex flex-col items-end gap-2">
-                   <div className="flex items-center gap-2 px-3 py-1 rounded-lg bg-emerald-500/10 border border-emerald-500/20">
-                     <span className="text-[9px] font-black text-emerald-500 uppercase tracking-widest">Synched</span>
-                   </div>
-                   <span className="text-[10px] font-medium text-slate-500">{new Date(record.last_scanned).toLocaleDateString()}</span>
                 </div>
               </motion.div>
             ))}
@@ -190,53 +225,37 @@ export default function BusinessClient({
         </div>
 
         {/* Activity Timeline - 5 Cols */}
-        <div className="lg:col-span-5 space-y-6">
-          <div className="flex items-center justify-between">
-            <h2 className="text-xl font-black text-white uppercase tracking-tighter flex items-center gap-3">
-              <TrendingUp size={24} className="text-indigo-500" /> Event Intelligence
-            </h2>
-            <div className="flex items-center gap-2">
-               <div className="w-1.5 h-1.5 rounded-full bg-indigo-500 animate-pulse" />
-               <span className="text-[10px] font-black text-indigo-500 uppercase tracking-widest">Active Stream</span>
-            </div>
-          </div>
-          
-          <div className="glass-card p-8 border-white/5">
+        <div className="lg:col-span-5 space-y-6 print:mt-10">
+          <h2 className="text-xl font-black text-white print:text-black uppercase tracking-tighter flex items-center gap-3">
+             <TrendingUp size={24} className="text-indigo-500" /> Event Stream
+          </h2>
+          <div className="glass-card p-8 border-white/5 print:border-black print:border-2">
             <ActivityTimeline events={activityEvents} />
-          </div>
-
-          <div className="glass-card p-6 border-amber-500/10 bg-amber-500/5">
-            <div className="flex gap-4">
-              <AlertCircle className="text-amber-500 shrink-0" size={20} />
-              <div className="space-y-1">
-                <h4 className="text-xs font-black text-amber-500 uppercase tracking-widest">System Notice</h4>
-                <p className="text-[11px] text-amber-500/70 font-medium leading-relaxed">
-                  Any discrepancies in historical data are flagged for manual review by the identity resolution engine.
-                </p>
-              </div>
-            </div>
           </div>
         </div>
 
       </div>
 
-      {/* Action Footer */}
+      {/* Action Footer - Hide on print */}
       <motion.div 
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
-        className="pt-10 border-t border-white/5 flex flex-col md:flex-row items-center justify-between gap-6 pb-20"
+        className="pt-10 border-t border-white/5 flex flex-col md:flex-row items-center justify-between gap-6 pb-20 print:hidden"
       >
         <div className="flex flex-col">
-          <h3 className="text-lg font-black text-white uppercase tracking-tighter">Business Action Hub</h3>
-          <p className="text-xs text-slate-500 font-medium mt-1 uppercase tracking-widest">Request updates or dispute resolution results.</p>
+          <h3 className="text-lg font-black text-white uppercase tracking-tighter">Forensic Audit Hub</h3>
+          <p className="text-xs text-slate-500 font-medium mt-1 uppercase tracking-widest">Verify and export the forensic truth of this identity.</p>
         </div>
         <div className="flex items-center gap-4">
-          <button className="px-8 py-4 glass-card text-xs font-black text-slate-400 hover:text-white uppercase tracking-widest transition-all">
-            Export Certificate
+          <button 
+            onClick={handleExport}
+            className="px-8 py-4 glass-card text-xs font-black text-slate-400 hover:text-white uppercase tracking-widest transition-all"
+          >
+            Export Audit Certificate
           </button>
           <button className="px-10 py-4 bg-indigo-600 text-white rounded-2xl text-xs font-black uppercase tracking-widest hover:bg-indigo-500 transition-all shadow-2xl shadow-indigo-500/20 active:scale-95 flex items-center gap-3">
-            Recalculate Identity <Zap size={16} />
+            Re-Verify Identity <Fingerprint size={16} />
           </button>
         </div>
       </motion.div>
@@ -246,13 +265,13 @@ export default function BusinessClient({
 
 function QuickInfoCard({ icon, label, value }: { icon: React.ReactNode, label: string, value: string | number }) {
   return (
-    <div className="glass-card p-5 border-white/5 flex flex-col gap-3 group hover:border-white/10 transition-all">
-      <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center text-slate-400 group-hover:text-indigo-400 transition-colors">
+    <div className="glass-card p-5 border-white/5 flex flex-col gap-3 group hover:border-white/10 transition-all print:border-black print:border print:bg-transparent">
+      <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center text-slate-400 print:text-black group-hover:text-indigo-400 transition-colors">
         {icon}
       </div>
       <div>
         <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">{label}</span>
-        <div className="text-lg font-black text-white uppercase tracking-tight mt-0.5">{value}</div>
+        <div className="text-lg font-black text-white print:text-black uppercase tracking-tight mt-0.5">{value}</div>
       </div>
     </div>
   );

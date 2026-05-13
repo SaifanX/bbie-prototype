@@ -20,10 +20,24 @@ export default async function IntelligencePage() {
     .select('*')
     .order('event_date', { ascending: false });
 
-  // 3. Fetch resolution stats for accuracy chart
-  const { data: resolutions } = await supabase
+  // 3. Fetch Resolution Events for Accuracy Metrics
+  const { data: resolutionEvents } = await supabase
     .from('resolution_events')
     .select('status, match_score');
+
+  const totalResolved = resolutionEvents?.length || 0;
+  const approvedEvents = resolutionEvents?.filter(e => e.status === 'approved') || [];
+  const identifierMatches = approvedEvents.filter(e => e.match_score >= 1.0).length;
+  const fuzzyMatches = approvedEvents.filter(e => e.match_score < 1.0).length;
+  const pendingMatches = resolutionEvents?.filter(e => e.status === 'pending').length || 0;
+
+  const matchBreakdown = {
+    idPercent: totalResolved > 0 ? Math.round((identifierMatches / totalResolved) * 100) : 0,
+    fuzzyPercent: totalResolved > 0 ? Math.round((fuzzyMatches / totalResolved) * 100) : 0,
+    unresolvedPercent: totalResolved > 0 ? Math.round((pendingMatches / totalResolved) * 100) : 0
+  };
+
+  const accuracyRaw = totalResolved > 0 ? Math.round((approvedEvents.length / totalResolved) * 100) : 0;
 
   // 4. Fetch Department Distribution
   const { data: deptData } = await supabase
@@ -40,20 +54,6 @@ export default async function IntelligencePage() {
   const activeCount = businesses?.filter(b => b.activity_status?.toLowerCase() === 'active').length || 0;
   const dormantCount = businesses?.filter(b => b.activity_status?.toLowerCase() === 'dormant').length || 0;
   const closedCount = businesses?.filter(b => b.activity_status?.toLowerCase() === 'closed').length || 0;
-
-  // Accuracy calculation
-  const highConfidence = resolutions?.filter(r => r.match_score >= 0.9).length || 0;
-  const idMatchCount = resolutions?.filter(r => r.match_score === 1.0).length || 0;
-  const fuzzyMatchCount = (resolutions?.filter(r => r.match_score < 1.0 && r.match_score >= 0.6).length || 0);
-  
-  const totalResolutions = resolutions?.length || 1;
-  const accuracyRaw = Math.round((highConfidence / totalResolutions) * 100);
-
-  const matchBreakdown = {
-    idPercent: Math.round((idMatchCount / totalResolutions) * 100),
-    fuzzyPercent: Math.round((fuzzyMatchCount / totalResolutions) * 100),
-    unresolvedPercent: 100 - Math.round(((idMatchCount + fuzzyMatchCount) / totalResolutions) * 100)
-  };
 
   // 5. Run Anomaly Detection (Sample/Summary)
   const { data: allBiz } = await supabase.from('businesses').select('id');

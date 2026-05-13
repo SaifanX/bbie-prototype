@@ -228,7 +228,7 @@ export default function DashboardClient({
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
-            {(totalBusinesses === 0 ? dirtyRecords : recentEvents)?.slice(0, visibleCount).map((event: any, i: number) => (
+            {(totalBusinesses === 0 ? dirtyRecords : recentEvents)?.map((event: any, i: number) => (
               <ResolutionCard 
                 key={event.id}
                 event={event}
@@ -237,17 +237,6 @@ export default function DashboardClient({
               />
             ))}
           </div>
-
-          {(totalBusinesses === 0 ? dirtyRecords : recentEvents)?.length > visibleCount && (
-            <div className="flex justify-center mt-8">
-              <button 
-                onClick={() => setVisibleCount(prev => prev + 5)}
-                className="px-12 py-5 bg-white/5 border border-white/10 rounded-2xl text-[10px] font-black text-slate-400 uppercase tracking-[0.3em] hover:text-white hover:bg-white/10 hover:border-white/20 transition-all active:scale-95"
-              >
-                Load More Records
-              </button>
-            </div>
-          )}
         </div>
       </div>
     </div>
