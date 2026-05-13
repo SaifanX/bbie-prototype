@@ -14,7 +14,7 @@ function cn(...inputs: ClassValue[]) {
 }
 
 export default function IntelligenceClient({ stats }: any) {
-  const [activeTab, setActiveTab] = useState<'overview' | 'anomalies' | 'graph'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'anomalies' | 'graph' | 'learning'>('overview');
 
   const graphData = stats.graphData || { nodes: [], links: [] };
 
@@ -39,6 +39,7 @@ export default function IntelligenceClient({ stats }: any) {
            <TabButton active={activeTab === 'overview'} label="Overview" icon={<BarChart3 size={14} />} onClick={() => setActiveTab('overview')} />
            <TabButton active={activeTab === 'anomalies'} label="Anomalies" icon={<AlertTriangle size={14} />} onClick={() => setActiveTab('anomalies')} />
            <TabButton active={activeTab === 'graph'} label="Graph Explorer" icon={<Share2 size={14} />} onClick={() => setActiveTab('graph')} />
+           <TabButton active={activeTab === 'learning'} label="Learning Hub" icon={<Globe size={14} />} onClick={() => setActiveTab('learning')} />
         </div>
       </div>
 
@@ -146,6 +147,65 @@ export default function IntelligenceClient({ stats }: any) {
           </motion.div>
         </div>
       )}
+
+      {activeTab === 'learning' && (
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="space-y-8 z-10 relative"
+        >
+          <div className="glass-card p-10">
+            <div className="flex justify-between items-start mb-10">
+              <div>
+                <h2 className="text-2xl font-black text-white uppercase tracking-tighter flex items-center gap-3">
+                  <Globe size={32} className="text-emerald-500" /> AI Optimization Hub
+                </h2>
+                <p className="text-slate-500 font-medium mt-2">The system is learning from {stats.learningInsights?.totalFeedbackPoints || 0} reviewer decisions.</p>
+              </div>
+              <div className="bg-emerald-500/10 border border-emerald-500/20 px-6 py-3 rounded-2xl">
+                <span className="text-[10px] font-black text-emerald-500 uppercase tracking-[0.2em]">Learning Status: ACTIVE</span>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+              {stats.learningInsights?.recommendations.map((rec: any, i: number) => (
+                <div key={i} className="glass-card border-white/5 p-8 hover:border-emerald-500/30 transition-all bg-white/[0.02]">
+                   <div className="flex items-center justify-between mb-6">
+                     <span className="text-[10px] font-black text-emerald-400 uppercase tracking-widest px-3 py-1 bg-emerald-500/10 rounded-full border border-emerald-500/20">
+                       {rec.impact} Impact
+                     </span>
+                     <TrendingUp size={20} className="text-emerald-500" />
+                   </div>
+                   <h3 className="text-lg font-black text-white uppercase tracking-tight mb-2">Adjust {rec.field} Weight</h3>
+                   <div className="flex items-center gap-4 mb-6">
+                     <div className="flex flex-col">
+                       <span className="text-[8px] text-slate-500 uppercase font-black tracking-tighter">Current</span>
+                       <span className="text-xl font-mono font-bold text-slate-400">{rec.currentWeight}</span>
+                     </div>
+                     <div className="h-px w-8 bg-slate-700" />
+                     <div className="flex flex-col">
+                       <span className="text-[8px] text-emerald-500 uppercase font-black tracking-tighter">Suggested</span>
+                       <span className="text-2xl font-mono font-black text-emerald-400">{rec.suggestedWeight}</span>
+                     </div>
+                   </div>
+                   <p className="text-xs text-slate-500 leading-relaxed font-medium">{rec.reasoning}</p>
+                   <button className="w-full mt-8 py-3 bg-white/5 hover:bg-emerald-500 hover:text-white rounded-xl text-[10px] font-black uppercase tracking-widest transition-all border border-white/10 hover:border-emerald-500">
+                     Apply Optimization
+                   </button>
+                </div>
+              ))}
+              
+              {(!stats.learningInsights?.recommendations || stats.learningInsights.recommendations.length === 0) && (
+                <div className="lg:col-span-3 py-20 flex flex-col items-center justify-center text-center">
+                  <Activity size={48} className="text-slate-700 mb-6 animate-pulse" />
+                  <p className="text-slate-500 font-bold uppercase tracking-widest text-sm">Awaiting sufficient feedback data to suggest optimizations...</p>
+                </div>
+              )}
+            </div>
+          </div>
+        </motion.div>
+      )}
+
 
       {activeTab === 'anomalies' && (
         <motion.div 

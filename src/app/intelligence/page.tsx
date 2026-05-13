@@ -2,6 +2,7 @@ import { supabase } from '@/utils/supabase';
 import IntelligenceClient from './IntelligenceClient';
 import { detectAnomalies } from '@/utils/anomaly';
 import { inferStatus } from '@/utils/inference';
+import { getLearningInsights } from '@/utils/learning';
 
 export const dynamic = 'force-dynamic';
 
@@ -85,6 +86,9 @@ export default async function IntelligencePage() {
     ?.filter(s => s.business_id)
     .map(s => ({ source: s.id, target: s.business_id })) || [];
 
+  // 7. Get Learning Insights (Layer 6)
+  const learningInsights = await getLearningInsights();
+
   // Final distribution
   const stats = {
     total: total,
@@ -96,6 +100,7 @@ export default async function IntelligencePage() {
     deptStats,
     anomalyStats,
     matchBreakdown,
+    learningInsights,
     graphData: {
       nodes: graphNodes,
       links: graphLinks
