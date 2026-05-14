@@ -1,6 +1,6 @@
 import { supabase } from '@/utils/supabase';
 import IntelligenceClient from './IntelligenceClient';
-import { detectAnomalies } from '@/utils/anomaly';
+import { detectAnomalies, getGlobalAnomalyStats } from '@/utils/anomaly';
 import { inferStatus } from '@/utils/inference';
 import { getLearningInsights } from '@/utils/learning';
 
@@ -55,24 +55,8 @@ export default async function IntelligencePage() {
   const dormantCount = businesses?.filter(b => b.activity_status?.toLowerCase() === 'dormant').length || 0;
   const closedCount = businesses?.filter(b => b.activity_status?.toLowerCase() === 'closed').length || 0;
 
-  // 5. Run Anomaly Detection (Sample/Summary)
-  const { data: allBiz } = await supabase.from('businesses').select('id');
-  let anomalyStats = {
-    address_mismatch: 0,
-    suspicious_inactivity: 0,
-    identifier_collision: 0
-  };
-
-  if (allBiz) {
-    for (const b of allBiz) {
-      const anomalies = await detectAnomalies(b.id);
-      anomalies.forEach(a => {
-        if (a.type === 'INCONSISTENT_ADDRESS') anomalyStats.address_mismatch++;
-        if (a.type === 'SUSPICIOUS_INACTIVITY') anomalyStats.suspicious_inactivity++;
-        if (a.type === 'IDENTIFIER_COLLISION') anomalyStats.identifier_collision++;
-      });
-    }
-  }
+  // 5. Run Anomaly Detection (Batch)
+  const anomalyStats = await getGlobalAnomalyStats();
 
   // 6. Generate Dynamic Graph Data
   const { data: allSourceRecords } = await supabase.from('source_records').select('id, entity_name, business_id');

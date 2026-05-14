@@ -80,3 +80,41 @@ export async function detectAnomalies(businessId: string): Promise<Anomaly[]> {
 
   return anomalies;
 }
+export async function getGlobalAnomalyStats() {
+  // 1. Identifier Collisions: Find PANs shared by multiple UBIDs
+  const { data: collisions } = await supabase
+    .rpc('get_identifier_collisions'); // Using a custom RPC for performance if available, or fall back to:
+  
+  // Fallback if RPC isn't there:
+  const { data: allBiz } = await supabase.from('businesses').select('pan, gstin');
+  const panMap = new Map();
+  let collisionCount = 0;
+  allBiz?.forEach(b => {
+    if (b.pan) {
+      panMap.set(b.pan, (panMap.get(b.pan) || 0) + 1);
+      if (panMap.get(b.pan) === 2) collisionCount++;
+    }
+  });
+
+  // 2. Suspicious Inactivity: Dormant or Closed with 0 recent events
+  const eighteenMonthsAgo = new Date();
+  eighteenMonthsAgo.setMonth(eighteenMonthsAgo.getMonth() - 18);
+  
+  const { count: inactivityCount } = await supabase
+    .from('businesses')
+    .select('*', { count: 'exact', head: true })
+    .or(`activity_status.eq.dormant,activity_status.eq.closed`);
+
+  // 3. Address Mismatch: Businesses with rejected resolutions due to location
+  const { count: addressMismatch } = await supabase
+    .from('resolution_events')
+    .select('*', { count: 'exact', head: true })
+    .eq('status', 'rejected')
+    .ilike('feedback', '%address%');
+
+  return {
+    address_mismatch: addressMismatch || 0,
+    suspicious_inactivity: inactivityCount || 0,
+    identifier_collision: collisionCount || 0
+  };
+}

@@ -39,7 +39,7 @@ export default async function EntitySearchPage({ searchParams }: { searchParams:
           .in('id', ids);
         
         // Maintain vector ranking
-        results = ids.map(id => businessData?.find(b => b.id === id)).filter(Boolean);
+        results = ids.map((id: string) => businessData?.find(b => b.id === id)).filter(Boolean);
       }
     } else {
       // Default view: Show latest resolved

@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import { Sidebar } from "@/components/layout/Sidebar";
-import { Header } from "@/components/layout/Header";
+import { AppWrapper } from "@/components/layout/AppWrapper";
 
 export const metadata: Metadata = {
   title: "BBIE - Business Registry",
@@ -24,13 +23,9 @@ export default function RootLayout({
           <div className="absolute bottom-[-10%] left-[-10%] w-[30%] h-[30%] bg-emerald-600/10 blur-[100px] rounded-full animate-pulse" />
         </div>
 
-        <Sidebar />
-        <div className="flex-1 ml-64 flex flex-col min-h-screen relative z-10">
-          <Header />
-          <main className="flex-1">
-            {children}
-          </main>
-        </div>
+        <AppWrapper>
+          {children}
+        </AppWrapper>
       </body>
     </html>
   );

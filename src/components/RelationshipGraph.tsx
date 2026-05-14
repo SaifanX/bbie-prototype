@@ -7,7 +7,7 @@ import dynamic from 'next/dynamic';
 const ForceGraph2D = dynamic(() => import('react-force-graph-2d'), { ssr: false });
 
 export default function RelationshipGraph({ data }: { data: any }) {
-  const fgRef = useRef<any>();
+  const fgRef = useRef<any>(null);
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {

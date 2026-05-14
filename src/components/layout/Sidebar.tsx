@@ -12,11 +12,11 @@ function cn(...inputs: ClassValue[]) {
 }
 
 const navItems = [
-  { href: '/', icon: Home, label: 'Dashboard' },
-  { href: '/simulator', icon: Activity, label: 'Live Database' },
-  { href: '/search', icon: Search, label: 'Search Businesses' },
-  { href: '/intelligence', icon: Database, label: 'Reports' },
-  { href: '/review', icon: Users, label: 'Review' },
+  { href: '/dashboard', icon: Home, label: 'Command Center' },
+  { href: '/simulator', icon: Activity, label: 'Database Simulator' },
+  { href: '/search', icon: Search, label: 'Forensic Search' },
+  { href: '/intelligence', icon: Database, label: 'Intelligence Hub' },
+  { href: '/review', icon: Users, label: 'Review Workspace' },
 ];
 
 export function Sidebar() {

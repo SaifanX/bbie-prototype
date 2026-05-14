@@ -21,6 +21,8 @@ export default function IntelligenceClient({ stats }: any) {
     setAppliedRecs([...appliedRecs, index]);
   };
 
+  const graphData = stats.graphData || { nodes: [], links: [] };
+
   return (
     <div className="p-10 space-y-10 min-h-screen relative overflow-y-auto">
       
