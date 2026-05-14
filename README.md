@@ -26,7 +26,7 @@ bbie-prototype/
 
 ---
 
-## 🚀 The "Winning" Technology Stack
+## 🚀 The Tech Stack
 
 *   **Frontend**: Next.js 16 (App Router), TypeScript, Tailwind CSS 4.
 *   **Intelligence**: 
@@ -37,7 +37,7 @@ bbie-prototype/
 
 ---
 
-## 🛡️ Core Features (First-Place Spec)
+## 🛡️ Core Features
 
 1.  **Unified Business Identifier (UBID)**: Automated 1:N record matching.
 2.  **Forensic Reasoning**: AI-generated verdicts for ambiguous identity matches.
@@ -53,6 +53,7 @@ bbie-prototype/
 2. Run `npm install`.
 3. Configure `.env.local` with your Supabase and Gemini credentials.
 4. Run `npm run dev`.
+5. Open browser tab at [http://localhost:3001/](http://localhost:3001/)
 
 ---
 

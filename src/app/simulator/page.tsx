@@ -55,16 +55,33 @@ export default function SimulatorPage() {
     for (let i = 0; i < currentData.length; i++) {
       const record = currentData[i];
       setNormalizingIndex(i);
-      setActiveStage(1);
       
       setLogs(prev => [...prev, `> ANALYZING: ${record.original}`]);
       
       try {
+        // Step 0: Ingest
+        setActiveStage(0);
+        await new Promise(r => setTimeout(r, 400));
+        
+        // Step 1: Shield
+        setActiveStage(1);
+        await new Promise(r => setTimeout(r, 400));
+
+        // Step 2: Vector
+        setActiveStage(2);
+        await new Promise(r => setTimeout(r, 400));
+
         // CALL THE REAL ENGINE
         const result = await runResolution(record.id);
-        
         setActiveAnalysis(result);
+
+        // Step 3: Align
         setActiveStage(3);
+        await new Promise(r => setTimeout(r, 800));
+
+        // Step 4: Issue
+        setActiveStage(4);
+        await new Promise(r => setTimeout(r, 600));
 
         setStats(prev => ({
           ...prev,
@@ -82,11 +99,8 @@ export default function SimulatorPage() {
           return next;
         });
 
-        // Small delay to let the user read the AI verdict
-        await new Promise(resolve => setTimeout(resolve, 1500));
+        await new Promise(resolve => setTimeout(resolve, 1000));
         setActiveAnalysis(null);
-        setActiveStage(0);
-
       } catch (err) {
         setLogs(prev => [...prev, `> ERROR PROCESSING ${record.original}`]);
       }
@@ -129,7 +143,7 @@ export default function SimulatorPage() {
             disabled={!isDataLoaded || isEngaged}
             className="px-10 py-4 rounded-xl bg-indigo-600 text-white font-black uppercase tracking-widest transition-all hover:bg-indigo-500 disabled:bg-slate-800 active:scale-95 shadow-2xl shadow-indigo-500/20"
           >
-            {isEngaged ? 'Processing...' : 'Engage Engine'}
+            {isEngaged ? 'Synchronizing...' : 'Execute Synchronization'}
           </button>
         </div>
       </div>
@@ -187,18 +201,34 @@ export default function SimulatorPage() {
                           <Cpu size={32} className="text-indigo-400 animate-pulse" />
                        </div>
                        <div>
-                          <p className="text-[10px] font-black text-indigo-400 uppercase tracking-[0.3em] mb-1">Forensic Analysis</p>
+                          <p className="text-[10px] font-black text-indigo-400 uppercase tracking-[0.3em] mb-1">Precision Resolution</p>
                           <h2 className="text-2xl font-black text-white uppercase tracking-tight">{currentData[normalizingIndex!].original}</h2>
                        </div>
                     </div>
 
+                    {/* Granular Pipeline Visualizer */}
+                    <div className="grid grid-cols-5 gap-2">
+                       {['Ingest', 'Shield', 'Vector', 'Align', 'Issue'].map((step, idx) => (
+                         <div key={step} className="flex flex-col gap-2">
+                            <div className={cn(
+                              "h-1 rounded-full transition-all duration-500",
+                              idx <= activeStage ? "bg-indigo-500 shadow-[0_0_8px_rgba(99,102,241,0.5)]" : "bg-white/10"
+                            )} />
+                            <span className={cn(
+                              "text-[7px] font-black uppercase text-center",
+                              idx <= activeStage ? "text-indigo-400" : "text-slate-600"
+                            )}>{step}</span>
+                         </div>
+                       ))}
+                    </div>
+
                     <div className="grid grid-cols-2 gap-4">
                        <div className="bg-white/5 border border-white/5 p-4 rounded-xl">
-                          <span className="text-[9px] font-bold text-slate-500 uppercase block mb-1">Similarity Index</span>
+                          <span className="text-[9px] font-bold text-slate-500 uppercase block mb-1">Alignment Confidence</span>
                           <div className="text-3xl font-black text-white">{(activeAnalysis.score * 100).toFixed(0)}%</div>
                        </div>
                        <div className="bg-white/5 border border-white/5 p-4 rounded-xl">
-                          <span className="text-[9px] font-bold text-slate-500 uppercase block mb-1">Status</span>
+                          <span className="text-[9px] font-bold text-slate-500 uppercase block mb-1">Resolution Status</span>
                           <div className={`text-xl font-black uppercase ${
                             activeAnalysis.status === 'resolved' ? 'text-emerald-500' : 'text-amber-500'
                           }`}>
@@ -211,7 +241,7 @@ export default function SimulatorPage() {
                        <div className="absolute top-0 right-0 p-2 opacity-20">
                           <Fingerprint size={40} />
                        </div>
-                       <span className="text-[9px] font-black text-indigo-400 uppercase tracking-widest block mb-3">AI Verdict</span>
+                       <span className="text-[9px] font-black text-indigo-400 uppercase tracking-widest block mb-3">Institutional Verdict</span>
                        <p className="text-sm font-medium text-slate-300 italic leading-relaxed">
                           "{activeAnalysis.verdict}"
                        </p>
@@ -225,7 +255,7 @@ export default function SimulatorPage() {
                     className="text-center"
                   >
                      <Cpu size={64} className="mx-auto mb-6" />
-                     <p className="text-[10px] font-black uppercase tracking-widest">Engine Dormant</p>
+                     <p className="text-[10px] font-black uppercase tracking-widest">Engine Standby</p>
                   </motion.div>
                 )}
              </AnimatePresence>

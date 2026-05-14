@@ -1,7 +1,7 @@
 'use client'
 
 import { motion, useScroll, useTransform, useMotionValue, useSpring } from 'framer-motion';
-import { Shield, Zap, Globe, Database, ArrowRight, Fingerprint, Search, ShieldCheck, Activity } from 'lucide-react';
+import { Shield, Zap, Globe, Database, ArrowRight, Fingerprint, Search, ShieldCheck, Activity, Cpu } from 'lucide-react';
 import Link from 'next/link';
 import { useRef, useEffect } from 'react';
 
@@ -56,9 +56,9 @@ export default function PresentationLanding() {
             className="flex items-center justify-center gap-3 mb-8"
           >
             <div className="w-12 h-12 bg-indigo-600 rounded-2xl flex items-center justify-center shadow-2xl shadow-indigo-500/40">
-              <Shield size={24} />
+              <ShieldCheck size={24} />
             </div>
-            <span className="text-sm font-black uppercase tracking-[0.5em] text-indigo-400">Bharat Intelligence Engine</span>
+            <span className="text-sm font-black uppercase tracking-[0.5em] text-indigo-400">Bharat Intelligence Framework</span>
           </motion.div>
           
           <motion.h1 
@@ -84,9 +84,13 @@ export default function PresentationLanding() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1, delay: 0.6 }}
+            className="flex flex-col sm:flex-row items-center justify-center gap-4"
           >
-            <Link href="/dashboard" className="px-10 py-5 bg-white text-black rounded-2xl font-black uppercase tracking-widest text-xs hover:bg-indigo-500 hover:text-white transition-all active:scale-95 flex items-center gap-4 mx-auto w-fit shadow-2xl shadow-white/10">
-              Enter National Registry <ArrowRight size={18} />
+            <Link href="/dashboard" className="px-10 py-5 bg-white text-black rounded-2xl font-black uppercase tracking-widest text-xs hover:bg-indigo-500 hover:text-white transition-all active:scale-95 flex items-center gap-4 shadow-2xl shadow-white/10">
+              Enter Governance Hub <ArrowRight size={18} />
+            </Link>
+            <Link href="/how-it-works" className="px-10 py-5 bg-white/5 border border-white/10 text-white rounded-2xl font-black uppercase tracking-widest text-xs hover:bg-white/10 transition-all active:scale-95 flex items-center gap-4">
+              The Resolution Framework
             </Link>
           </motion.div>
         </motion.div>
@@ -154,7 +158,7 @@ export default function PresentationLanding() {
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-32">
              <span className="text-[10px] font-black text-indigo-500 uppercase tracking-[0.4em] block mb-4">The Solution</span>
-             <h2 className="text-6xl font-black uppercase tracking-tighter text-white">The Forensic Blueprint</h2>
+             <h2 className="text-6xl font-black uppercase tracking-tighter text-white">The Resolution Framework</h2>
              <p className="text-slate-500 font-medium mt-4 max-w-2xl mx-auto">Our 3-Phase Intelligence Pipeline transforms departmental noise into a National System of Record.</p>
           </div>
 
@@ -179,6 +183,41 @@ export default function PresentationLanding() {
                desc="Clean data feeds the Command Center, providing auditors with a forensic timeline and high-risk anomaly alerts for instant governance."
                icon={<Activity className="text-amber-400" />}
              />
+          </div>
+        </div>
+      </section>
+
+      {/* --- SECTION 3.5: THE THREE PILLARS (THE LOGIC) --- */}
+      <section className="py-40 px-6 relative z-30 bg-[#020205]">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-24">
+             <span className="text-[10px] font-black text-indigo-500 uppercase tracking-[0.4em] block mb-4">Forensic Logic</span>
+             <h2 className="text-6xl font-black uppercase tracking-tighter text-white">The Three Pillars of Truth</h2>
+             <p className="text-slate-500 font-medium mt-4 max-w-2xl mx-auto">How we transform billions of identity fragments into a single National System of Record.</p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="glass-card p-10 border-white/5 bg-white/[0.01] hover:border-indigo-500/20 transition-all">
+               <div className="w-14 h-14 bg-indigo-500/10 rounded-2xl flex items-center justify-center mb-8">
+                  <Database className="text-indigo-400" size={28} />
+               </div>
+               <h3 className="text-xl font-black text-white uppercase tracking-tighter mb-4">Unified Ingestion</h3>
+               <p className="text-sm text-slate-500 font-medium leading-relaxed">Collecting messy, siloed data from MCA, GSTN, and MSME into a normalized sovereignty buffer.</p>
+            </div>
+            <div className="glass-card p-10 border-white/5 bg-white/[0.01] hover:border-emerald-500/20 transition-all">
+               <div className="w-14 h-14 bg-emerald-500/10 rounded-2xl flex items-center justify-center mb-8">
+                  <Fingerprint className="text-emerald-400" size={28} />
+               </div>
+               <h3 className="text-xl font-black text-white uppercase tracking-tighter mb-4">Precision Alignment</h3>
+               <p className="text-sm text-slate-500 font-medium leading-relaxed">Using 3072-dim Vector Search to resolve identities across phonetic and spatial variations with 99.8% accuracy.</p>
+            </div>
+            <div className="glass-card p-10 border-white/5 bg-white/[0.01] hover:border-amber-500/20 transition-all">
+               <div className="w-14 h-14 bg-amber-500/10 rounded-2xl flex items-center justify-center mb-8">
+                  <Cpu className="text-amber-400" size={28} />
+               </div>
+               <h3 className="text-xl font-black text-white uppercase tracking-tighter mb-4">Learning Audit</h3>
+               <p className="text-sm text-slate-500 font-medium leading-relaxed">A human-in-the-loop feedback system that retrains the engine with every forensic decision.</p>
+            </div>
           </div>
         </div>
       </section>
@@ -210,7 +249,7 @@ export default function PresentationLanding() {
            </div>
 
            <Link href="/dashboard" className="mt-20 px-10 py-5 bg-indigo-600 text-white rounded-2xl font-black uppercase tracking-widest text-xs hover:bg-indigo-500 transition-all active:scale-95 inline-flex items-center gap-4 shadow-xl shadow-indigo-500/20">
-              Access the Command Center <ArrowRight size={18} />
+              Access the Governance Hub <ArrowRight size={18} />
            </Link>
         </div>
       </section>

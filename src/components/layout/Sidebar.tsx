@@ -12,9 +12,9 @@ function cn(...inputs: ClassValue[]) {
 }
 
 const navItems = [
-  { href: '/dashboard', icon: Home, label: 'Command Center' },
-  { href: '/simulator', icon: Activity, label: 'Database Simulator' },
-  { href: '/search', icon: Search, label: 'Forensic Search' },
+  { href: '/dashboard', icon: Home, label: 'Governance Hub' },
+  { href: '/simulator', icon: Activity, label: 'Identity Simulator' },
+  { href: '/search', icon: Search, label: 'Registry Search' },
   { href: '/intelligence', icon: Database, label: 'Intelligence Hub' },
   { href: '/review', icon: Users, label: 'Review Workspace' },
 ];

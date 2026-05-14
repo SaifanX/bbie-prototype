@@ -9,7 +9,8 @@ export function AppWrapper({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   
   // Define pages that should NOT have a sidebar or header (Full-screen presentation mode)
-  const isLandingPage = pathname === '/' || pathname === '/gateway' || pathname === '/docs';
+  const fullScreenRoutes = ['/', '/how-it-works', '/api', '/api/docs'];
+  const isLandingPage = fullScreenRoutes.includes(pathname);
 
   if (isLandingPage) {
     return (

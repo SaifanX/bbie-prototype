@@ -34,7 +34,7 @@ The bridge table where the BBIE Engine proposes merges.
 1. **Ingestion**: Raw records are loaded into `source_records`.
 2. **Vector Scan**: The engine generates embeddings for the new record and compares them against existing `businesses`.
 3. **Fuzzy Logic**: If high semantic similarity is found, a secondary fuzzy matching check is run on fields like PAN, address, and directors.
-4. **Human-in-the-Loop**: Any match with a score between 60% and 95% is sent to the **Verification Workspace** for human review.
+4. **Human-in-the-Loop**: Any match with a score between 60% and 95% is sent to the **Review Workspace** for human review.
 5. **Resolution**: Upon approval, the `source_record` is linked to the `business` and the "Golden Record" is updated with any missing data (data enrichment).
 
 ## 3. Data Integrity

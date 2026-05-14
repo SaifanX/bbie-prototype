@@ -1,13 +1,15 @@
 @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap');
 @import "tailwindcss";
 
-@theme {
-  --font-sans: 'Space Grotesk', sans-serif;
-  --font-mono: 'JetBrains Mono', monospace;
-  
-  --color-background: #020205;
-  --color-glass: rgba(10, 10, 20, 0.6);
-  --color-glass-border: rgba(255, 255, 255, 0.08);
+@layer base {
+  :root {
+    --font-sans: 'Space Grotesk', sans-serif;
+    --font-mono: 'JetBrains Mono', monospace;
+    
+    --color-background: #020205;
+    --color-glass: rgba(10, 10, 20, 0.6);
+    --color-glass-border: rgba(255, 255, 255, 0.08);
+  }
 }
 
 /* Custom Base Styles */

@@ -112,11 +112,11 @@ export default function DashboardClient({
           trend="Human in loop"
         />
         <MetricCard 
-          title="Anomalies" 
+          title="Regulatory Flags" 
           value={formatNumber(anomalyCount)} 
           icon={<AlertTriangle size={20} />} 
           color="orange" 
-          trend="Critical priority"
+          trend="Institutional Priority"
           isDown={anomalyCount > 0}
         />
       </div>
@@ -175,7 +175,7 @@ export default function DashboardClient({
 
         <div className="glass-card p-8 flex flex-col gap-6 border-orange-500/10">
           <div className="flex items-center justify-between">
-            <h3 className="text-lg font-black text-white uppercase tracking-tight">Active Anomalies</h3>
+            <h3 className="text-lg font-black text-white uppercase tracking-tight">Active Flags</h3>
             <AlertTriangle className="text-orange-500" size={20} />
           </div>
           
@@ -198,7 +198,7 @@ export default function DashboardClient({
           </div>
           
           <button className="w-full py-4 bg-orange-500/10 border border-orange-500/20 rounded-xl text-[10px] font-black text-orange-500 uppercase tracking-widest hover:bg-orange-500/20 transition-all mt-auto">
-            Review All Anomalies
+            Audit All Flags
           </button>
         </div>
       </div>

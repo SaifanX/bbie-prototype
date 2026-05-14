@@ -42,12 +42,13 @@ node scripts/seed_events.js
 ```bash
 npm run dev
 ```
-Open [http://localhost:3000](http://localhost:3000) to view the BBIE Dashboard.
+Open [http://localhost:3001](http://localhost:3001) to view the BBIE Engine.
 
 ---
 
 ## 🏗️ Key Navigation for Judges:
-1. **Dashboard (/)**: High-level registry health and real-time processing feed.
-2. **Verification Workspace (/review)**: Human-in-the-loop interface where the **Real Matching Engine** calculates confidence scores.
-3. **Registry Reports (/intelligence)**: Active Intelligence dashboard showing business status (Active/Dormant/Closed) inferred from the event stream.
-4. **Simulator (/simulator)**: A visual representation of how raw data is cleaned, normalized, and linked to a UBID.
+1. **Presentation Landing (/)**: Cinematic high-impact narrative of the National Identity crisis.
+2. **Command Center (/dashboard)**: High-level registry health and real-time processing feed.
+3. **Review Workspace (/review)**: Human-in-the-loop interface where the **Real Matching Engine** calculates confidence scores.
+4. **Intelligence Hub (/intelligence)**: Active Intelligence dashboard showing business status (Active/Dormant/Closed) inferred from the event stream.
+5. **Simulator (/simulator)**: A visual representation of how raw data is cleaned, normalized, and linked to a UBID.
