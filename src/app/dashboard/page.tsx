@@ -92,7 +92,7 @@ export default async function DashboardPage() {
       dormantCount={dormantCount}
       closedCount={closedCount}
       anomalyCount={anomalyCount}
-      anomalyList={anomalyList}
+      anomalyList={anomalyList || []}
       scoreStream={scoreStream?.map(s => Math.round((s.match_score || 0.45) * 100)) || []}
     />
   );

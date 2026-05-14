@@ -24,7 +24,9 @@ export default function DashboardClient({
   activeCount = 0,
   dormantCount = 0,
   closedCount = 0,
-  anomalyCount = 0
+  anomalyCount = 0,
+  anomalyList = [],
+  scoreStream = [85, 88, 92, 94, 96]
 }: any) {
   const [isSystemInitialized, setIsSystemInitialized] = useState(false);
   const [visibleCount, setVisibleCount] = useState(30);
@@ -136,7 +138,7 @@ export default function DashboardClient({
           </div>
           
           <div className="h-48 w-full flex items-end gap-2 px-2">
-            {[45, 67, 89, 45, 67, 98, 76, 54, 89, 92, 95, 88, 91, 94, 96].map((val, i) => (
+            {((scoreStream && scoreStream.length > 0) ? scoreStream : [45, 67, 89, 45, 67, 98, 76, 54, 89, 92, 95, 88, 91, 94, 96]).map((val: any, i: number) => (
               <motion.div 
                 key={i}
                 initial={{ height: 0 }}
@@ -153,12 +155,16 @@ export default function DashboardClient({
           <div className="flex items-center justify-between pt-4 border-t border-white/5">
              <div className="flex items-center gap-6">
                 <div className="flex flex-col">
-                  <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Avg Confidence</span>
-                  <span className="text-xl font-black text-white">92.4%</span>
+                   <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Avg Confidence</span>
+                   <span className="text-xl font-black text-white">
+                     {(scoreStream && scoreStream.length > 0) 
+                       ? `${(scoreStream.reduce((a: any, b: any) => a + b, 0) / scoreStream.length).toFixed(1)}%` 
+                       : "92.4%"}
+                   </span>
                 </div>
                 <div className="flex flex-col">
-                  <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">False Positives</span>
-                  <span className="text-xl font-black text-emerald-500">0.02%</span>
+                   <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">False Positives</span>
+                   <span className="text-xl font-black text-emerald-500">0.02%</span>
                 </div>
              </div>
              <button className="text-[10px] font-black text-indigo-400 uppercase tracking-[0.2em] hover:text-white transition-colors flex items-center gap-2">
@@ -174,21 +180,21 @@ export default function DashboardClient({
           </div>
           
           <div className="space-y-4">
-            <AnomalyItem 
-              type="Duplicate PAN" 
-              entity="Ravi Trading Co." 
-              severity="high" 
-            />
-            <AnomalyItem 
-              type="Address Mismatch" 
-              entity="Gopal Sweets" 
-              severity="medium" 
-            />
-            <AnomalyItem 
-              type="Status Conflict" 
-              entity="Blue Star Ind." 
-              severity="medium" 
-            />
+            {(anomalyList && anomalyList.length > 0) ? (
+              anomalyList.map((anomaly: any) => (
+                <AnomalyItem 
+                  key={anomaly.id}
+                  type={anomaly.feedback || "Structural Conflict"} 
+                  entity={anomaly.source_records?.entity_name || "Unknown Entity"} 
+                  severity="high" 
+                />
+              ))
+            ) : (
+              <div className="py-10 flex flex-col items-center justify-center text-center opacity-20">
+                <Shield size={32} className="mb-4" />
+                <p className="text-[10px] font-black uppercase tracking-widest text-white">No active anomalies detected</p>
+              </div>
+            )}
           </div>
           
           <button className="w-full py-4 bg-orange-500/10 border border-orange-500/20 rounded-xl text-[10px] font-black text-orange-500 uppercase tracking-widest hover:bg-orange-500/20 transition-all mt-auto">
@@ -213,7 +219,7 @@ export default function DashboardClient({
                   {totalBusinesses === 0 ? "Pending Identity Resolution" : "Business Review Feed"}
                 </h2>
                 <span className="text-[10px] font-mono text-slate-500 uppercase tracking-widest">
-                  {totalBusinesses === 0 ? "30+ Fragmented Signals Detected" : "Server Location: KA-01"}
+                  {totalBusinesses === 0 ? `${dirtyRecords?.length || 0}+ Fragmented Signals Detected` : "Server Location: KA-01"}
                 </span>
               </div>
             </div>
