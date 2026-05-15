@@ -265,7 +265,7 @@ function ResolutionCard({ event, delay, isDirty }: any) {
           <div className="flex items-center gap-2">
              <div className={cn("w-1.5 h-1.5 rounded-full", "bg-orange-500")} />
              <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500">
-               {isDirty ? "RAW FRAGMENT" : "LINKED IDENTITY"}
+               {isDirty ? "UNRESOLVED" : "LINKED IDENTITY"}
              </span>
           </div>
           <div className={cn(
