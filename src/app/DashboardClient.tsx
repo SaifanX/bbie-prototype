@@ -328,7 +328,7 @@ function MetricCard({ title, value, icon, color, trend }: any) {
       className="glass-card p-6 flex flex-col gap-5 border-white/5 group relative overflow-hidden"
     >
       <div className="absolute top-0 right-0 p-4 opacity-[0.03] group-hover:opacity-[0.08] transition-opacity pointer-events-none">
-         {React.cloneElement(icon as React.ReactElement, { size: 64 })}
+         {React.cloneElement(icon as React.ReactElement, { size: 64 } as any)}
       </div>
 
       <div className={cn(
