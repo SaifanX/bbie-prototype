@@ -35,8 +35,9 @@ export function levenshteinDistance(s1: string, s2: string): number {
  * Good for addresses and long names
  */
 export function wordOverlapSimilarity(s1: string, s2: string): number {
-  const words1 = new Set(s1.split(/\s+/).filter(w => w.length > 1));
-  const words2 = new Set(s2.split(/\s+/).filter(w => w.length > 1));
+  // CRITICAL: Preserving single-character tokens as they are vital initials in Indian business names.
+  const words1 = new Set(s1.split(/\s+/).filter(w => w.length >= 1));
+  const words2 = new Set(s2.split(/\s+/).filter(w => w.length >= 1));
   
   if (words1.size === 0 || words2.size === 0) return 0;
   

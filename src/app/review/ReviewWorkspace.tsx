@@ -21,6 +21,7 @@ type PendingEvent = {
     entity_name: string;
     department: string;
     address: string;
+    pincode: string;
     gstin: string;
     pan: string;
   };
@@ -29,6 +30,7 @@ type PendingEvent = {
     ubid: string;
     primary_name: string;
     address: string;
+    pincode: string;
     gstin: string;
     pan: string;
   };
@@ -63,6 +65,7 @@ export default function ReviewWorkspace({
         entity_name: u.entity_name,
         department: u.department,
         address: u.raw_data?.address || 'N/A',
+        pincode: u.pincode || '',
         gstin: u.raw_data?.gstin || 'N/A',
         pan: u.raw_data?.pan || 'N/A'
       },
@@ -92,7 +95,7 @@ export default function ReviewWorkspace({
   const handleCreateNew = useCallback(async () => {
     if (!selectedEvent || isPending) return
     startTransition(async () => {
-      await createNewEntity(selectedEvent.id, selectedEvent.source.id, selectedEvent.source.entity_name, selectedEvent.source.address)
+      await createNewEntity(selectedEvent.id, selectedEvent.source.id, selectedEvent.source.entity_name, selectedEvent.source.address, selectedEvent.source.pincode)
       if (selectedEvent.type === 'flagged') {
         setEvents(prev => prev.filter(e => e.id !== selectedEvent.id))
       } else {

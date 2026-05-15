@@ -1,7 +1,9 @@
-# 💎 BBIE: Bharat Business Intelligence Engine
+# 🛠️ BBIE: Bharat Business Intelligence Engine
 ### Theme 1: AI for Bharat — Unified Business Identifier (UBID) + Active Intelligence
 
-BBIE is a high-trust, non-intrusive intelligence layer designed to resolve fragmented business identities across siloed government department systems. It leverages **Semantic Entity Resolution**, **Vector Similarity Search**, and **LLM-based Reasoning** to create a canonical "Golden Record" for every business in the ecosystem.
+**The National System of Record.**
+
+BBIE is a high-trust, forensic-grade intelligence layer designed to resolve fragmented business identities across siloed government department systems. It leverages **Semantic Entity Resolution**, **Vector Similarity Search**, and **LLM-based Reasoning** to create a canonical "Golden Record" for every business in the ecosystem.
 
 ---
 
@@ -10,51 +12,67 @@ BBIE is a high-trust, non-intrusive intelligence layer designed to resolve fragm
 ```text
 bbie-prototype/
 ├── docs/                   # Strategic Documentation & Schema
-│   ├── SCHEMA.md           # Database architecture & Resolution logic
-│   ├── RUN_INSTRUCTIONS.md # Deployment & Local setup guide
-│   └── AGENTS.md           # AI Agent interaction protocols
-├── public/                 # Static Assets & Branding
+├── scripts/                # Data Generation & Seeding Scripts
 ├── src/                    # Core Source Code
-│   ├── app/                # Next.js App Router (Dashboard, Search, Simulator)
-│   ├── components/         # Premium UI Components (Framer Motion + GSAP)
-│   └── utils/              # Intelligence Engine (Normalization, Similarity, Confidence)
-├── .env.local              # Environment Power Source (Gemini + Supabase)
-├── next.config.ts          # Next.js Configuration
-├── tsconfig.json           # TypeScript Configuration
-└── package.json            # High-performance Dependencies
+│   ├── app/                # Next.js App Router (Dashboard, Search, Live Resolution)
+│   ├── components/         # Matte Industrial UI Components
+│   ├── utils/              # Intelligence Engine (Normalization, Similarity)
+│   └── types/              # Unified Schema Definitions
+├── .env.local              # Environment Configuration
+├── tailwind.config.ts      # Matte Industrial Theme Enforcer
+└── package.json            # Core Dependencies
 ```
 
 ---
 
 ## 🚀 The Tech Stack
 
-*   **Frontend**: Next.js 16 (App Router), TypeScript, Tailwind CSS 4.
-*   **Intelligence**: 
-    *   **Gemini Pro API**: For Semantic Arbitration and Forensic Narrative generation.
-    *   **Supabase (PostgreSQL)**: Leveraging `pgvector` for semantic business search.
-    *   **Similarity Engine**: Custom hybrid weighted scoring (Levenshtein + Word Overlap).
-*   **Aesthetics**: Framer Motion & GSAP for cinematic data-clustering visualizations.
+*   **Framework**: Next.js 14+ (App Router), TypeScript.
+*   **Design System**: **Matte Industrial (Sovereignty-Grade)**. A high-impact, utilitarian aesthetic using Jet Orange (#ff6b00) and Dusty Grey (#08080a). Zero glow, zero blurs—built for serious governance.
+*   **Intelligence Engine**: 
+    *   **Gemini Pro**: Semantic Arbitration and Forensic Reasoning.
+    *   **Supabase (PostgreSQL)**: Data persistence and Real-time event logging.
+    *   **Weighted Similarity**: Hybrid resolution logic (GSTIN, PAN, Address Vector).
+*   **Visuals**: Framer Motion for structural logic and state transitions.
 
 ---
 
-## 🛡️ Core Features
+## 🛡️ Core Capabilities
 
-1.  **Unified Business Identifier (UBID)**: Automated 1:N record matching.
-2.  **Forensic Reasoning**: AI-generated verdicts for ambiguous identity matches.
-3.  **Active Intelligence**: Cross-system activity analysis to detect "Zombie" vs "Active" states.
-4.  **Anomaly Detection**: Flagging identity collision and potential regulatory fraud.
-5.  **Transparent Audit**: Every decision is explainable, traceable, and reversible.
-
----
-
-## 🛠️ Getting Started
-
-1. Clone the repo.
-2. Run `npm install`.
-3. Configure `.env.local` with your Supabase and Gemini credentials.
-4. Run `npm run dev`.
-5. Open browser tab at [http://localhost:3001/](http://localhost:3001/)
+1.  **UBID Generation**: Automated resolution of 1:N fragmented records into a single identity.
+2.  **Forensic Arbitration**: AI-driven reasoning for high-entropy identity collisions.
+3.  **Active Intelligence**: Real-time cross-system event monitoring (GSTN, MCA, Udyam).
+4.  **Anomaly Detection**: Flagging "Zombie" entities and suspicious identity clusters.
+5.  **Resolution Protocol**: A step-by-step transparent audit trail for every entity resolution.
 
 ---
 
-**Built for the AI for Bharat Hackathon 2026**
+## 🛠️ Deployment & Local Setup
+
+1. **Clone & Install**:
+   ```bash
+   git clone [repository-url]
+   npm install
+   ```
+
+2. **Environment Configuration**:
+   Create a `.env.local` file with the following:
+   * `NEXT_PUBLIC_SUPABASE_URL`
+   * `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+   * `GEMINI_API_KEY`
+
+3. **Database Seeding**:
+   ```bash
+   npm run seed
+   ```
+
+4. **Launch Engine**:
+   ```bash
+   npm run dev
+   ```
+   Access the Governance Hub at `http://localhost:3000`.
+
+---
+
+**Built for the AI for Bharat Hackathon 2026**  
+*Enforcing the Single Source of Truth for the National Economy.*

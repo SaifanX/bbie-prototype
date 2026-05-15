@@ -1,10 +1,10 @@
 import { calculateConfidence, ConfidenceInput } from './confidence';
 
 interface BusinessRecord {
-  primary_name?: string;
+  name?: string;
   pan?: string;
   gstin?: string;
-  registered_address?: string;
+  address?: string;
   pincode?: string;
 }
 
@@ -21,15 +21,15 @@ export interface MatchResult {
 export function calculateMatch(source: BusinessRecord, target: BusinessRecord): MatchResult {
   const input: ConfidenceInput = {
     source: {
-      name: source.primary_name || '',
-      address: source.registered_address || '',
+      name: source.name || '',
+      address: source.address || '',
       pan: source.pan,
       gstin: source.gstin,
       pincode: source.pincode
     },
     target: {
-      name: target.primary_name || '',
-      address: target.registered_address || '',
+      name: target.name || '',
+      address: target.address || '',
       pan: target.pan,
       gstin: target.gstin,
       pincode: target.pincode

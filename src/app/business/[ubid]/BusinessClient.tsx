@@ -48,7 +48,7 @@ export default function BusinessClient({
   // Prepare graph data for this specific business
   const graphData = {
     nodes: [
-      { id: business.id, name: business.primary_name, group: 'business' },
+      { id: business.id, name: business.name, group: 'business' },
       ...linkedRecords.map(r => ({ id: r.id, name: r.entity_name, group: 'source' }))
     ],
     links: linkedRecords.map(r => ({ source: r.id, target: business.id }))
@@ -59,11 +59,11 @@ export default function BusinessClient({
   };
   
   return (
-    <div className="p-10 space-y-10 min-h-screen relative overflow-y-auto print:p-0 print:bg-white print:text-black">
+    <div className="p-10 space-y-10 min-h-screen relative overflow-y-auto print:p-0 print:bg-white print:text-black bg-[#08080a] text-slate-100">
       
       {/* Cinematic Background Element - Hide on print */}
       <div className="absolute top-0 right-0 p-20 opacity-5 pointer-events-none print:hidden">
-        <Building2 size={400} className="text-indigo-500" />
+        <Building2 size={400} className="text-orange-500" />
       </div>
 
       {/* Navigation - Hide on print */}
@@ -80,7 +80,7 @@ export default function BusinessClient({
         </Link>
         <div className="flex flex-col">
           <span className="text-[10px] font-black text-slate-500 uppercase tracking-[0.3em]">Directory / Business Profile</span>
-          <span className="text-xs font-bold text-indigo-400 uppercase tracking-widest mt-1">ID: {business.ubid}</span>
+          <span className="text-xs font-bold text-orange-400 uppercase tracking-widest mt-1">ID: {business.ubid}</span>
         </div>
       </motion.div>
 
@@ -100,27 +100,27 @@ export default function BusinessClient({
         >
           <div className="flex flex-col gap-4">
             <div className="flex items-center gap-3 print:hidden">
-              <div className="px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 flex items-center gap-2">
-                <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-[0_0_8px_#10b981]" />
-                <span className="text-[10px] font-black text-emerald-500 uppercase tracking-widest">Verified Identity</span>
+              <div className="px-3 py-1 rounded-full bg-orange-500/10 border border-orange-500/20 flex items-center gap-2">
+                <div className="w-1.5 h-1.5 rounded-full bg-orange-500 shadow-[0_0_8px_#ff6b00]" />
+                <span className="text-[10px] font-black text-orange-500 uppercase tracking-widest">Verified Identity</span>
               </div>
               {score > 90 && (
-                <div className="px-3 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/20 flex items-center gap-2">
-                  <ShieldCheck size={12} className="text-indigo-400" />
-                  <span className="text-[10px] font-black text-indigo-400 uppercase tracking-widest">High Confidence</span>
+                <div className="px-3 py-1 rounded-full bg-orange-500/10 border border-orange-500/20 flex items-center gap-2">
+                  <ShieldCheck size={12} className="text-orange-400" />
+                  <span className="text-[10px] font-black text-orange-400 uppercase tracking-widest">High Confidence</span>
                 </div>
               )}
             </div>
-            <h1 className="text-6xl font-black text-white print:text-black uppercase tracking-tighter leading-[0.9]">
-              {business.primary_name}
+            <h1 className="text-6xl font-black text-white print:text-black uppercase tracking-tighter leading-[0.9] italic">
+              {business.name}
             </h1>
             <div className="flex flex-wrap items-center gap-6 text-slate-400 print:text-black font-medium">
               <div className="flex items-center gap-2">
-                <MapPin size={18} className="text-indigo-400" />
-                <span>{business.registered_address || 'Address Not Provided'}</span>
+                <MapPin size={18} className="text-orange-500" />
+                <span className="uppercase tracking-tight">{business.address || 'Address Not Provided'}</span>
               </div>
               <div className="flex items-center gap-2">
-                <Fingerprint size={18} className="text-indigo-400" />
+                <Fingerprint size={18} className="text-orange-500" />
                 <span className="font-mono">PAN: {business.pan || 'N/A'}</span>
               </div>
             </div>
@@ -140,14 +140,14 @@ export default function BusinessClient({
           transition={{ delay: 0.2 }}
           className="glass-card p-8 flex flex-col items-center justify-center text-center relative overflow-hidden group print:border-2 print:border-black"
         >
-          <div className="absolute inset-0 bg-indigo-500/5 group-hover:bg-indigo-500/10 transition-colors pointer-events-none print:hidden" />
+          <div className="absolute inset-0 bg-orange-500/5 group-hover:bg-orange-500/10 transition-colors pointer-events-none print:hidden" />
           <div className="relative w-40 h-40 rounded-full flex items-center justify-center mb-6">
             <svg className="w-full h-full -rotate-90 transform">
-              <circle cx="80" cy="80" r="70" fill="transparent" stroke="rgba(0,0,0,0.05)" strokeWidth="8" />
+              <circle cx="80" cy="80" r="70" fill="transparent" stroke="rgba(255,255,255,0.05)" strokeWidth="8" />
               <motion.circle 
                 cx="80" cy="80" r="70" 
                 fill="transparent" 
-                stroke={score > 80 ? "#10b981" : "#6366f1"} 
+                stroke="#ff6b00" 
                 strokeWidth="8" 
                 strokeDasharray="440" 
                 initial={{ strokeDashoffset: 440 }}
@@ -170,17 +170,17 @@ export default function BusinessClient({
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 z-10 relative">
         <div className="space-y-6">
           <h2 className="text-xl font-black text-white print:text-black uppercase tracking-tighter flex items-center gap-3">
-             <Fingerprint size={24} className="text-indigo-500" /> Forensic Trail
+             <Fingerprint size={24} className="text-orange-500" /> Forensic Trail
           </h2>
-          <div className="glass-card p-8 border-white/5 print:border-black print:border-2">
+          <div className="glass-card p-8 border-white/5 print:border-black print:border-2 bg-black/40">
              <ForensicTimeline events={resolution ? [resolution] : []} />
           </div>
         </div>
         <div className="space-y-6">
           <h2 className="text-xl font-black text-white print:text-black uppercase tracking-tighter flex items-center gap-3">
-             <Layers size={24} className="text-indigo-500" /> Relational Web
+             <Layers size={24} className="text-orange-500" /> Relational Web
           </h2>
-          <div className="glass-card h-[400px] border-white/5 relative overflow-hidden print:border-black print:border-2 print:h-[300px]">
+          <div className="glass-card h-[400px] border-white/5 relative overflow-hidden print:border-black print:border-2 print:h-[300px] bg-black/40">
              <RelationshipGraph data={graphData} />
           </div>
         </div>
@@ -193,7 +193,7 @@ export default function BusinessClient({
         <div className="lg:col-span-7 space-y-6 print:mt-10">
           <div className="flex items-center justify-between">
             <h2 className="text-xl font-black text-white print:text-black uppercase tracking-tighter flex items-center gap-3">
-              <Layers size={24} className="text-indigo-500" /> Source Lineage
+              <Layers size={24} className="text-orange-500" /> Source Lineage
             </h2>
           </div>
           
@@ -204,14 +204,14 @@ export default function BusinessClient({
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: i * 0.1 }}
-                className="glass-card p-6 flex items-center justify-between group hover:bg-white/[0.04] transition-all print:border-black print:border print:bg-transparent"
+                className="glass-card p-6 flex items-center justify-between group hover:bg-orange-500/[0.04] transition-all print:border-black print:border print:bg-transparent bg-black/20"
               >
                 <div className="flex items-center gap-5">
-                  <div className="w-12 h-12 rounded-xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-indigo-400 print:text-black">
+                  <div className="w-12 h-12 rounded-xl bg-orange-500/10 border border-orange-500/20 flex items-center justify-center text-orange-500 print:text-black">
                     <Database size={20} />
                   </div>
                   <div className="flex flex-col">
-                    <span className="text-[10px] font-black text-indigo-400 print:text-black uppercase tracking-[0.2em]">Source Record</span>
+                    <span className="text-[10px] font-black text-orange-500 print:text-black uppercase tracking-[0.2em]">Source Record</span>
                     <h4 className="text-sm font-black text-white print:text-black uppercase tracking-tight mt-0.5">{record.entity_name}</h4>
                     <div className="flex items-center gap-2 mt-1">
                       <span className="text-[9px] font-bold px-2 py-0.5 rounded bg-white/5 text-slate-500 print:text-black border border-white/5 print:border-black uppercase">{record.department.replace('_', ' ')}</span>
@@ -227,9 +227,9 @@ export default function BusinessClient({
         {/* Activity Timeline - 5 Cols */}
         <div className="lg:col-span-5 space-y-6 print:mt-10">
           <h2 className="text-xl font-black text-white print:text-black uppercase tracking-tighter flex items-center gap-3">
-             <TrendingUp size={24} className="text-indigo-500" /> Event Stream
+             <TrendingUp size={24} className="text-orange-500" /> Event Stream
           </h2>
-          <div className="glass-card p-8 border-white/5 print:border-black print:border-2">
+          <div className="glass-card p-8 border-white/5 print:border-black print:border-2 bg-black/40">
             <ActivityTimeline events={activityEvents} />
           </div>
         </div>
@@ -250,11 +250,11 @@ export default function BusinessClient({
         <div className="flex items-center gap-4">
           <button 
             onClick={handleExport}
-            className="px-8 py-4 glass-card text-xs font-black text-slate-400 hover:text-white uppercase tracking-widest transition-all"
+            className="px-8 py-4 glass-card text-xs font-black text-slate-400 hover:text-white uppercase tracking-widest transition-all border-white/5"
           >
             Export Audit Certificate
           </button>
-          <button className="px-10 py-4 bg-indigo-600 text-white rounded-2xl text-xs font-black uppercase tracking-widest hover:bg-indigo-500 transition-all shadow-2xl shadow-indigo-500/20 active:scale-95 flex items-center gap-3">
+          <button className="px-10 py-4 bg-orange-600 text-white rounded-2xl text-xs font-black uppercase tracking-widest hover:bg-orange-500 transition-all shadow-2xl shadow-orange-500/20 active:scale-95 flex items-center gap-3">
             Re-Verify Identity <Fingerprint size={16} />
           </button>
         </div>
@@ -265,8 +265,8 @@ export default function BusinessClient({
 
 function QuickInfoCard({ icon, label, value }: { icon: React.ReactNode, label: string, value: string | number }) {
   return (
-    <div className="glass-card p-5 border-white/5 flex flex-col gap-3 group hover:border-white/10 transition-all print:border-black print:border print:bg-transparent">
-      <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center text-slate-400 print:text-black group-hover:text-indigo-400 transition-colors">
+    <div className="glass-card p-5 border-white/5 flex flex-col gap-3 group hover:border-white/10 transition-all print:border-black print:border print:bg-transparent bg-black/20">
+      <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center text-slate-400 print:text-black group-hover:text-orange-500 transition-colors">
         {icon}
       </div>
       <div>

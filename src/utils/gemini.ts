@@ -16,7 +16,9 @@ export async function generateEmbedding(text: string): Promise<number[]> {
     return result.embedding.values;
   } catch (error) {
     console.error("Embedding Error:", error);
-    return new Array(3072).fill(0);
+    // CRITICAL: Halt resolution on failure instead of returning a zero-vector
+    // This prevents silent data corruption and registry duplication.
+    throw new Error("Embedding generation failed, halting resolution.");
   }
 }
 

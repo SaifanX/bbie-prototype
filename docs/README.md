@@ -1,36 +1,50 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🏛️ BBIE: Strategic Documentation Hub
 
-## Getting Started
+Welcome to the central intelligence repository for the **Bharat Business Intelligence Engine**. This directory contains the technical blueprints, schema definitions, and strategic protocols governing the engine's operation.
 
-First, run the development server:
+---
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## 🏗️ Core Architecture
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### 1. Unified Business Identifier (UBID)
+The UBID is a 12-character alphanumeric canonical key generated through a weighted consensus of cross-system identifiers.
+*   **Primary Anchors**: PAN (Income Tax), GSTIN (GSTN), CIN (MCA).
+*   **Secondary Anchors**: Physical Address Vectors, Director DINs, Contact Signatures.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### 2. Semantic Arbitration Layer
+Leveraging **Gemini Pro**, the engine performs forensic reasoning on "High Entropy" records—entities that share identical names but different addresses, or vice-versa.
+*   **Protocol**: Resolve -> Arbitrate -> Verify.
+*   **Transparency**: Every arbitration generates a human-readable "Forensic Verdict" visible in the Resolution Workshop.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### 3. Active Intelligence Pipeline
+Monitoring the "Heartbeat" of a business beyond its static registration.
+*   **Activity Signals**: Last GST filing, MCA compliance status, Udyam registration updates.
+*   **States**: `ACTIVE` | `DORMANT` | `ZOMBIE` | `ANOMALY`.
 
-## Learn More
+---
 
-To learn more about Next.js, take a look at the following resources:
+## 🎨 Design System: Matte Industrial (Sovereignty-Grade)
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+The BBIE user interface adheres to a strictly utilitarian, high-impact design philosophy.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+*   **Palette**: 
+    *   **Primary**: Jet Orange (`#ff6b00`) — represents urgency and operational status.
+    *   **Background**: Dusty Grey (`#08080a`) — provides a non-distracting, forensic workspace.
+    *   **Borders**: Sharp white/5 or orange/20 — defining structural clarity without shadows.
+*   **Enforcement**: Zero blurs, zero glows, zero decorative pulses. Visual movement is reserved exclusively for data state transitions.
 
-## Deploy on Vercel
+---
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## 📂 Documentation Directory
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+| File | Purpose |
+| :--- | :--- |
+| `SCHEMA.md` | Database architecture and Entity relationship maps. |
+| `AGENTS.md` | LLM prompt engineering and Arbitration logic. |
+| `PIPELINE.md` | Technical flow of the data normalization and resolution engine. |
+| `SECURITY.md` | Sparse Masking protocols for PII (Personally Identifiable Information). |
+
+---
+
+**Confidential | Internal Governance Use Only**  
+*Bharat Business Intelligence Engine - V1.0.8*

@@ -1,8 +1,9 @@
 'use client'
 
-import { motion } from 'framer-motion';
-import { Terminal, Shield, Zap, Code, ArrowRight, CheckCircle2, Globe, Database, Server, Key, Lock, Search, FileText } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Terminal, Shield, Zap, Code, ArrowRight, CheckCircle2, Globe, Database, Server, Key, Lock, Search, FileText, Play, Loader2 } from 'lucide-react';
 import Link from 'next/link';
+import { useState } from 'react';
 
 export default function APIHubPage() {
   return (
@@ -59,45 +60,7 @@ export default function APIHubPage() {
 
           {/* Live Endpoint Preview */}
           <div className="relative">
-             <div className="glass-card border-white/10 bg-black/40 overflow-hidden shadow-2xl relative z-10">
-                <div className="bg-white/5 border-b border-white/10 p-4 flex items-center justify-between">
-                   <div className="flex items-center gap-3">
-                      <Terminal size={14} className="text-slate-500" />
-                      <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Interactive API Console</span>
-                   </div>
-                   <div className="flex gap-1.5">
-                      <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                      <span className="text-[8px] font-black text-emerald-500 uppercase">Production v1.0</span>
-                   </div>
-                </div>
-                <div className="p-8 space-y-8">
-                   {/* Endpoint A */}
-                   <div className="space-y-4">
-                      <div className="flex items-center gap-4">
-                         <span className="px-2 py-0.5 bg-indigo-500 text-white text-[9px] font-black rounded">POST</span>
-                         <span className="text-sm font-mono text-white tracking-tight">/v1/resolve</span>
-                      </div>
-                      <div className="bg-black/40 p-4 rounded-lg border border-white/5 font-mono text-[11px] text-slate-400">
-                         {"{ \"entity_name\": \"Sri Sai Enterprises\", \"pincode\": \"560001\" }"}
-                      </div>
-                   </div>
-                   
-                   <div className="flex justify-center">
-                      <div className="h-4 w-px bg-white/10" />
-                   </div>
-
-                   {/* Endpoint B */}
-                   <div className="space-y-4">
-                      <div className="flex items-center gap-4">
-                         <span className="px-2 py-0.5 bg-emerald-500 text-white text-[9px] font-black rounded">GET</span>
-                         <span className="text-sm font-mono text-white tracking-tight">/v1/business/[ubid]</span>
-                      </div>
-                      <div className="bg-black/40 p-4 rounded-lg border border-white/5 font-mono text-[11px] text-emerald-400 opacity-80">
-                         {"{ \"ubid\": \"BBIE-X942\", \"status\": \"verified\", \"score\": 0.98 }"}
-                      </div>
-                   </div>
-                </div>
-             </div>
+             <APIConsole />
              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-indigo-500/20 blur-[100px] rounded-full pointer-events-none" />
           </div>
         </div>
@@ -186,6 +149,109 @@ export default function APIHubPage() {
           <p className="text-[10px] font-black text-slate-500 uppercase tracking-[0.3em]">© 2026 National Business Intelligence Engine</p>
         </div>
       </footer>
+    </div>
+  );
+}
+
+function APIConsole() {
+  const [entityName, setEntityName] = useState('Mphasis');
+  const [pincode, setPincode] = useState('560001');
+  const [loading, setLoading] = useState(false);
+  const [result, setResult] = useState<any>(null);
+
+  const handleTest = async () => {
+    setLoading(true);
+    setResult(null);
+    try {
+      const response = await fetch('/api/v1/resolve', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ entity_name: entityName, pincode, sovereignty_mask: true })
+      });
+      const data = await response.json();
+      setResult(data);
+    } catch (err) {
+      setResult({ error: "Failed to connect to API" });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="glass-card border-white/10 bg-black/40 overflow-hidden shadow-2xl relative z-10 w-full">
+      <div className="bg-white/5 border-b border-white/10 p-4 flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <Terminal size={14} className="text-slate-500" />
+          <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Interactive API Console</span>
+        </div>
+        <div className="flex gap-1.5">
+          <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+          <span className="text-[8px] font-black text-emerald-500 uppercase">Live Engine</span>
+        </div>
+      </div>
+      
+      <div className="p-8 space-y-6">
+        <div className="space-y-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <span className="px-2 py-0.5 bg-indigo-500 text-white text-[9px] font-black rounded">POST</span>
+              <span className="text-sm font-mono text-white tracking-tight">/api/v1/resolve</span>
+            </div>
+            <button 
+              onClick={handleTest}
+              disabled={loading}
+              className="flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 text-white rounded-lg text-[10px] font-black uppercase tracking-widest transition-all"
+            >
+              {loading ? <Loader2 size={12} className="animate-spin" /> : <Play size={12} />}
+              Test Call
+            </button>
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <label className="text-[9px] font-black text-slate-500 uppercase tracking-widest">Entity Name</label>
+              <input 
+                value={entityName}
+                onChange={(e) => setEntityName(e.target.value)}
+                className="w-full bg-black/40 border border-white/10 rounded-lg p-3 text-xs font-mono text-white focus:outline-none focus:border-indigo-500/50"
+              />
+            </div>
+            <div className="space-y-2">
+              <label className="text-[9px] font-black text-slate-500 uppercase tracking-widest">Pincode</label>
+              <input 
+                value={pincode}
+                onChange={(e) => setPincode(e.target.value)}
+                className="w-full bg-black/40 border border-white/10 rounded-lg p-3 text-xs font-mono text-white focus:outline-none focus:border-indigo-500/50"
+              />
+            </div>
+          </div>
+        </div>
+
+        <AnimatePresence mode="wait">
+          {result && (
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              className="space-y-4"
+            >
+              <div className="flex items-center gap-2">
+                <CheckCircle2 size={12} className="text-emerald-500" />
+                <span className="text-[10px] font-black text-emerald-500 uppercase tracking-widest">Response Received</span>
+              </div>
+              <div className="bg-black/60 p-4 rounded-lg border border-white/5 font-mono text-[10px] text-slate-400 overflow-auto max-h-48 custom-scrollbar">
+                <pre>{JSON.stringify(result, null, 2)}</pre>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+        
+        {!result && !loading && (
+          <div className="py-10 text-center border-2 border-dashed border-white/5 rounded-2xl">
+             <p className="text-[10px] font-black text-slate-600 uppercase tracking-[0.2em]">Ready for execution</p>
+          </div>
+        )}
+      </div>
     </div>
   );
 }

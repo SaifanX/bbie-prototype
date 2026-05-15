@@ -38,23 +38,23 @@ export default async function DashboardPage() {
   const { data: dirtyRecords } = await supabase
     .from('source_records')
     .select('id, entity_name, department')
-    .is('business_id', null)
+    .eq('resolved', false)
     .limit(30);
 
   const { count: activeCount } = await supabase
     .from('businesses')
     .select('*', { count: 'exact', head: true })
-    .eq('activity_status', 'active');
+    .eq('status', 'active');
 
   const { count: dormantCount } = await supabase
     .from('businesses')
     .select('*', { count: 'exact', head: true })
-    .eq('activity_status', 'dormant');
+    .eq('status', 'dormant');
 
   const { count: closedCount } = await supabase
     .from('businesses')
     .select('*', { count: 'exact', head: true })
-    .eq('activity_status', 'closed');
+    .eq('status', 'closed');
 
   const { count: anomalyCount } = await supabase
     .from('resolution_events')
@@ -81,6 +81,11 @@ export default async function DashboardPage() {
     .order('created_at', { ascending: false })
     .limit(15);
 
+  const { count: unresolvedCount } = await supabase
+    .from('source_records')
+    .select('*', { count: 'exact', head: true })
+    .eq('resolved', false);
+
   return (
     <DashboardClient 
       totalBusinesses={totalBusinesses}
@@ -88,6 +93,7 @@ export default async function DashboardPage() {
       pendingReviews={pendingReviews}
       recentEvents={recentEvents}
       dirtyRecords={dirtyRecords}
+      unresolvedCount={unresolvedCount}
       activeCount={activeCount}
       dormantCount={dormantCount}
       closedCount={closedCount}
