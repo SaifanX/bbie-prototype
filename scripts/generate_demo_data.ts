@@ -8,23 +8,13 @@ const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
 const supabase = createClient(supabaseUrl, supabaseKey);
 
-const SEED_TEMPLATES = [
-  { name: "Sri Manjunatha Provision Stores", sector: "Retail", address: "BTM Layout, Bangalore" },
-  { name: "S.K. Enterprises", sector: "Manufacturing", address: "Peenya Industrial Area, Bangalore" },
-  { name: "Venkateshwara Silk House", sector: "Textiles", address: "Chickpet, Bangalore" },
-  { name: "Gowda & Sons Hardware", sector: "Construction", address: "Yeshwanthpur, Bangalore" },
-  { name: "Basaveshwara Traders", sector: "Wholesale", address: "APMC Yard, Yeshwanthpur" },
-  { name: "Anjaneya Coffee Works", sector: "Food & Beverage", address: "Malleshwaram, Bangalore" },
-  { name: "Cauvery Silk Emporium", sector: "Textiles", address: "MG Road, Bangalore" },
-  { name: "Lakshmi Narasimha Swamy Flour Mill", sector: "Food Processing", address: "Rajajinagar, Bangalore" },
-  { name: "Shiva Shanti General Stores", sector: "Retail", address: "Jayanagar 4th Block" },
-  { name: "Maruthi Automobiles", sector: "Automotive", address: "Koramangala, Bangalore" },
-];
+const SURNAMES = ["Gowda", "Shetty", "Murthy", "Rao", "Singh", "Gupta", "Agarwal", "Iyer", "Menon", "Patil", "Deshmukh", "Reddy", "Naidu", "Chauhan", "Mehta", "Shah", "Kulkarni", "Joshi", "Bose", "Chatterjee"];
+const SUFFIXES = ["Enterprises", "Traders", "Solutions", "Industries", "Logistics", "Ventures", "Agro", "Infratech", "Digital", "Systems", "Manufacturing", "Textiles", "Associates", "Group", "Agency", "Works", "Corporation", "Engineering", "Consultancy", "Global"];
+const SECTORS = ["Manufacturing", "Services", "Retail", "Wholesale", "Agro-Processing", "IT Services", "Logistics", "Textiles", "Construction", "Food & Beverage"];
+const AREAS = ["Peenya", "BTM Layout", "Yeshwanthpur", "Whitefield", "Electronic City", "Rajajinagar", "Jayanagar", "Koramangala", "Indiranagar", "Malleshwaram", "Bommasandra", "HSR Layout"];
 
-// Helper to generate realistic PAN and GSTIN
 const genPAN = () => `ABCDE${Math.floor(1000 + Math.random() * 9000)}F`;
 const genGSTIN = (pan: string) => `29${pan}1Z5`;
-
 const DEPARTMENTS = ["Factories_&_Boilers", "Labour_Department", "Shops_&_Establishments", "Commercial_Taxes"];
 
 function sparseMask(text: string): string {
@@ -35,7 +25,7 @@ function sparseMask(text: string): string {
 }
 
 async function seedData() {
-  console.log("🧹 Wiping existing data for Cold Start demo...");
+  console.log("🧹 Performing forensic wipe for high-quality demo data...");
   
   await supabase.from('businesses').delete().neq('id', '00000000-0000-0000-0000-000000000000');
   await supabase.from('source_records').delete().neq('id', '00000000-0000-0000-0000-000000000000');
@@ -43,51 +33,63 @@ async function seedData() {
   await supabase.from('activity_events').delete().neq('id', '00000000-0000-0000-0000-000000000000');
   await supabase.from('system_logs').delete().neq('id', '00000000-0000-0000-0000-000000000000');
 
-  console.log("🌱 Generating 100 Golden Seeds...");
+  console.log("🌱 Generating 100 UNIQUE realistic business identities...");
   
   const goldenSeeds = [];
-  for (let i = 0; i < 100; i++) {
-    const template = SEED_TEMPLATES[i % SEED_TEMPLATES.length];
-    const name = i < SEED_TEMPLATES.length ? template.name : `${template.name} #${i + 1}`;
-    const pan = genPAN();
-    goldenSeeds.push({
-      id: randomUUID(),
-      name,
-      pan,
-      gstin: genGSTIN(pan),
-      address: template.address,
-      pincode: `5600${Math.floor(10 + Math.random() * 80)}`,
-      sector: template.sector
-    });
+  const usedNames = new Set();
+
+  while (goldenSeeds.length < 100) {
+    const surname = SURNAMES[Math.floor(Math.random() * SURNAMES.length)];
+    const suffix = SUFFIXES[Math.floor(Math.random() * SUFFIXES.length)];
+    const area = AREAS[Math.floor(Math.random() * AREAS.length)];
+    const sector = SECTORS[Math.floor(Math.random() * SECTORS.length)];
+    
+    // Create variety: "Surname & Sons Suffix", "Surname Suffix", "Area Surname Suffix"
+    let name = "";
+    const rand = Math.random();
+    if (rand < 0.3) name = `${surname} & Sons ${suffix}`;
+    else if (rand < 0.6) name = `${surname} ${suffix}`;
+    else name = `${area} ${suffix}`;
+
+    if (!usedNames.has(name)) {
+      usedNames.add(name);
+      const pan = genPAN();
+      goldenSeeds.push({
+        id: randomUUID(),
+        name,
+        pan,
+        gstin: genGSTIN(pan),
+        address: `${Math.floor(Math.random() * 500)} / ${Math.floor(Math.random() * 50)}, ${area}, Bangalore`,
+        pincode: `5600${Math.floor(10 + Math.random() * 80)}`,
+        sector
+      });
+    }
   }
 
-  console.log("🧩 Shattering into exactly 300 Source Records...");
+  console.log("🧩 Shattering into 300 unique Government source fragments...");
   
   const sourceRecords = [];
   const activityEvents = [];
 
   for (const seed of goldenSeeds) {
-    // Generate exactly 3 fragments per seed to reach 300 total
     const fragmentCount = 3;
-    
     for (let f = 0; f < fragmentCount; f++) {
       const dept = DEPARTMENTS[f % DEPARTMENTS.length];
       let entityName = seed.name;
       
-      // Apply "Shatter" variations
+      // Apply forensic variations (Simulating data entry errors/abbreviations)
       if (f === 1) entityName = entityName.toUpperCase();
       if (f === 2) {
         entityName = entityName
-          .replace("Provision Stores", "P. Stores")
           .replace("Enterprises", "Entp")
-          .replace("House", "Hse")
-          .replace("Hardware", "Hw")
-          .replace("Traders", "Tdr")
-          .replace("Works", "Wks")
-          .replace("Emporium", "Emp")
-          .replace("Flour Mill", "F. Mill")
-          .replace("General Stores", "G. Stores")
-          .replace("Automobiles", "Auto");
+          .replace("Solutions", "Sol")
+          .replace("Industries", "Ind")
+          .replace("Logistics", "Log")
+          .replace("Systems", "Sys")
+          .replace("Corporation", "Corp")
+          .replace("Manufacturing", "Mfg")
+          .replace("Consultancy", "Cons")
+          .replace(" & Sons ", " & S ");
       }
       
       const recordId = randomUUID();
@@ -98,7 +100,7 @@ async function seedData() {
         source_id: `SRC-${f}-${seed.pan || 'NA'}`,
         pan: f === 0 ? seed.pan : (Math.random() > 0.4 ? seed.pan : null),
         gstin: f === 0 ? seed.gstin : (Math.random() > 0.4 ? seed.gstin : null),
-        address: seed.address + (f === 1 ? ", 2nd Floor" : ""),
+        address: seed.address + (f === 1 ? `, ${seed.pincode}` : ""),
         resolved: false,
         raw_data: {
           original_name: seed.name,
@@ -106,35 +108,32 @@ async function seedData() {
           pan: seed.pan,
           gstin: seed.gstin,
           address: seed.address,
-          pincode: seed.pincode
+          pincode: seed.pincode,
+          sector: seed.sector
         }
       });
 
-      // Generate Activity Events for this record
       activityEvents.push({
         source_record_id: recordId,
-        event_type: f === 0 ? "REGISTRATION" : (f === 1 ? "TAX_FILING" : "LICENSE_RENEWAL"),
-        event_date: new Date(Date.now() - Math.random() * 10000000000).toISOString(),
+        event_type: f === 0 ? "REGISTRATION" : (f === 1 ? "TAX_FILING" : "AUDIT_RENEWAL"),
+        event_date: new Date(Date.now() - Math.random() * 20000000000).toISOString(),
         department: dept,
-        metadata: { pan: seed.pan, gstin: seed.gstin, amount: Math.floor(Math.random() * 50000) }
+        metadata: { pan: seed.pan, amount: Math.floor(Math.random() * 100000) }
       });
     }
   }
 
-  // Batch insert
-  console.log(`🚀 Pushing ${sourceRecords.length} records to Supabase...`);
+  console.log(`🚀 Injecting ${sourceRecords.length} fragments into the resolution node...`);
   
   for (let i = 0; i < sourceRecords.length; i += 50) {
-    const { error } = await supabase.from('source_records').insert(sourceRecords.slice(i, i + 50));
-    if (error) console.error("Error inserting source_records:", error);
+    await supabase.from('source_records').insert(sourceRecords.slice(i, i + 50));
   }
 
   for (let i = 0; i < activityEvents.length; i += 50) {
-    const { error } = await supabase.from('activity_events').insert(activityEvents.slice(i, i + 50));
-    if (error) console.error("Error inserting activity_events:", error);
+    await supabase.from('activity_events').insert(activityEvents.slice(i, i + 50));
   }
 
-  console.log("✅ Seeding Complete. Dashboard is now in COLD START mode with exactly 300 fragments.");
+  console.log("✅ High-Quality Seeding Complete. 100 Unique Identities | 300 Forensic Fragments.");
 }
 
 seedData().catch(console.error);
