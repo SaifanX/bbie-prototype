@@ -1,9 +1,9 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
-import { Activity, Database, CheckCircle, AlertTriangle, ChevronRight, Zap, SquareTerminal, Cpu, Globe, Share2, Fingerprint, ArrowRight, ShieldAlert } from 'lucide-react';
+import { useState, useEffect, useRef, useCallback } from 'react';
+import { Activity, Database, CheckCircle, AlertTriangle, ChevronRight, Zap, SquareTerminal, Cpu, Globe, Share2, Fingerprint, ArrowRight, ShieldAlert, RotateCcw, StopCircle } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { runResolution, getUnresolvedRecords } from './actions';
+import { runResolution, getUnresolvedRecords, revertRecord } from './actions';
 import { supabase } from '@/utils/supabase';
 import { cn } from '@/utils/cn';
 
@@ -38,6 +38,10 @@ export default function LiveResolutionPage() {
   });
 
   const [activeAnalysis, setActiveAnalysis] = useState<any>(null);
+  const abortRef = useRef(false);
+  type HistoryEntry = { recordId: string; businessId: string | null; entityName: string; status: string; };
+  const [history, setHistory] = useState<HistoryEntry[]>([]);
+  const [isReverting, setIsReverting] = useState(false);
 
   // Subscribe to real-time logs
   useEffect(() => {
@@ -76,42 +80,36 @@ export default function LiveResolutionPage() {
   const startNormalization = async () => {
     if (isEngaged || !isDataLoaded) return;
     setIsEngaged(true);
+    abortRef.current = false;
 
     for (let i = 0; i < currentData.length; i++) {
+      if (abortRef.current) break;
+
       const record = currentData[i];
       setNormalizingIndex(i);
       
       try {
-        // Step 0: Ingest
-        setActiveStage(0);
-        await new Promise(r => setTimeout(r, 400));
-        
-        // Step 1: Shield
-        setActiveStage(1);
-        await new Promise(r => setTimeout(r, 400));
+        setActiveStage(0); await new Promise(r => setTimeout(r, 400));
+        if (abortRef.current) break;
+        setActiveStage(1); await new Promise(r => setTimeout(r, 400));
+        if (abortRef.current) break;
+        setActiveStage(2); await new Promise(r => setTimeout(r, 400));
+        if (abortRef.current) break;
 
-        // Step 2: Vector
-        setActiveStage(2);
-        await new Promise(r => setTimeout(r, 400));
-
-        // CALL THE REAL ENGINE
         const result = await runResolution(record.id);
         setActiveAnalysis(result);
 
-        // Step 3: Align
-        setActiveStage(3);
-        await new Promise(r => setTimeout(r, 800));
+        setActiveStage(3); await new Promise(r => setTimeout(r, 800));
+        setActiveStage(4); await new Promise(r => setTimeout(r, 600));
 
-        // Step 4: Issue
-        setActiveStage(4);
-        await new Promise(r => setTimeout(r, 600));
+        setHistory(prev => [{ recordId: record.id, businessId: result.matchedBusinessId, entityName: record.original, status: result.status }, ...prev]);
 
         setStats(prev => ({
           ...prev,
           scanned: prev.scanned + 1,
           resolved: result.status === 'resolved' ? prev.resolved + 1 : prev.resolved,
           triage: result.status === 'triage' ? prev.triage + 1 : prev.triage,
-          duplicates: result.status === 'resolved' ? prev.duplicates + 1 : prev.duplicates
+          duplicates: result.status === 'new_entity' ? prev.duplicates + 1 : prev.duplicates
         }));
 
         setCurrentData(prev => {
@@ -120,7 +118,7 @@ export default function LiveResolutionPage() {
           return next;
         });
 
-        await new Promise(resolve => setTimeout(resolve, 1000));
+        await new Promise(resolve => setTimeout(resolve, 600));
         setActiveAnalysis(null);
       } catch (err) {
         console.error(`Error processing ${record.original}:`, err);
@@ -129,6 +127,30 @@ export default function LiveResolutionPage() {
 
     setIsEngaged(false);
   };
+
+  const handleStop = () => {
+    abortRef.current = true;
+    setIsEngaged(false);
+  };
+
+  const handleUndo = useCallback(async (entry: { recordId: string; businessId: string | null; entityName: string; status: string }) => {
+    if (isReverting) return;
+    setIsReverting(true);
+    try {
+      await revertRecord(entry.recordId, entry.businessId);
+      setHistory(prev => prev.filter(h => h.recordId !== entry.recordId));
+      setCurrentData(prev => prev.map(r => r.id === entry.recordId ? { ...r, status: 'raw' } : r));
+      setStats(prev => ({
+        ...prev,
+        scanned: Math.max(0, prev.scanned - 1),
+        resolved: entry.status === 'resolved' ? Math.max(0, prev.resolved - 1) : prev.resolved,
+        triage: entry.status === 'triage' ? Math.max(0, prev.triage - 1) : prev.triage,
+        duplicates: entry.status === 'new_entity' ? Math.max(0, prev.duplicates - 1) : prev.duplicates,
+      }));
+    } finally {
+      setIsReverting(false);
+    }
+  }, [isReverting]);
 
   return (
     <div className="p-10 min-h-screen w-full bg-[#08080a] text-slate-100 flex flex-col gap-10 relative overflow-x-hidden">
@@ -155,14 +177,24 @@ export default function LiveResolutionPage() {
           >
             01. Ingest Fragments
           </button>
-          <button 
-            onClick={startNormalization}
-            disabled={!isDataLoaded || isEngaged}
-             className="px-10 py-5 rounded-xl bg-orange-600 text-white font-black uppercase text-[10px] tracking-[0.2em] transition-all hover:bg-orange-500 hover:scale-[1.02] disabled:bg-slate-900 disabled:opacity-50 active:scale-95 border border-orange-400/20 group relative overflow-hidden"
-          >
-            <span className="relative z-10">{isEngaged ? 'Engine Active...' : '02. Execute Protocol'}</span>
-            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
-          </button>
+          {isEngaged ? (
+            <button
+              onClick={handleStop}
+              className="px-10 py-5 rounded-xl bg-red-600/80 text-white font-black uppercase text-[10px] tracking-[0.2em] transition-all hover:bg-red-500 border border-red-400/20 flex items-center gap-3"
+            >
+              <StopCircle size={14} />
+              Stop Engine
+            </button>
+          ) : (
+            <button 
+              onClick={startNormalization}
+              disabled={!isDataLoaded || isEngaged}
+               className="px-10 py-5 rounded-xl bg-orange-600 text-white font-black uppercase text-[10px] tracking-[0.2em] transition-all hover:bg-orange-500 hover:scale-[1.02] disabled:bg-slate-900 disabled:opacity-50 active:scale-95 border border-orange-400/20 group relative overflow-hidden"
+            >
+              <span className="relative z-10">02. Execute Protocol</span>
+              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
+            </button>
+          )}
         </div>
       </div>
 
@@ -320,12 +352,47 @@ export default function LiveResolutionPage() {
           </div>
         </div>
 
-        {/* Logs Column */}
-        <div className="col-span-3 flex flex-col gap-6">
+        {/* Logs + Undo Column */}
+        <div className="col-span-3 flex flex-col gap-4">
+
+          {/* Undo History */}
+          {history.length > 0 && (
+            <div className="bg-black/60 border border-orange-600/20 rounded-3xl p-4 flex flex-col gap-2 max-h-[220px]">
+              <div className="flex items-center justify-between mb-1">
+                <span className="text-[10px] font-black text-orange-500 uppercase tracking-[0.3em] flex items-center gap-2">
+                  <RotateCcw size={10} /> Action History
+                </span>
+                <span className="text-[9px] text-slate-600">{history.length} actions</span>
+              </div>
+              <div className="overflow-y-auto space-y-2 custom-scrollbar">
+                {history.map((entry) => (
+                  <div key={entry.recordId} className="flex items-center justify-between bg-white/[0.03] border border-white/5 rounded-xl px-3 py-2">
+                    <div className="flex flex-col">
+                      <span className="text-[9px] font-black text-white uppercase truncate w-32">{entry.entityName}</span>
+                      <span className={cn("text-[8px] font-bold uppercase tracking-widest",
+                        entry.status === 'resolved' ? 'text-orange-500' :
+                        entry.status === 'new_entity' ? 'text-white' : 'text-orange-300'
+                      )}>{entry.status.replace('_', ' ')}</span>
+                    </div>
+                    <button
+                      onClick={() => handleUndo(entry)}
+                      disabled={isReverting}
+                      className="p-1.5 rounded-lg bg-red-600/10 border border-red-600/20 text-red-400 hover:bg-red-600/20 transition-all disabled:opacity-30"
+                      title="Undo this action"
+                    >
+                      <RotateCcw size={10} />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Intelligence Feed */}
           <h3 className="text-[10px] font-black text-slate-500 uppercase tracking-[0.3em] flex items-center gap-2">
              <SquareTerminal size={12} className="text-orange-500" /> Intelligence Feed
           </h3>
-          <div className="bg-black/80 border border-white/5 rounded-3xl p-6 font-mono text-[10px] flex flex-col h-[650px] overflow-hidden ">
+          <div className="bg-black/80 border border-white/5 rounded-3xl p-6 font-mono text-[10px] flex flex-col flex-1 overflow-hidden">
              <div className="flex-1 overflow-y-auto custom-scrollbar space-y-4">
                 {logs.length === 0 ? (
                   <div className="text-slate-800 animate-pulse italic mt-10 text-center tracking-[0.3em] uppercase text-[9px]">
