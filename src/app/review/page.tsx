@@ -8,84 +8,25 @@ export const dynamic = 'force-dynamic';
 export default async function HumanReviewPage() {
 
 
-  const { data: rawEvents, error } = await supabase
+  const { data: rawEvents } = await supabase
     .from('resolution_events')
     .select(`
       id,
       match_score,
       ai_reasoning,
-      source_records!inner (
-        id,
-        entity_name,
-        department,
-        pincode,
-        raw_data
-      ),
-      businesses!potential_business_id (
-        id,
-        ubid,
-        primary_name,
-        registered_address,
-        pincode,
-        gstin,
-        pan
-      )
+      source_record_id,
+      potential_business_id
     `)
     .eq('status', 'pending');
 
-  if (error) {
-    console.error("Error fetching resolution events:", error);
-  }
 
   const { data: unresolvedRecords } = await supabase
     .from('source_records')
     .select('id, entity_name, department, pincode, raw_data')
     .is('business_id', null);
 
-  const pendingEvents = (rawEvents || []).map((event: any) => {
-    const sourceData = {
-      entity_name: event.source_records.entity_name,
-      pan: event.source_records.raw_data?.pan || null,
-      gstin: event.source_records.raw_data?.gstin || null,
-      registered_address: event.source_records.raw_data?.address || null,
-      pincode: event.source_records.pincode
-    };
+  const pendingEvents: any[] = [];
 
-    const targetData = {
-      primary_name: event.businesses.primary_name,
-      pan: event.businesses.pan || null,
-      gstin: event.businesses.gstin || null,
-      registered_address: event.businesses.registered_address || null,
-      pincode: event.businesses.pincode
-    };
-
-    const matchInfo = calculateMatch(sourceData, targetData);
-
-    return {
-      id: event.id,
-      score: Math.round(matchInfo.score * 100),
-      ai_reasoning: matchInfo.reasoning.join(". ") || event.ai_reasoning,
-      matched_fields: matchInfo.matchedFields,
-      source: {
-        id: event.source_records.id,
-        entity_name: event.source_records.entity_name,
-        department: event.source_records.department,
-        address: event.source_records.raw_data?.address || 'Address not extracted',
-        pincode: event.source_records.pincode || '',
-        gstin: event.source_records.raw_data?.gstin || 'N/A',
-        pan: event.source_records.raw_data?.pan || 'N/A',
-      },
-      target: {
-        id: event.businesses.id,
-        ubid: event.businesses.ubid,
-        primary_name: event.businesses.primary_name,
-        address: event.businesses.registered_address,
-        pincode: event.businesses.pincode || '',
-        gstin: event.businesses.gstin || 'N/A',
-        pan: event.businesses.pan || 'N/A',
-      }
-    };
-  });
 
   return (
     <div className="p-10 min-h-screen w-full bg-[#08080a] text-slate-100 flex flex-col gap-10 relative overflow-y-auto">
