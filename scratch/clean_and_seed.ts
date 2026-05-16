@@ -64,14 +64,13 @@ async function run() {
     const denseString = `${b.name} | ${b.address} | ${b.pincode}`;
     const embedding = await generateEmbedding(denseString);
     await supabase.from('businesses').insert({
-      primary_name: b.name,
-      registered_address: b.address,
+      name: b.name,
+      address: b.address,
       pincode: b.pincode,
       pan: b.pan,
       ubid: b.ubid,
       embedding: embedding,
-      confidence_score: 1.0,
-      activity_status: 'active'
+      status: 'active'
     });
   }
 

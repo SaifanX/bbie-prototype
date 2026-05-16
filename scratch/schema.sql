@@ -12,7 +12,9 @@ create table if not exists public.businesses (
     sector text,
     status text default 'active',
     incorporation_date date,
-    embedding vector(768), -- For semantic name matching
+    pan text,
+    gstin text,
+    embedding vector(3072), -- For semantic name matching
     created_at timestamptz default now(),
     updated_at timestamptz default now()
 );
@@ -31,7 +33,7 @@ create table if not exists public.resolution_logs (
 
 -- Create a spatial index for faster name matching
 create index if not exists businesses_name_idx on public.businesses using gin (name gin_trgm_ops);
-create index if not exists businesses_embedding_idx on public.businesses using hnsw (embedding vector_cosine_ops);
+-- Note: hnsw index omitted for 3072-dim vectors (exceeds pgvector 2000-dim limit for hnsw)
 
 -- Forensic Audit Trail
 create table if not exists public.audit_trail (

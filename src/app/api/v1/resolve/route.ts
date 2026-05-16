@@ -6,7 +6,8 @@ import { maskPII } from '@/utils/privacy';
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { entity_name, pincode, sovereignty_mask } = body;
+    const { entity_name, pincode, sovereignty_mask, pan, gstin, address } = body;
+
 
     if (!entity_name) {
       return NextResponse.json({ error: 'entity_name is required' }, { status: 400 });
@@ -23,7 +24,7 @@ export async function POST(request: NextRequest) {
     } else {
       // Fallback to name-based filtering if no pincode
       const firstWord = entity_name.split(' ')[0];
-      query = query.ilike('primary_name', `%${firstWord}%`);
+      query = query.ilike('name', `%${firstWord}%`);
     }
 
     const { data: candidates, error } = await query.limit(50);
@@ -36,18 +37,21 @@ export async function POST(request: NextRequest) {
     // 2. Score candidates using the BBIE Confidence Engine
     const results = (candidates || []).map(business => {
       const sourceRecord = {
-        primary_name: entity_name,
+        name: entity_name,
         pincode: pincode,
-        registered_address: '' 
+        address: address || '',
+        pan: pan,
+        gstin: gstin
       };
 
       const targetRecord = {
-        primary_name: business.name,
-        registered_address: business.address,
+        name: business.name,
+        address: business.address,
         pincode: business.pincode,
         pan: business.pan,
         gstin: business.gstin
       };
+
 
       const match = calculateMatch(sourceRecord, targetRecord);
       

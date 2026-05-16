@@ -36,12 +36,11 @@ async function bootstrap() {
     const embedding = await generateEmbedding(denseString);
     
     const { error } = await supabase.from('businesses').upsert({
-      primary_name: b.name,
-      registered_address: b.address,
+      name: b.name,
+      address: b.address,
       ubid: b.ubid,
       embedding: embedding,
-      confidence_score: 1.0,
-      activity_status: 'active'
+      status: 'active'
     }, { onConflict: 'ubid' });
 
     if (error) {
