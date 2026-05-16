@@ -158,9 +158,17 @@ export async function processRecord(recordId: string): Promise<ResolutionResult>
     status = 'triage';
 
   } else {
-    // NO MATCH — Create a new business entity in the registry
-    await logStep(`No viable candidates. Creating new registry entry...`, 'decision');
-    
+    // NO MATCH — Compute data quality score, then create a new business entity
+    const dataQualityScore = (
+      (record.entity_name ? 0.20 : 0) +
+      (record.pan ? 0.35 : 0) +
+      (record.gstin ? 0.25 : 0) +
+      ((record.address || record.raw_data?.address) ? 0.20 : 0)
+    );
+    highestScore = dataQualityScore;
+
+    await logStep(`No viable candidates. Data quality: ${(dataQualityScore * 100).toFixed(0)}%. Creating new registry entry...`, 'decision');
+
     const ubid = generateUBID(record.entity_name);
     const { data: newBusiness, error: bizError } = await supabaseAdmin
       .from('businesses')

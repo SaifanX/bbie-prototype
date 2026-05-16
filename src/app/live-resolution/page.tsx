@@ -270,10 +270,14 @@ export default function LiveResolutionPage() {
                     <div className="grid grid-cols-2 gap-8">
                        <div className="bg-white/5 border border-white/5 p-8 rounded-[30px] relative group overflow-hidden">
                           <div className="absolute inset-0 bg-orange-600/[0.02] opacity-0 group-hover:opacity-100 transition-opacity" />
-                          <span className="text-[10px] font-black text-slate-500 uppercase tracking-[0.3em] block mb-3">Confidence Index</span>
-                          <div className="text-5xl font-black text-white italic tracking-tighter">
-                            {(activeAnalysis.score * 100).toFixed(0)}<span className="text-orange-500">%</span>
-                          </div>
+                           <span className="text-[10px] font-black text-slate-500 uppercase tracking-[0.3em] block mb-3">
+                             {activeAnalysis.status === 'new_entity' ? 'Data Quality Index' : 'Confidence Index'}
+                           </span>
+                           <div className="text-5xl font-black text-white italic tracking-tighter">
+                             {activeAnalysis.status === 'new_entity' 
+                               ? <>{(activeAnalysis.score * 100).toFixed(0)}<span className="text-orange-500">%</span></>
+                               : <>{(activeAnalysis.score * 100).toFixed(0)}<span className="text-orange-500">%</span></>}
+                           </div>
                        </div>
                        <div className="bg-white/5 border border-white/5 p-8 rounded-[30px] relative group overflow-hidden">
                           <div className="absolute inset-0 bg-orange-600/[0.02] opacity-0 group-hover:opacity-100 transition-opacity" />
@@ -293,9 +297,9 @@ export default function LiveResolutionPage() {
                           <ShieldAlert size={64} className="text-orange-500" />
                        </div>
                        <span className="text-[10px] font-black text-orange-500 uppercase tracking-[0.4em] block mb-4">AI Reasoning Trace</span>
-                       <p className="text-sm font-bold text-slate-300 italic leading-relaxed uppercase tracking-tight">
-                          "{activeAnalysis.verdict}"
-                       </p>
+                        <p className="text-sm font-bold text-slate-300 italic leading-relaxed uppercase tracking-tight">
+                           "{activeAnalysis.verdict}"
+                        </p>
                     </div>
                   </motion.div>
                 ) : (
