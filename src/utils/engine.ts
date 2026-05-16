@@ -1,6 +1,7 @@
 import { createClient } from '@supabase/supabase-js';
 import { generateEmbedding, generateMatchVerdict } from './gemini';
 import { calculateMatch } from './matcher';
+import { archiveSourceRecord } from './archive';
 
 // Read-only anon client for SELECT queries
 import { supabase } from './supabase';
@@ -77,10 +78,7 @@ export async function processRecord(recordId: string): Promise<ResolutionResult>
       const verdict = `Direct match confirmed via unique identifier. Linking to existing identity: ${bestMatch.name}.`;
       await logStep(`Direct Match Found: ${bestMatch.name} via ${record.pan ? 'PAN' : 'GSTIN'}`, 'decision');
 
-      await supabaseAdmin.from('source_records').update({
-        business_id: bestMatch.id,
-        resolved: true
-      }).eq('id', recordId);
+      await archiveSourceRecord(recordId, bestMatch.id, true);
 
       await supabaseAdmin.from('resolution_events').insert({
         source_record_id: recordId,
@@ -145,10 +143,7 @@ export async function processRecord(recordId: string): Promise<ResolutionResult>
     verdict = `Heuristic alignment confirmed high probability of identity overlap with ${bestMatch.name}.`;
     status = 'resolved';
 
-    await supabaseAdmin.from('source_records').update({
-      business_id: bestMatch.id,
-      resolved: true
-    }).eq('id', recordId);
+    await archiveSourceRecord(recordId, bestMatch.id, true);
 
   } else if (highestScore > 0.4 && bestMatch) {
     await logStep(`Ambiguous match (${(highestScore * 100).toFixed(0)}%). Invoking AI Arbitration...`, 'decision');
@@ -185,10 +180,7 @@ export async function processRecord(recordId: string): Promise<ResolutionResult>
       .single();
 
     if (!bizError && newBusiness) {
-      await supabaseAdmin.from('source_records').update({
-        business_id: newBusiness.id,
-        resolved: true
-      }).eq('id', recordId);
+      await archiveSourceRecord(recordId, newBusiness.id, true);
 
       verdict = `New business identity created. UBID assigned: ${ubid}`;
       status = 'new_entity';

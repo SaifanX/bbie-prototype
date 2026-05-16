@@ -3,6 +3,7 @@
 import { createClient } from '@supabase/supabase-js';
 import { processRecord, ResolutionResult } from '@/utils/engine';
 import { supabase } from '@/utils/supabase';
+import { restoreSourceRecord } from '@/utils/archive';
 
 const supabaseAdmin = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -36,25 +37,29 @@ export async function getUnresolvedRecords() {
 }
 
 /**
- * Fully reverses a resolved record — deletes the business if it was newly
+ * Fully reverses a resolved record — restores from archive if needed, deletes the business if it was newly
  * created (and has no other linked records), resets source_record to
  * unresolved, and removes resolution events.
  */
 export async function revertRecord(sourceRecordId: string, businessId: string | null) {
-  // 1. Reset the source record
-  await supabaseAdmin
-    .from('source_records')
-    .update({ business_id: null, resolved: false })
-    .eq('id', sourceRecordId);
+  // 1. Restore the source record from archive vault
+  await restoreSourceRecord(sourceRecordId);
 
-  // 2. Delete the business only if it has no other linked source records
+  // 2. Delete the business only if it has no other linked source records in either staging or archive
   if (businessId) {
-    const { data: others } = await supabaseAdmin
+    const { data: othersStaging } = await supabaseAdmin
       .from('source_records')
       .select('id')
       .eq('business_id', businessId);
 
-    if (!others || others.length === 0) {
+    const { data: othersArchive } = await supabaseAdmin
+      .from('source_records_archive')
+      .select('id')
+      .eq('business_id', businessId);
+
+    const totalLinked = (othersStaging?.length || 0) + (othersArchive?.length || 0);
+
+    if (totalLinked === 0) {
       await supabaseAdmin.from('businesses').delete().eq('id', businessId);
     }
   }
@@ -67,3 +72,4 @@ export async function revertRecord(sourceRecordId: string, businessId: string | 
 
   return { success: true };
 }
+

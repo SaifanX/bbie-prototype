@@ -2,6 +2,7 @@
 
 import { createClient } from '@supabase/supabase-js'
 import { revalidatePath } from 'next/cache'
+import { archiveSourceRecord } from '@/utils/archive'
 
 // Use service role key to bypass RLS for write operations
 const supabaseAdmin = createClient(
@@ -49,16 +50,8 @@ export async function createNewEntity(
     throw new Error(`Failed to create entity: ${bizError?.message}`);
   }
 
-  // 2. Mark source record as resolved
-  const { error: srcError } = await supabaseAdmin
-    .from('source_records')
-    .update({ business_id: newBusiness.id, resolved: true })
-    .eq('id', sourceRecordId);
-
-  if (srcError) {
-    console.error('Failed to update source record:', srcError);
-    throw new Error(`Failed to link source record: ${srcError?.message}`);
-  }
+  // 2. Archive source record
+  await archiveSourceRecord(sourceRecordId, newBusiness.id, true);
 
   revalidatePath('/review');
   revalidatePath('/dashboard');
@@ -71,16 +64,8 @@ export async function approveMerge(
   sourceRecordId: string,
   targetBusinessId: string
 ) {
-  // 1. Link source record to the existing business
-  const { error: srcError } = await supabaseAdmin
-    .from('source_records')
-    .update({ business_id: targetBusinessId, resolved: true })
-    .eq('id', sourceRecordId);
-
-  if (srcError) {
-    console.error('Failed to approve merge:', srcError);
-    throw new Error(`Failed to approve merge: ${srcError?.message}`);
-  }
+  // 1. Archive source record linked to the existing business
+  await archiveSourceRecord(sourceRecordId, targetBusinessId, true);
 
   // 2. Update resolution event status if it exists
   if (eventId && eventId !== sourceRecordId) {
@@ -97,11 +82,8 @@ export async function approveMerge(
 }
 
 export async function flagFraud(_eventId: string, sourceRecordId: string) {
-  // Mark source record as resolved (rejected) so it leaves the queue
-  await supabaseAdmin
-    .from('source_records')
-    .update({ resolved: true })
-    .eq('id', sourceRecordId);
+  // Archive source record as resolved (rejected) so it leaves the active queue
+  await archiveSourceRecord(sourceRecordId, null, true);
 
   revalidatePath('/review');
   revalidatePath('/');

@@ -7,6 +7,8 @@ import { approveMerge, createNewEntity, flagFraud } from './actions'
 import { useRouter } from 'next/navigation'
 import { clsx, type ClassValue } from 'clsx'
 import { twMerge } from 'tailwind-merge'
+import GlobalActionHistory from '@/components/GlobalActionHistory'
+import { addHistoryEntry } from '@/utils/history'
 
 function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -52,6 +54,11 @@ export default function ReviewWorkspace({
   const [isPending, startTransition] = useTransition()
   const router = useRouter()
 
+  useEffect(() => {
+    setEvents(initialEvents);
+    setUnresolved(unresolvedRecords);
+  }, [initialEvents, unresolvedRecords]);
+
   // Combined list for searching/filtering
   const allRecords = [
     ...events.map(e => ({ ...e, type: 'flagged' })),
@@ -67,25 +74,24 @@ export default function ReviewWorkspace({
         (hasAddress ? 15 : 0)
       ));
       return {
-      id: u.id,
-      score: dataScore,
-      ai_reasoning: "No existing identity match found. Data quality verified. Ready for new UBID assignment.",
-      type: 'unresolved',
-      source: {
         id: u.id,
-        entity_name: u.entity_name,
-        department: u.department,
-        address: u.raw_data?.address || 'N/A',
-        pincode: u.pincode || '',
-        gstin: u.raw_data?.gstin || 'N/A',
-        pan: u.raw_data?.pan || 'N/A'
-      },
-      target: null,
-      matched_fields: [] as string[]
-    };
+        score: dataScore,
+        ai_reasoning: "No existing identity match found. Data quality verified. Ready for new UBID assignment.",
+        type: 'unresolved',
+        source: {
+          id: u.id,
+          entity_name: u.entity_name,
+          department: u.department,
+          address: u.raw_data?.address || 'N/A',
+          pincode: u.pincode || '',
+          gstin: u.raw_data?.gstin || 'N/A',
+          pan: u.raw_data?.pan || 'N/A'
+        },
+        target: null,
+        matched_fields: [] as string[]
+      };
     })
   ]
-
 
   const filteredRecords = allRecords.filter(r => {
     const matchesSearch = r.source.entity_name.toLowerCase().includes(searchQuery.toLowerCase())
@@ -99,6 +105,7 @@ export default function ReviewWorkspace({
     if (!selectedEvent || isPending || selectedEvent.type === 'unresolved') return
     startTransition(async () => {
       await approveMerge(selectedEvent.id, selectedEvent.source.id, selectedEvent.target!.id)
+      addHistoryEntry({ recordId: selectedEvent.source.id, businessId: selectedEvent.target!.id, entityName: selectedEvent.source.entity_name, status: 'resolved' });
       setEvents(prev => prev.filter(e => e.id !== selectedEvent.id))
       setSelectedIndex(0)
       router.refresh()
@@ -109,6 +116,7 @@ export default function ReviewWorkspace({
     if (!selectedEvent || isPending) return
     startTransition(async () => {
       await createNewEntity(selectedEvent.id, selectedEvent.source.id, selectedEvent.source.entity_name, selectedEvent.source.address, selectedEvent.source.pincode)
+      addHistoryEntry({ recordId: selectedEvent.source.id, businessId: selectedEvent.source.id, entityName: selectedEvent.source.entity_name, status: 'new_entity' });
       if (selectedEvent.type === 'flagged') {
         setEvents(prev => prev.filter(e => e.id !== selectedEvent.id))
       } else {
@@ -123,6 +131,7 @@ export default function ReviewWorkspace({
     if (!selectedEvent || isPending) return
     startTransition(async () => {
       await flagFraud(selectedEvent.id, selectedEvent.source.id)
+      addHistoryEntry({ recordId: selectedEvent.source.id, businessId: null, entityName: selectedEvent.source.entity_name, status: 'triage' });
       if (selectedEvent.type === 'flagged') {
         setEvents(prev => prev.filter(e => e.id !== selectedEvent.id))
       } else {
@@ -150,7 +159,7 @@ export default function ReviewWorkspace({
       <motion.div 
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
-        className="flex-1 flex items-center justify-center glass-card border-indigo-500/20 m-10"
+        className="flex-1 flex flex-col items-center justify-center glass-card border-indigo-500/20 m-10 p-10 gap-8"
       >
         <div className="text-center">
           <div className="w-24 h-24 bg-emerald-500/10 border border-emerald-500/20 rounded-full flex items-center justify-center mx-auto mb-8 shadow-[0_0_50px_rgba(16,185,129,0.1)]">
@@ -164,6 +173,9 @@ export default function ReviewWorkspace({
           >
             Clear Filters
           </button>
+        </div>
+        <div className="w-full max-w-xl mt-6">
+          <GlobalActionHistory />
         </div>
       </motion.div>
     )
@@ -497,6 +509,9 @@ export default function ReviewWorkspace({
              <DecisionNode label="Tax_ID" score={100} active />
           </div>
        </div>
+       <div className="xl:col-span-4 flex flex-col min-h-0">
+          <GlobalActionHistory />
+       </div>
     </div>
   </div>
   )
@@ -524,7 +539,6 @@ function DataField({ label, value, compareValue, isMismatched = false, mono = fa
   const renderHighlighted = (val: string, comp: string) => {
     if (!isMismatched || !comp) return val;
     
-    // Simple character-level diff for visual effect
     const chars = val.split('');
     const compChars = comp.split('');
     

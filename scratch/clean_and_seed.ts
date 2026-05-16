@@ -56,6 +56,7 @@ async function run() {
   await supabase.from('resolution_events').delete().neq('id', '00000000-0000-0000-0000-000000000000');
   await supabase.from('activity_events').delete().neq('id', '00000000-0000-0000-0000-000000000000');
   await supabase.from('source_records').delete().neq('id', '00000000-0000-0000-0000-000000000000');
+  await supabase.from('source_records_archive').delete().neq('id', '00000000-0000-0000-0000-000000000000');
   await supabase.from('businesses').delete().neq('id', '00000000-0000-0000-0000-000000000000');
 
   console.log("✨ Seeding Golden Registry...");

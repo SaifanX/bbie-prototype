@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Activity, Building2, AlertTriangle, Layers, Zap, Shield, Cpu, ExternalLink, ArrowUpRight, ArrowDownRight, Radio, Fingerprint, ArrowRight, Database, Disc } from 'lucide-react';
 import Link from 'next/link';
 import { cn } from '@/utils/cn';
+import GlobalActionHistory from '@/components/GlobalActionHistory';
 
 const formatNumber = (num: number | null) => {
   return num !== null ? new Intl.NumberFormat('en-IN').format(num) : '0';
@@ -114,6 +115,11 @@ export default function DashboardClient({
           color="grey" 
           trend="Engine Confidence"
         />
+      </div>
+
+      {/* Global Action History Banner */}
+      <div className="z-10 relative">
+        <GlobalActionHistory />
       </div>
 
       {/* Intelligence Row */}

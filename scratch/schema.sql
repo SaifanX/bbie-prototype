@@ -44,3 +44,21 @@ create table if not exists public.audit_trail (
     metadata jsonb,
     created_at timestamptz default now()
 );
+
+-- Resolved Source Records Vault (The Messy Vault)
+create table if not exists public.source_records_archive (
+    id uuid primary key,
+    business_id uuid references public.businesses(id) on delete set null,
+    department varchar not null,
+    source_id varchar not null,
+    entity_name text not null,
+    pan varchar,
+    gstin varchar,
+    raw_data jsonb,
+    reported_date timestamptz,
+    created_at timestamptz default now(),
+    resolved boolean default true,
+    address text,
+    embedding vector(3072),
+    archived_at timestamptz default now()
+);
