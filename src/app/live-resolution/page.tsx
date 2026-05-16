@@ -39,9 +39,10 @@ export default function LiveResolutionPage() {
 
   const [activeAnalysis, setActiveAnalysis] = useState<any>(null);
   const abortRef = useRef(false);
-  type HistoryEntry = { recordId: string; businessId: string | null; entityName: string; status: string; };
+  type HistoryEntry = { recordId: string; businessId: string | null; entityName: string; status: string; undone?: boolean; };
   const [history, setHistory] = useState<HistoryEntry[]>([]);
   const [isReverting, setIsReverting] = useState(false);
+
 
   // Subscribe to real-time logs
   useEffect(() => {
@@ -133,12 +134,12 @@ export default function LiveResolutionPage() {
     setIsEngaged(false);
   };
 
-  const handleUndo = useCallback(async (entry: { recordId: string; businessId: string | null; entityName: string; status: string }) => {
-    if (isReverting) return;
+  const handleUndo = useCallback(async (entry: HistoryEntry) => {
+    if (isReverting || entry.undone) return;
     setIsReverting(true);
     try {
       await revertRecord(entry.recordId, entry.businessId);
-      setHistory(prev => prev.filter(h => h.recordId !== entry.recordId));
+      setHistory(prev => prev.map(h => h.recordId === entry.recordId ? { ...h, undone: true } : h));
       setCurrentData(prev => prev.map(r => r.id === entry.recordId ? { ...r, status: 'raw' } : r));
       setStats(prev => ({
         ...prev,
@@ -151,6 +152,33 @@ export default function LiveResolutionPage() {
       setIsReverting(false);
     }
   }, [isReverting]);
+
+  const handleRedo = useCallback(async (entry: HistoryEntry) => {
+    if (isReverting || !entry.undone) return;
+    setIsReverting(true);
+    try {
+      const result = await runResolution(entry.recordId);
+      setHistory(prev => prev.map(h => h.recordId === entry.recordId ? { 
+        ...h, 
+        businessId: result.matchedBusinessId, 
+        status: result.status, 
+        undone: false 
+      } : h));
+      setCurrentData(prev => prev.map(r => r.id === entry.recordId ? { ...r, status: 'done' } : r));
+      setStats(prev => ({
+        ...prev,
+        scanned: prev.scanned + 1,
+        resolved: result.status === 'resolved' ? prev.resolved + 1 : prev.resolved,
+        triage: result.status === 'triage' ? prev.triage + 1 : prev.triage,
+        duplicates: result.status === 'new_entity' ? prev.duplicates + 1 : prev.duplicates,
+      }));
+    } catch (err) {
+      console.error(`Redo failed for ${entry.entityName}:`, err);
+    } finally {
+      setIsReverting(false);
+    }
+  }, [isReverting]);
+
 
   return (
     <div className="p-10 min-h-screen w-full bg-[#08080a] text-slate-100 flex flex-col gap-10 relative overflow-x-hidden">
@@ -366,22 +394,40 @@ export default function LiveResolutionPage() {
               </div>
               <div className="overflow-y-auto space-y-2 custom-scrollbar">
                 {history.map((entry) => (
-                  <div key={entry.recordId} className="flex items-center justify-between bg-white/[0.03] border border-white/5 rounded-xl px-3 py-2">
+                  <div key={entry.recordId} className={cn(
+                    "flex items-center justify-between border rounded-xl px-3 py-2 transition-all",
+                    entry.undone ? "bg-white/[0.01] border-white/5 opacity-40" : "bg-white/[0.03] border-white/5"
+                  )}>
                     <div className="flex flex-col">
-                      <span className="text-[9px] font-black text-white uppercase truncate w-32">{entry.entityName}</span>
+                      <span className={cn(
+                        "text-[9px] font-black uppercase truncate w-32",
+                        entry.undone ? "text-slate-500 line-through" : "text-white"
+                      )}>{entry.entityName}</span>
                       <span className={cn("text-[8px] font-bold uppercase tracking-widest",
+                        entry.undone ? 'text-slate-600' :
                         entry.status === 'resolved' ? 'text-orange-500' :
                         entry.status === 'new_entity' ? 'text-white' : 'text-orange-300'
-                      )}>{entry.status.replace('_', ' ')}</span>
+                      )}>{entry.undone ? 'UNDONE' : entry.status.replace('_', ' ')}</span>
                     </div>
-                    <button
-                      onClick={() => handleUndo(entry)}
-                      disabled={isReverting}
-                      className="p-1.5 rounded-lg bg-red-600/10 border border-red-600/20 text-red-400 hover:bg-red-600/20 transition-all disabled:opacity-30"
-                      title="Undo this action"
-                    >
-                      <RotateCcw size={10} />
-                    </button>
+                    {entry.undone ? (
+                      <button
+                        onClick={() => handleRedo(entry)}
+                        disabled={isReverting}
+                        className="p-1.5 rounded-lg bg-orange-600/10 border border-orange-600/20 text-orange-400 hover:bg-orange-600/20 transition-all disabled:opacity-30 flex items-center gap-1 text-[8px] font-black uppercase tracking-wider"
+                        title="Redo this action"
+                      >
+                        <Zap size={10} /> Redo
+                      </button>
+                    ) : (
+                      <button
+                        onClick={() => handleUndo(entry)}
+                        disabled={isReverting}
+                        className="p-1.5 rounded-lg bg-red-600/10 border border-red-600/20 text-red-400 hover:bg-red-600/20 transition-all disabled:opacity-30"
+                        title="Undo this action"
+                      >
+                        <RotateCcw size={10} />
+                      </button>
+                    )}
                   </div>
                 ))}
               </div>
