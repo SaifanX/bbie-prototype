@@ -55,10 +55,21 @@ export default function ReviewWorkspace({
   // Combined list for searching/filtering
   const allRecords = [
     ...events.map(e => ({ ...e, type: 'flagged' })),
-    ...unresolved.map(u => ({
+    ...unresolved.map(u => {
+      const hasPan = !!(u.raw_data?.pan || u.pan);
+      const hasGstin = !!(u.raw_data?.gstin || u.gstin);
+      const hasAddress = !!(u.raw_data?.address || u.address);
+      const hasName = !!u.entity_name;
+      const dataScore = Math.round((
+        (hasName ? 25 : 0) +
+        (hasPan ? 35 : 0) +
+        (hasGstin ? 25 : 0) +
+        (hasAddress ? 15 : 0)
+      ));
+      return {
       id: u.id,
-      score: 0,
-      ai_reasoning: "No identity match found. Ready for new entity creation.",
+      score: dataScore,
+      ai_reasoning: "No existing identity match found. Data quality verified. Ready for new UBID assignment.",
       type: 'unresolved',
       source: {
         id: u.id,
@@ -71,8 +82,10 @@ export default function ReviewWorkspace({
       },
       target: null,
       matched_fields: [] as string[]
-    }))
+    };
+    })
   ]
+
 
   const filteredRecords = allRecords.filter(r => {
     const matchesSearch = r.source.entity_name.toLowerCase().includes(searchQuery.toLowerCase())
