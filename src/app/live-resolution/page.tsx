@@ -353,7 +353,7 @@ export default function LiveResolutionPage() {
         </div>
 
         {/* Logs + Undo Column */}
-        <div className="col-span-3 flex flex-col gap-4">
+        <div className="col-span-3 flex flex-col gap-4 h-[650px]">
 
           {/* Undo History */}
           {history.length > 0 && (
