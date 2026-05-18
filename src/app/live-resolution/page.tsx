@@ -192,7 +192,7 @@ export default function LiveResolutionPage() {
     <div className="p-10 min-h-screen w-full bg-[#09090b] text-zinc-100 flex flex-col gap-10 relative overflow-x-hidden selection:bg-orange-500/30">
 
       {/* Header */}
-      <div className="flex justify-between items-end z-10 shrink-0 border-b border-zinc-800 pb-10">
+      <div className="flex flex-col lg:flex-row justify-between items-start lg:items-end gap-6 z-10 shrink-0 border-b border-zinc-800 pb-10">
         <div>
           <div className="flex items-center gap-2 mb-3">
             <Zap size={14} className="text-orange-500 fill-orange-500" />
@@ -204,7 +204,7 @@ export default function LiveResolutionPage() {
           </p>
         </div>
 
-        <div className="flex gap-4 items-center">
+        <div className="flex flex-wrap gap-4 items-center w-full lg:w-auto">
           <button 
             onClick={() => setShowMaskingModal(true)}
             className="px-6 py-5 rounded-xl bg-orange-500/10 text-orange-500 font-black uppercase text-[10px] tracking-[0.2em] transition-all hover:bg-orange-500 hover:text-white border border-orange-500/20 flex items-center gap-2 shadow-lg shadow-orange-500/10 active:scale-95"
@@ -239,9 +239,9 @@ export default function LiveResolutionPage() {
         </div>
       </div>
 
-      <div className="flex-1 grid grid-cols-12 gap-8 z-10">
+      <div className="flex-1 grid grid-cols-1 lg:grid-cols-12 gap-8 z-10">
         {/* Ingestion Column */}
-        <div className="col-span-3 flex flex-col gap-6">
+        <div className="lg:col-span-3 flex flex-col gap-6">
           <div className="flex items-center justify-between">
             <h3 className="text-[10px] font-black text-zinc-500 uppercase tracking-[0.3em] flex items-center gap-2">
                <Database size={12} className="text-orange-500" /> Source Records
@@ -289,15 +289,15 @@ export default function LiveResolutionPage() {
         </div>
 
         {/* Center Analysis Column */}
-        <div className="col-span-6 flex flex-col gap-8">
-          <div className="grid grid-cols-4 gap-5">
+        <div className="lg:col-span-6 flex flex-col gap-8">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-5">
              <StatBox label="Scanned" value={stats.scanned} color="text-zinc-400" />
              <StatBox label="Identified" value={stats.duplicates} color="text-orange-500" />
              <StatBox label="Resolved" value={stats.resolved} color="text-white" />
              <StatBox label="Triaged" value={stats.triage} color="text-orange-300" />
           </div>
 
-          <div className="flex-1 bg-zinc-950 border border-zinc-800 rounded-[40px] p-10 relative flex flex-col items-center justify-center overflow-hidden">
+          <div className="flex-1 bg-zinc-950 border border-zinc-800 rounded-[40px] p-6 sm:p-10 relative flex flex-col items-center justify-center overflow-hidden">
              
              <AnimatePresence mode="wait">
                 {activeAnalysis ? (
@@ -315,14 +315,14 @@ export default function LiveResolutionPage() {
                        </div>
                        <div>
                           <p className="text-[10px] font-black text-orange-500 uppercase tracking-[0.5em] mb-4">Core.Resolution_Arbitration</p>
-                          <h2 className="text-4xl font-black text-white uppercase tracking-tighter leading-none italic">
+                          <h2 className="text-2xl sm:text-4xl font-black text-white uppercase tracking-tighter leading-none italic break-all">
                             {currentData[normalizingIndex!].original}
                           </h2>
                        </div>
                     </div>
 
                     {/* Pipeline Visualizer */}
-                    <div className="grid grid-cols-5 gap-4 px-4">
+                    <div className="grid grid-cols-5 gap-2 sm:gap-4 px-2 sm:px-4">
                        {['Ingest', 'Shield', 'Vector', 'Align', 'Issue'].map((step, idx) => (
                          <div key={step} className="flex flex-col gap-3">
                             <div className={cn(
@@ -330,19 +330,19 @@ export default function LiveResolutionPage() {
                                idx <= activeStage ? "bg-orange-500" : "bg-zinc-900"
                             )} />
                             <span className={cn(
-                              "text-[9px] font-black uppercase text-center tracking-[0.2em]",
+                              "text-[8px] sm:text-[9px] font-black uppercase text-center tracking-[0.2em]",
                               idx <= activeStage ? "text-orange-500" : "text-zinc-700"
                             )}>{step}</span>
                          </div>
                        ))}
                     </div>
 
-                    <div className="grid grid-cols-2 gap-8">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
                        <div className="bg-zinc-900 border border-zinc-800 p-8 rounded-[30px] relative group overflow-hidden">
                            <span className="text-[10px] font-black text-zinc-500 uppercase tracking-[0.3em] block mb-3">
                              {activeAnalysis.status === 'new_entity' ? 'Data Quality Index' : 'Confidence Index'}
                            </span>
-                           <div className="text-5xl font-black text-white italic tracking-tighter">
+                           <div className="text-4xl sm:text-5xl font-black text-white italic tracking-tighter">
                              {activeAnalysis.status === 'new_entity' 
                                ? <>{(activeAnalysis.score * 100).toFixed(0)}<span className="text-orange-500">%</span></>
                                : <>{(activeAnalysis.score * 100).toFixed(0)}<span className="text-orange-500">%</span></>}
@@ -351,7 +351,7 @@ export default function LiveResolutionPage() {
                        <div className="bg-zinc-900 border border-zinc-800 p-8 rounded-[30px] relative group overflow-hidden">
                           <span className="text-[10px] font-black text-zinc-500 uppercase tracking-[0.3em] block mb-3">Protocol Verdict</span>
                           <div className={cn(
-                            "text-2xl font-black uppercase italic tracking-tighter",
+                            "text-xl sm:text-2xl font-black uppercase italic tracking-tighter",
                             activeAnalysis.status === 'resolved' ? 'text-orange-500' : 
                             activeAnalysis.status === 'triage' ? 'text-orange-300' : 'text-white'
                           )}>
@@ -360,12 +360,12 @@ export default function LiveResolutionPage() {
                        </div>
                     </div>
 
-                    <div className="bg-orange-500/10 border border-orange-500/20 p-8 rounded-[32px] relative overflow-hidden">
+                    <div className="bg-orange-500/10 border border-orange-500/20 p-6 sm:p-8 rounded-[32px] relative overflow-hidden">
                        <div className="absolute top-0 right-0 p-6 opacity-[0.03]">
                           <ShieldAlert size={64} className="text-orange-500" />
                        </div>
                        <span className="text-[10px] font-black text-orange-500 uppercase tracking-[0.4em] block mb-4">AI Reasoning Trace</span>
-                        <p className="text-sm font-bold text-zinc-300 italic leading-relaxed uppercase tracking-tight">
+                        <p className="text-xs sm:text-sm font-bold text-zinc-300 italic leading-relaxed uppercase tracking-tight">
                            "{activeAnalysis.verdict}"
                         </p>
                     </div>
@@ -389,7 +389,7 @@ export default function LiveResolutionPage() {
         </div>
 
         {/* Logs + Undo Column */}
-        <div className="col-span-3 flex flex-col gap-4 h-[650px]">
+        <div className="lg:col-span-3 flex flex-col gap-4 h-[650px]">
 
           {/* Global Undo History */}
           <GlobalActionHistory />

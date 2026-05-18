@@ -182,16 +182,16 @@ export default function ReviewWorkspace({
   }
 
   return (
-    <div className="flex flex-col gap-8 h-[calc(100vh-160px)] p-6 selection:bg-orange-500/30">
+    <div className="flex flex-col gap-8 min-h-screen md:h-[calc(100vh-160px)] p-4 sm:p-6 selection:bg-orange-500/30 overflow-y-auto md:overflow-hidden">
       
       {/* Search & Filter Bar */}
-      <div className="flex flex-col md:flex-row gap-6 items-center justify-between z-20">
-         <div className="flex p-1 bg-zinc-900 border border-zinc-800 rounded-2xl">
+      <div className="flex flex-col md:flex-row gap-6 items-stretch md:items-center justify-between z-20 shrink-0">
+         <div className="flex p-1 bg-zinc-900 border border-zinc-800 rounded-2xl overflow-x-auto custom-scrollbar w-full md:w-auto">
             <FilterTab active={filter === 'all'} label="All Items" count={allRecords.length} onClick={() => setFilter('all')} />
             <FilterTab active={filter === 'flagged'} label="AI Matches" count={events.length} onClick={() => setFilter('flagged')} />
             <FilterTab active={filter === 'unresolved'} label="Unresolved Source" count={unresolved.length} onClick={() => setFilter('unresolved')} />
          </div>
-         <div className="relative w-full md:w-96 group">
+         <div className="relative w-full md:w-96 group shrink-0">
             <div className="absolute inset-y-0 left-4 flex items-center pointer-events-none">
                <Command size={16} className="text-zinc-500 group-focus-within:text-orange-500 transition-colors" />
             </div>
@@ -200,14 +200,14 @@ export default function ReviewWorkspace({
                placeholder="Search by entity name..." 
                value={searchQuery}
                onChange={(e) => setSearchQuery(e.target.value)}
-               className="w-full bg-zinc-900 border border-zinc-800 rounded-2xl py-4 pl-12 pr-6 text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-orange-500/50 focus:bg-zinc-800 transition-all"
+               className="w-full bg-zinc-900 border border-zinc-800 rounded-2xl py-4 pl-12 pr-6 text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-orange-500/50 focus:bg-zinc-800 transition-all truncate"
             />
          </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 flex-1 min-h-0">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 flex-1 min-h-0 overflow-y-auto md:overflow-hidden">
         {/* Review Sidebar - 3 Cols */}
-        <div className="lg:col-span-3 flex flex-col min-h-0 bg-zinc-950 rounded-3xl border border-zinc-800 overflow-hidden shadow-2xl">
+        <div className="lg:col-span-3 flex flex-col min-h-[300px] md:min-h-0 bg-zinc-950 rounded-3xl border border-zinc-800 overflow-hidden shadow-2xl shrink-0 lg:shrink">
           <div className="p-6 border-b border-zinc-800 bg-zinc-900 flex items-center justify-between">
               <div className="flex flex-col">
                   <span className="text-[10px] font-black text-orange-500 uppercase tracking-widest">Master Queue</span>
@@ -220,7 +220,7 @@ export default function ReviewWorkspace({
               </div>
           </div>
           
-          <div className="flex-1 overflow-y-auto p-4 space-y-3 custom-scrollbar">
+          <div className="flex-1 overflow-y-auto p-4 space-y-3 custom-scrollbar max-h-[400px] md:max-h-none">
             {filteredRecords.map((record, idx) => (
               <motion.div 
                 key={record.id}
@@ -238,15 +238,15 @@ export default function ReviewWorkspace({
                     className="absolute left-0 top-4 bottom-4 w-1 bg-orange-500 rounded-full" 
                   />
                 )}
-                <div className="flex justify-between items-start mb-2">
+                <div className="flex justify-between items-start mb-2 gap-2">
                   <span className={cn(
-                    "text-xs font-black tracking-tight truncate pr-4 transition-colors",
+                    "text-xs font-black tracking-tight truncate transition-colors",
                     idx === selectedIndex ? "text-white" : "text-zinc-500 group-hover:text-zinc-300"
                   )}>
                     {record.source.entity_name}
                   </span>
                   <span className={cn(
-                    "text-[8px] font-black px-1.5 py-0.5 rounded uppercase tracking-tighter",
+                    "text-[8px] font-black px-1.5 py-0.5 rounded uppercase tracking-tighter shrink-0",
                     record.type === 'unresolved' 
                       ? "text-orange-400 bg-orange-500/10 border border-orange-500/20" 
                       : "text-orange-500 bg-orange-500/10 border border-orange-500/20"
@@ -256,7 +256,7 @@ export default function ReviewWorkspace({
                 </div>
                 <div className="flex items-center gap-2">
                   <div className={cn("w-1.5 h-1.5 rounded-full", record.type === 'unresolved' ? "bg-orange-400" : "bg-orange-500")} />
-                  <span className="text-[9px] font-mono text-zinc-500 uppercase tracking-widest">
+                  <span className="text-[9px] font-mono text-zinc-500 uppercase tracking-widest truncate">
                     {record.source.department.replace('_', ' ')}
                   </span>
                 </div>
@@ -264,25 +264,25 @@ export default function ReviewWorkspace({
             ))}
           </div>
 
-        <div className="p-4 bg-zinc-900 border-t border-zinc-800">
+        <div className="p-4 bg-zinc-900 border-t border-zinc-800 shrink-0">
             <div className="flex items-center gap-2 text-[9px] font-black text-zinc-500 uppercase tracking-widest">
-                <Command size={10} /> 
-                <span>A: Approve | C: Create | X: Flag</span>
+                <Command size={10} className="shrink-0" /> 
+                <span className="truncate">A: Approve | C: Create | X: Flag</span>
             </div>
         </div>
       </div>
 
       {/* Main Workspace - 9 Cols */}
-      <div className="lg:col-span-9 flex flex-col gap-6 min-h-0 overflow-y-auto pr-2 custom-scrollbar">
+      <div className="lg:col-span-9 flex flex-col gap-6 min-h-0 overflow-y-auto pr-1 sm:pr-2 custom-scrollbar">
         <AnimatePresence mode="wait">
           {!selectedEvent ? (
             <motion.div 
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              className="flex-1 flex flex-col items-center justify-center gap-4 text-zinc-500 bg-[#121215] border border-dashed border-zinc-800 rounded-3xl"
+              className="flex-1 flex flex-col items-center justify-center gap-4 text-zinc-500 bg-[#121215] border border-dashed border-zinc-800 rounded-3xl p-8"
             >
               <Info size={48} className="opacity-20" />
-              <span className="text-[10px] font-black uppercase tracking-widest">No Selection Match</span>
+              <span className="text-[10px] font-black uppercase tracking-widest text-center">No Selection Match</span>
             </motion.div>
           ) : (
           <motion.div 
@@ -293,24 +293,24 @@ export default function ReviewWorkspace({
             className="flex flex-col gap-6 h-full"
           >
             {/* Header / Engine Status */}
-            <div className="flex items-center justify-between px-2">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between px-2 gap-4">
                 <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 rounded-2xl bg-orange-500/10 border border-orange-500/20 flex items-center justify-center">
+                    <div className="w-12 h-12 rounded-2xl bg-orange-500/10 border border-orange-500/20 flex items-center justify-center shrink-0">
                         <Cpu size={24} className="text-orange-500 animate-pulse" />
                     </div>
                     <div>
-                        <h2 className="text-xl font-black text-white uppercase tracking-tighter">Resolution Workbench</h2>
+                        <h2 className="text-lg sm:text-xl font-black text-white uppercase tracking-tighter">Resolution Workbench</h2>
                         <div className="flex items-center gap-2">
-                            <div className="w-2 h-2 rounded-full bg-orange-500 animate-pulse" />
-                            <span className="text-[10px] font-mono text-zinc-500 uppercase tracking-widest">Engine Stage: High-Risk Conflict Arbiter</span>
+                            <div className="w-2 h-2 rounded-full bg-orange-500 animate-pulse shrink-0" />
+                            <span className="text-[9px] sm:text-[10px] font-mono text-zinc-500 uppercase tracking-widest truncate">Engine Stage: High-Risk Conflict Arbiter</span>
                         </div>
                     </div>
                 </div>
-                <div className="flex items-center gap-6">
+                <div className="flex items-center gap-6 self-end sm:self-auto">
                     <div className="text-right">
                         <span className="text-[9px] font-black text-zinc-500 uppercase tracking-widest block mb-1">Match Confidence</span>
                         <div className="flex items-center gap-3">
-                            <span className="text-2xl font-mono font-black text-white">{selectedEvent.score}%</span>
+                            <span className="text-xl sm:text-2xl font-mono font-black text-white">{selectedEvent.score}%</span>
                             <div className="w-16 h-2 bg-zinc-900 rounded-full overflow-hidden border border-zinc-800">
                                 <motion.div 
                                     initial={{ width: 0 }}
@@ -323,23 +323,23 @@ export default function ReviewWorkspace({
                 </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-6 flex-1 min-h-0">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 flex-1 min-h-0">
                {/* SOURCE DATA */}
-               <div className="bg-zinc-950 border border-zinc-800 rounded-3xl flex flex-col p-8 relative group overflow-hidden shadow-xl">
-                  <div className="absolute top-0 right-0 p-8 opacity-5">
+               <div className="bg-zinc-950 border border-zinc-800 rounded-3xl flex flex-col p-6 sm:p-8 relative group overflow-hidden shadow-xl">
+                  <div className="absolute top-0 right-0 p-8 opacity-5 pointer-events-none">
                       <FileText size={120} />
                   </div>
-                  <div className="flex items-center justify-between mb-8 relative z-10">
+                  <div className="flex items-center justify-between mb-8 relative z-10 gap-2">
                      <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 rounded-xl bg-orange-500/10 flex items-center justify-center border border-orange-500/20">
+                        <div className="w-8 h-8 rounded-xl bg-orange-500/10 flex items-center justify-center border border-orange-500/20 shrink-0">
                             <FileText size={16} className="text-orange-500" />
                         </div>
-                        <span className="text-[10px] font-black text-orange-500 uppercase tracking-widest">Legacy Signal</span>
+                        <span className="text-[10px] font-black text-orange-500 uppercase tracking-widest truncate">Legacy Signal</span>
                      </div>
-                     <span className="text-[9px] font-mono text-orange-500/60 uppercase">TIMESTAMP: 2026-05-06</span>
+                     <span className="text-[8px] sm:text-[9px] font-mono text-orange-500/60 uppercase shrink-0">TIMESTAMP: 2026-05-06</span>
                   </div>
 
-                  <div className="space-y-10 relative z-10">
+                  <div className="space-y-8 relative z-10 flex-1">
                      <DataField 
                         label="Entity Name (Dirty)" 
                         value={selectedEvent.source.entity_name} 
@@ -347,11 +347,11 @@ export default function ReviewWorkspace({
                         isMismatched={!selectedEvent.matched_fields.includes('Name')}
                         color="amber"
                      />
-                     <div className="grid grid-cols-2 gap-8">
+                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 sm:gap-8">
                         <DataField label="Department Source" value={selectedEvent.source.department.replace('_', ' ')} color="amber" />
                         <DataField label="Source ID" value={selectedEvent.source.id.split('-')[1]} color="amber" mono />
                      </div>
-                     <div className="grid grid-cols-2 gap-8">
+                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 sm:gap-8">
                         <DataField label="GSTIN (Signal)" value={selectedEvent.source.gstin} color="amber" mono />
                         <DataField label="PAN (Signal)" value={selectedEvent.source.pan} color="amber" mono />
                      </div>
@@ -366,33 +366,33 @@ export default function ReviewWorkspace({
                </div>
 
             {/* TARGET DATA */}
-               <div className="bg-[#121215] border border-zinc-800 rounded-3xl flex flex-col p-8 relative group overflow-hidden shadow-xl">
-                  <div className="absolute top-0 right-0 p-8 opacity-5">
+               <div className="bg-[#121215] border border-zinc-800 rounded-3xl flex flex-col p-6 sm:p-8 relative group overflow-hidden shadow-xl">
+                  <div className="absolute top-0 right-0 p-8 opacity-5 pointer-events-none">
                       <Building2 size={120} />
                   </div>
-                  <div className="flex items-center justify-between mb-8 relative z-10">
+                  <div className="flex items-center justify-between mb-8 relative z-10 gap-2">
                      <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 rounded-xl bg-orange-500/10 flex items-center justify-center border border-orange-500/20">
+                        <div className="w-8 h-8 rounded-xl bg-orange-500/10 flex items-center justify-center border border-orange-500/20 shrink-0">
                             <Building2 size={16} className="text-orange-500" />
                         </div>
-                        <span className="text-[10px] font-black text-zinc-300 uppercase tracking-widest">
+                        <span className="text-[10px] font-black text-zinc-300 uppercase tracking-widest truncate">
                           {selectedEvent.target ? "Golden Registry Record" : "Registry Candidate"}
                         </span>
                      </div>
                      {selectedEvent.target ? (
-                       <div className="flex items-center gap-1.5 bg-orange-500/10 border border-orange-500/20 px-2 py-1 rounded">
+                       <div className="flex items-center gap-1.5 bg-orange-500/10 border border-orange-500/20 px-2 py-1 rounded shrink-0">
                           <ShieldCheck size={10} className="text-orange-500" />
                           <span className="text-[8px] font-black text-orange-500 uppercase tracking-widest">Verified UBID</span>
                        </div>
                      ) : (
-                       <div className="flex items-center gap-1.5 bg-zinc-900 border border-zinc-800 px-2 py-1 rounded">
+                       <div className="flex items-center gap-1.5 bg-zinc-900 border border-zinc-800 px-2 py-1 rounded shrink-0">
                           <AlertTriangle size={10} className="text-orange-400" />
                           <span className="text-[8px] font-black text-orange-400 uppercase tracking-widest">No Match</span>
                        </div>
                      )}
                   </div>
 
-                  <div className="space-y-10 relative z-10">
+                  <div className="space-y-8 relative z-10 flex-1">
                     {selectedEvent.target ? (
                       <>
                         <DataField 
@@ -401,11 +401,11 @@ export default function ReviewWorkspace({
                             compareValue={selectedEvent.source.entity_name}
                             isMismatched={!selectedEvent.matched_fields.includes('Name')}
                         />
-                         <div className="grid grid-cols-2 gap-8">
+                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 sm:gap-8">
                              <DataField label="Unified Identifier" value={selectedEvent.target.ubid} mono color="indigo" />
                              <DataField label="Record Health" value="OPTIMIZED" color="emerald" />
                          </div>
-                         <div className="grid grid-cols-2 gap-8">
+                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 sm:gap-8">
                              <DataField label="GSTIN (Legal)" value={selectedEvent.target.gstin} mono color="indigo" />
                              <DataField label="PAN (Legal)" value={selectedEvent.target.pan} mono color="indigo" />
                          </div>
@@ -417,7 +417,7 @@ export default function ReviewWorkspace({
                         />
                       </>
                     ) : (
-                      <div className="flex flex-col items-center justify-center py-20 text-center opacity-40 group-hover:opacity-60 transition-opacity">
+                      <div className="flex flex-col items-center justify-center py-20 text-center opacity-40 group-hover:opacity-60 transition-opacity px-4">
                          <div className="w-16 h-16 rounded-2xl bg-zinc-900 border border-zinc-800 flex items-center justify-center mb-4">
                             <Plus size={32} className="text-zinc-500" />
                          </div>
@@ -430,7 +430,7 @@ export default function ReviewWorkspace({
             </div>
 
             {/* AI Reasoning & Actions Bar */}
-            <div className="bg-zinc-900 border border-zinc-800 rounded-3xl p-6 flex items-center gap-8 relative overflow-hidden shadow-xl">
+            <div className="bg-zinc-900 border border-zinc-800 rounded-3xl p-6 flex flex-col sm:flex-row items-start sm:items-center gap-6 relative overflow-hidden shadow-xl">
                 <div className="flex-1 flex items-start gap-4">
                     <div className="w-10 h-10 rounded-xl bg-zinc-950 border border-zinc-800 flex items-center justify-center shrink-0">
                         <Zap size={20} className="text-orange-500" />
@@ -445,7 +445,7 @@ export default function ReviewWorkspace({
                     </div>
                 </div>
 
-                <div className="flex items-center gap-4 shrink-0">
+                <div className="flex flex-wrap items-center gap-4 w-full sm:w-auto shrink-0">
                    <ReviewAction 
                       icon={<ShieldAlert size={18} />} 
                       label="Flag as Wrong" 
@@ -480,17 +480,17 @@ export default function ReviewWorkspace({
       </div>
     </div>
     <div className="grid grid-cols-1 xl:grid-cols-12 gap-6 mt-6">
-       <div className="xl:col-span-8 bg-zinc-900 border border-zinc-800 rounded-3xl p-8 space-y-6 shadow-xl">
+       <div className="xl:col-span-8 bg-zinc-900 border border-zinc-800 rounded-3xl p-6 sm:p-8 space-y-6 shadow-xl overflow-hidden">
           <div className="flex items-center gap-3">
-             <div className="w-10 h-10 rounded-xl bg-orange-500/10 border border-orange-500/20 flex items-center justify-center">
+             <div className="w-10 h-10 rounded-xl bg-orange-500/10 border border-orange-500/20 flex items-center justify-center shrink-0">
                 <Zap size={20} className="text-orange-500" />
              </div>
              <div>
-                <h3 className="text-sm font-black text-white uppercase tracking-widest">Intelligence Briefing</h3>
-                <span className="text-[10px] font-mono text-zinc-500 uppercase tracking-widest">Cross-Field Conflict Analysis</span>
+                <h3 className="text-sm font-black text-white uppercase tracking-widest truncate">Intelligence Briefing</h3>
+                <span className="text-[10px] font-mono text-zinc-500 uppercase tracking-widest truncate block">Cross-Field Conflict Analysis</span>
              </div>
           </div>
-          <div className="space-y-4">
+          <div className="space-y-4 overflow-x-auto custom-scrollbar">
              {selectedEvent && (
                 <>
                    <MismatchRow label="Entity Name" source={selectedEvent.source.entity_name} target={selectedEvent.target?.primary_name} />

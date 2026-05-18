@@ -89,8 +89,14 @@ async function run() {
   await supabase.from('source_records').delete().neq('id', '00000000-0000-0000-0000-000000000000');
   await supabase.from('source_records_archive').delete().neq('id', '00000000-0000-0000-0000-000000000000');
   await supabase.from('businesses').delete().neq('id', '00000000-0000-0000-0000-000000000000');
-  await supabase.from('system_logs').delete().neq('id', '00000000-0000-0000-0000-000000000000');
+  await supabase.from('system_logs').delete().neq('stage', 'PIN_CONFIG');
   await supabase.from('resolution_logs').delete().neq('id', '00000000-0000-0000-0000-000000000000');
+
+  // Ensure PIN config exists
+  const { data: pinCfg } = await supabase.from('system_logs').select('id').eq('stage', 'PIN_CONFIG').limit(1);
+  if (!pinCfg || pinCfg.length === 0) {
+    await supabase.from('system_logs').insert({ stage: 'PIN_CONFIG', message: 'Chess@ble', severity: 'info' });
+  }
 
   console.log("📝 Seeding Authentic Bengaluru MSME Storyline Records into source_records...");
   for (const r of MESSY_RECORDS) {

@@ -136,9 +136,9 @@ function SearchRow({ item, filter, isExpanded, onToggle }: any) {
                 transition={{ duration: 0.3, ease: 'easeInOut' }}
                 className="overflow-hidden bg-zinc-950 border-b border-zinc-800"
               >
-                <div className="p-12 grid grid-cols-12 gap-12">
+                <div className="p-6 sm:p-12 grid grid-cols-1 lg:grid-cols-12 gap-8 sm:gap-12">
                   {/* Left Column: Metadata */}
-                  <div className="col-span-4 space-y-8">
+                  <div className="lg:col-span-4 space-y-8">
                     <div>
                       <h4 className="text-[10px] font-black text-orange-500 uppercase tracking-[0.3em] mb-6 flex items-center gap-2">
                         <Building2 size={12} /> Entity Metadata
@@ -169,11 +169,11 @@ function SearchRow({ item, filter, isExpanded, onToggle }: any) {
                   </div>
 
                   {/* Right Column: Activity History */}
-                  <div className="col-span-8">
+                  <div className="lg:col-span-8">
                     <h4 className="text-[10px] font-black text-orange-500 uppercase tracking-[0.3em] mb-6 flex items-center gap-2">
                       <History size={12} /> Forensic Activity Stream
                     </h4>
-                    <div className="bg-zinc-900 rounded-3xl p-8 border border-zinc-800">
+                    <div className="bg-zinc-900 rounded-3xl p-6 sm:p-8 border border-zinc-800 overflow-x-auto custom-scrollbar">
                       <ActivityTimeline events={item.activity_events || []} />
                     </div>
                   </div>

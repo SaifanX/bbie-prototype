@@ -23,23 +23,23 @@ export default function IntelligenceClient({ stats }: any) {
   const graphData = stats.graphData || { nodes: [], links: [] };
 
   return (
-    <div className="p-10 space-y-10 min-h-screen relative overflow-y-auto bg-[#09090b] text-zinc-100 selection:bg-orange-500/30">
+    <div className="p-4 sm:p-10 space-y-10 min-h-screen relative overflow-y-auto bg-[#09090b] text-zinc-100 selection:bg-orange-500/30">
       
       {/* Background Decor */}
-      <div className="absolute top-0 right-0 p-10 opacity-5 pointer-events-none">
+      <div className="absolute top-0 right-0 p-10 opacity-5 pointer-events-none hidden sm:block">
         <Activity size={300} className="text-orange-500" />
       </div>
 
-      <div className="flex justify-between items-end z-10 relative border-b border-zinc-800 pb-10">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-end z-10 relative border-b border-zinc-800 pb-10 gap-6">
         <div>
           <div className="flex items-center gap-2 mb-2">
             <TrendingUp size={14} className="text-orange-500" />
             <span className="text-[10px] font-black text-orange-500 uppercase tracking-[0.4em]">Business Intelligence Engine</span>
           </div>
-          <h1 className="text-5xl font-black text-white uppercase tracking-tighter">Command Center</h1>
+          <h1 className="text-3xl sm:text-5xl font-black text-white uppercase tracking-tighter">Command Center</h1>
           <p className="text-zinc-500 mt-2 font-medium">Cross-departmental monitoring and anomaly detection engine.</p>
         </div>
-        <div className="flex p-1 bg-zinc-900 border border-zinc-800 rounded-2xl">
+        <div className="flex p-1 bg-zinc-900 border border-zinc-800 rounded-2xl overflow-x-auto custom-scrollbar w-full md:w-auto shrink-0">
            <TabButton active={activeTab === 'overview'} label="Overview" icon={<BarChart3 size={14} />} onClick={() => setActiveTab('overview')} />
            <TabButton active={activeTab === 'anomalies'} label="Anomalies" icon={<AlertTriangle size={14} />} onClick={() => setActiveTab('anomalies')} />
            <TabButton active={activeTab === 'graph'} label="Graph Explorer" icon={<Share2 size={14} />} onClick={() => setActiveTab('graph')} />
@@ -53,21 +53,21 @@ export default function IntelligenceClient({ stats }: any) {
           <motion.div 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="lg:col-span-8 bg-[#121215] border border-zinc-800 p-8 rounded-3xl flex flex-col shadow-xl"
+            className="lg:col-span-8 bg-[#121215] border border-zinc-800 p-6 sm:p-8 rounded-3xl flex flex-col shadow-xl overflow-hidden"
           >
-            <div className="flex justify-between items-start mb-12">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-12 gap-4">
               <div>
-                <h2 className="text-xl font-black text-white uppercase tracking-tighter flex items-center gap-3">
-                  <BarChart3 size={24} className="text-orange-500" /> Activity Pulse
+                <h2 className="text-lg sm:text-xl font-black text-white uppercase tracking-tighter flex items-center gap-3">
+                  <BarChart3 size={24} className="text-orange-500 shrink-0" /> Activity Pulse
                 </h2>
-                <p className="text-sm text-zinc-500 font-medium mt-1">Real-time classification of {stats.total} businesses based on event stream decay.</p>
+                <p className="text-xs sm:text-sm text-zinc-500 font-medium mt-1">Real-time classification of {stats.total} businesses based on event stream decay.</p>
               </div>
-              <div className="bg-orange-500/10 border border-orange-500/20 px-4 py-2 rounded-xl text-orange-500 text-xs font-black flex items-center gap-2">
+              <div className="bg-orange-500/10 border border-orange-500/20 px-4 py-2 rounded-xl text-orange-500 text-xs font-black flex items-center gap-2 shrink-0">
                 <TrendingUp size={14} /> LIVE ENGINE
               </div>
             </div>
             
-            <div className="h-80 flex items-end justify-between gap-12 px-8 mb-4">
+            <div className="h-80 flex items-end justify-between gap-4 sm:gap-12 px-2 sm:px-8 mb-4">
               <Bar height={`${stats.total > 0 ? (stats.active / stats.total) * 100 : 0}%`} label="ACTIVE" value={stats.active} active />
               <Bar height={`${stats.total > 0 ? (stats.dormant / stats.total) * 100 : 0}%`} label="DORMANT" value={stats.dormant} />
               <Bar height={`${stats.total > 0 ? (stats.closed / stats.total) * 100 : 0}%`} label="CLOSED" value={stats.closed} />
@@ -79,23 +79,23 @@ export default function IntelligenceClient({ stats }: any) {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            className="lg:col-span-4 bg-[#121215] border border-zinc-800 p-8 rounded-3xl flex flex-col items-center shadow-xl"
+            className="lg:col-span-4 bg-[#121215] border border-zinc-800 p-6 sm:p-8 rounded-3xl flex flex-col items-center shadow-xl overflow-hidden"
           >
             <div className="w-full mb-10">
-              <h2 className="text-xl font-black text-white uppercase tracking-tighter flex items-center gap-3">
-                <PieChart size={24} className="text-orange-500" /> Match Quality
+              <h2 className="text-lg sm:text-xl font-black text-white uppercase tracking-tighter flex items-center gap-3">
+                <PieChart size={24} className="text-orange-500 shrink-0" /> Match Quality
               </h2>
             </div>
             
-            <div className="relative w-56 h-56 rounded-full flex items-center justify-center mb-10 group">
-              <div className="absolute inset-0 rounded-full border-[20px] border-zinc-800" />
+            <div className="relative w-48 h-48 sm:w-56 sm:h-56 rounded-full flex items-center justify-center mb-10 group shrink-0">
+              <div className="absolute inset-0 rounded-full border-[16px] sm:border-[20px] border-zinc-800" />
               <svg className="w-full h-full -rotate-90 transform">
-                <circle cx="112" cy="112" r="92" fill="transparent" stroke="#f97316" strokeWidth="20" strokeDasharray="578" strokeDashoffset={578 - (578 * stats.accuracy / 100)} strokeLinecap="round" className="opacity-80 group-hover:opacity-100 transition-all duration-1000" />
+                <circle cx="50%" cy="50%" r="40%" fill="transparent" stroke="#f97316" strokeWidth="16" strokeDasharray="578" strokeDashoffset={578 - (578 * stats.accuracy / 100)} strokeLinecap="round" className="opacity-80 group-hover:opacity-100 transition-all duration-1000" />
               </svg>
 
               <div className="absolute inset-0 flex flex-col items-center justify-center">
-                <span className="text-4xl font-black text-white tracking-tighter">{stats.accuracy}%</span>
-                <span className="text-[10px] text-zinc-500 font-black uppercase tracking-widest">Confidence</span>
+                <span className="text-3xl sm:text-4xl font-black text-white tracking-tighter">{stats.accuracy}%</span>
+                <span className="text-[9px] sm:text-[10px] text-zinc-500 font-black uppercase tracking-widest">Confidence</span>
               </div>
             </div>
 
@@ -111,28 +111,28 @@ export default function IntelligenceClient({ stats }: any) {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
-            className="lg:col-span-12 bg-[#121215] border border-zinc-800 p-8 rounded-3xl shadow-xl"
+            className="lg:col-span-12 bg-[#121215] border border-zinc-800 p-6 sm:p-8 rounded-3xl shadow-xl overflow-hidden"
           >
-            <div className="flex items-center justify-between mb-8">
-              <h2 className="text-xl font-black text-white uppercase tracking-tighter flex items-center gap-3">
-                <Calendar size={24} className="text-orange-500" /> Global Event Stream
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-8 gap-4">
+              <h2 className="text-lg sm:text-xl font-black text-white uppercase tracking-tighter flex items-center gap-3">
+                <Calendar size={24} className="text-orange-500 shrink-0" /> Global Event Stream
               </h2>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 shrink-0">
                  <div className="w-2 h-2 rounded-full bg-orange-500 animate-pulse" />
                  <span className="text-[10px] font-black text-orange-500 uppercase tracking-widest">Processing Live Feed</span>
               </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-              <div className="space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 sm:gap-12">
+              <div className="space-y-6 overflow-x-auto custom-scrollbar">
                  <p className="text-xs text-zinc-500 font-medium uppercase tracking-widest">Recent System Signals</p>
                  <ActivityTimeline events={stats.recentEvents} />
               </div>
               <div className="space-y-6">
                  <p className="text-xs text-zinc-500 font-medium uppercase tracking-widest">Source Distribution</p>
-                 <div className="h-64 flex items-end justify-between gap-4 bg-zinc-950 p-6 border border-zinc-800 rounded-2xl">
+                 <div className="h-64 flex items-end justify-between gap-2 sm:gap-4 bg-zinc-950 p-4 sm:p-6 border border-zinc-800 rounded-2xl overflow-x-auto custom-scrollbar">
                    {Object.entries(stats.deptStats || {}).map(([dept, count]: any) => (
-                     <div key={dept} className="flex flex-col items-center gap-2 flex-1 group h-full">
+                     <div key={dept} className="flex flex-col items-center gap-2 flex-1 group h-full min-w-[50px]">
                        <div className="relative w-full flex-1 flex flex-col justify-end">
                          <motion.div 
                            initial={{ height: 0 }}
@@ -158,15 +158,15 @@ export default function IntelligenceClient({ stats }: any) {
           animate={{ opacity: 1, y: 0 }}
           className="space-y-8 z-10 relative"
         >
-          <div className="bg-[#121215] border border-zinc-800 p-10 rounded-3xl shadow-xl">
-            <div className="flex justify-between items-start mb-10">
+          <div className="bg-[#121215] border border-zinc-800 p-6 sm:p-10 rounded-3xl shadow-xl overflow-hidden">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-10 gap-4">
               <div>
-                <h2 className="text-2xl font-black text-white uppercase tracking-tighter flex items-center gap-3">
-                  <Globe size={32} className="text-orange-500" /> AI Optimization Hub
+                <h2 className="text-xl sm:text-2xl font-black text-white uppercase tracking-tighter flex items-center gap-3">
+                  <Globe size={32} className="text-orange-500 shrink-0" /> AI Optimization Hub
                 </h2>
-                <p className="text-zinc-500 font-medium mt-2">The system is learning from {stats.learningInsights?.totalFeedbackPoints || 0} reviewer decisions.</p>
+                <p className="text-xs sm:text-sm text-zinc-500 font-medium mt-2">The system is learning from {stats.learningInsights?.totalFeedbackPoints || 0} reviewer decisions.</p>
               </div>
-              <div className="bg-orange-500/10 border border-orange-500/20 px-6 py-3 rounded-2xl">
+              <div className="bg-orange-500/10 border border-orange-500/20 px-6 py-3 rounded-2xl shrink-0">
                 <span className="text-[10px] font-black text-orange-500 uppercase tracking-[0.2em]">Learning Status: ACTIVE</span>
               </div>
             </div>
@@ -176,7 +176,7 @@ export default function IntelligenceClient({ stats }: any) {
                 const isApplied = appliedRecs.includes(i);
                 return (
                   <div key={i} className={cn(
-                    "bg-zinc-950 border border-zinc-800 p-8 rounded-2xl transition-all relative overflow-hidden",
+                    "bg-zinc-950 border border-zinc-800 p-6 sm:p-8 rounded-2xl transition-all relative overflow-hidden",
                     isApplied ? "border-orange-500/50 bg-orange-500/5" : "hover:border-orange-500/30"
                   )}>
                     {isApplied && (
@@ -224,9 +224,9 @@ export default function IntelligenceClient({ stats }: any) {
               })}
               
               {(!stats.learningInsights?.recommendations || stats.learningInsights.recommendations.length === 0) && (
-                <div className="lg:col-span-3 py-20 flex flex-col items-center justify-center text-center">
+                <div className="lg:col-span-3 py-20 flex flex-col items-center justify-center text-center px-4">
                   <Activity size={48} className="text-zinc-700 mb-6 animate-pulse" />
-                  <p className="text-zinc-500 font-bold uppercase tracking-widest text-sm">Awaiting sufficient feedback data to suggest optimizations...</p>
+                  <p className="text-zinc-500 font-bold uppercase tracking-widest text-xs sm:text-sm">Awaiting sufficient feedback data to suggest optimizations...</p>
                 </div>
               )}
             </div>
@@ -239,13 +239,13 @@ export default function IntelligenceClient({ stats }: any) {
         <motion.div 
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          className="bg-[#121215] border border-zinc-800 p-10 rounded-3xl z-10 relative shadow-xl"
+          className="bg-[#121215] border border-zinc-800 p-6 sm:p-10 rounded-3xl z-10 relative shadow-xl overflow-hidden"
         >
-          <div className="mb-10">
-            <h2 className="text-2xl font-black text-white uppercase tracking-tighter flex items-center gap-3">
-              <AlertTriangle size={32} className="text-orange-500" /> High-Risk Anomaly Hub
+          <div className="mb-10 flex flex-col gap-2">
+            <h2 className="text-xl sm:text-2xl font-black text-white uppercase tracking-tighter flex items-center gap-3">
+              <AlertTriangle size={32} className="text-orange-500 shrink-0" /> High-Risk Anomaly Hub
             </h2>
-            <p className="text-zinc-500 font-medium mt-2">Active scanning for inconsistent data and suspicious entity behavior.</p>
+            <p className="text-xs sm:text-sm text-zinc-500 font-medium mt-2">Active scanning for inconsistent data and suspicious entity behavior.</p>
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -275,7 +275,7 @@ export default function IntelligenceClient({ stats }: any) {
         <motion.div 
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          className="bg-[#121215] border border-zinc-800 rounded-3xl h-[700px] z-10 relative overflow-hidden shadow-xl"
+          className="bg-[#121215] border border-zinc-800 rounded-3xl h-[500px] sm:h-[700px] z-10 relative overflow-hidden shadow-xl"
         >
           <RelationshipGraph data={graphData} />
         </motion.div>

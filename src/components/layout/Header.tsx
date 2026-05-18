@@ -2,10 +2,10 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { Bell, Search, LogOut, User, Settings, AlertTriangle, Shield, Zap } from 'lucide-react';
+import { Bell, Search, LogOut, User, Settings, AlertTriangle, Shield, Zap, Menu } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
-export function Header() {
+export function Header({ onOpenSidebar = () => {} }: { onOpenSidebar?: () => void }) {
   const router = useRouter();
   const [searchQuery, setSearchQuery] = useState('');
   const [showNotifications, setShowNotifications] = useState(false);
@@ -25,19 +25,26 @@ export function Header() {
   };
 
   return (
-    <header className="h-20 flex items-center justify-between px-8 relative z-50 bg-[#09090b] border-b border-zinc-800 selection:bg-orange-500/30">
-      {/* Search HUD */}
-      <div className="flex items-center gap-6">
-        <div className="relative group">
-          <div className="relative flex items-center gap-4 w-96 bg-[#121215] border border-zinc-800 rounded-2xl px-4 py-2.5 shadow-md">
-            <Search className="text-orange-500" size={18} />
+    <header className="h-20 flex items-center justify-between px-4 sm:px-8 relative z-50 bg-[#09090b] border-b border-zinc-800 selection:bg-orange-500/30">
+      {/* Search HUD & Mobile Menu */}
+      <div className="flex items-center gap-4 sm:gap-6 flex-1 md:flex-initial">
+        <button 
+          onClick={onOpenSidebar}
+          className="md:hidden w-12 h-12 bg-[#121215] border border-zinc-800 rounded-2xl flex items-center justify-center text-zinc-400 hover:text-orange-500 transition-colors shadow-md shrink-0"
+        >
+          <Menu size={20} />
+        </button>
+
+        <div className="relative group flex-1 md:flex-initial">
+          <div className="relative flex items-center gap-4 w-full md:w-96 bg-[#121215] border border-zinc-800 rounded-2xl px-4 py-2.5 shadow-md">
+            <Search className="text-orange-500 shrink-0" size={18} />
             <input 
               type="text" 
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               onKeyDown={handleSearch}
               placeholder="SEARCH BUSINESS REGISTRY..." 
-              className="w-full bg-transparent border-none text-sm text-zinc-200 focus:outline-none placeholder:text-zinc-600 font-mono tracking-wider"
+              className="w-full bg-transparent border-none text-xs sm:text-sm text-zinc-200 focus:outline-none placeholder:text-zinc-600 font-mono tracking-wider truncate"
             />
           </div>
         </div>
@@ -55,7 +62,7 @@ export function Header() {
         </div>
       </div>
 
-      <div className="flex items-center gap-6">
+      <div className="flex items-center gap-4 sm:gap-6 shrink-0 ml-4">
         {/* Clock HUD */}
         <div className="text-right hidden sm:block min-w-[100px]">
           {mounted ? (
@@ -73,7 +80,7 @@ export function Header() {
         </div>
 
         {/* Notifications */}
-        <div className="relative">
+        <div className="relative shrink-0">
           <button 
             onClick={() => setShowNotifications(!showNotifications)}
             className="w-12 h-12 bg-[#121215] border border-zinc-800 rounded-2xl flex items-center justify-center relative group overflow-hidden shadow-md"
@@ -107,7 +114,7 @@ export function Header() {
         </div>
 
         {/* Profile */}
-        <div className="flex items-center gap-4 pl-6 border-l border-zinc-800">
+        <div className="flex items-center gap-4 pl-4 sm:pl-6 border-l border-zinc-800 shrink-0">
           <div className="w-10 h-10 rounded-full bg-orange-500 p-0.5 shadow-md">
             <div className="w-full h-full rounded-full bg-zinc-950 flex items-center justify-center text-xs font-bold text-white">
               SA
