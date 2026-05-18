@@ -17,12 +17,12 @@ export default function RelationshipGraph({ data }: { data: any }) {
   if (!mounted) return null;
 
   return (
-    <div className="w-full h-full relative">
+    <div className="w-full h-full relative selection:bg-orange-500/30">
       <ForceGraph2D
         ref={fgRef}
         graphData={data}
         nodeLabel="name"
-        nodeColor={(node: any) => node.group === 'business' ? '#ff6b00' : '#71717a'}
+        nodeColor={(node: any) => node.group === 'business' ? '#f97316' : '#71717a'}
         nodeRelSize={6}
         linkDirectionalParticles={2}
         linkDirectionalParticleSpeed={0.005}
@@ -38,9 +38,9 @@ export default function RelationshipGraph({ data }: { data: any }) {
       />
       
       {/* Legend */}
-      <div className="absolute bottom-6 right-6 p-4 glass-card border-white/5 bg-black/40 backdrop-blur-md flex flex-col gap-2">
+      <div className="absolute bottom-6 right-6 p-4 bg-[#121215] border border-zinc-800 rounded-2xl flex flex-col gap-2 shadow-xl">
          <div className="flex items-center gap-2">
-            <div className="w-3 h-3 rounded-full bg-[#ff6b00] shadow-[0_0_8px_#ff6b00]" />
+            <div className="w-3 h-3 rounded-full bg-orange-500" />
             <span className="text-[10px] font-black text-white uppercase tracking-widest">Verified Identity</span>
          </div>
          <div className="flex items-center gap-2">

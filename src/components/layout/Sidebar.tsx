@@ -18,13 +18,11 @@ export function Sidebar() {
   const pathname = usePathname();
 
   return (
-    <div className="w-64 flex flex-col h-screen fixed left-0 top-0 p-4 z-50">
-      <div className="glass-card h-full flex flex-col overflow-hidden relative border-white/5 bg-black/40">
-        {/* Glow behind logo */}
-        
+    <div className="w-64 flex flex-col h-screen fixed left-0 top-0 p-4 z-50 selection:bg-orange-500/30">
+      <div className="bg-[#121215] border border-zinc-800 rounded-3xl h-full flex flex-col overflow-hidden relative shadow-2xl">
         <div className="h-24 flex items-center px-6 mb-4 relative">
           <div className="font-bold text-xl text-white tracking-tighter flex items-center gap-3">
-            <div className="w-12 h-12 rounded-xl bg-orange-600 flex items-center justify-center group">
+            <div className="w-12 h-12 rounded-xl bg-orange-500 flex items-center justify-center group shadow-md shadow-orange-500/20">
               <Cpu className="text-white group-hover:rotate-180 transition-transform duration-700" size={24} />
             </div>
             <div className="flex flex-col leading-none">
@@ -41,11 +39,11 @@ export function Sidebar() {
               <Link key={item.href} href={item.href} className="relative group">
                 <div className={cn(
                   "flex items-center gap-3 px-4 py-3.5 rounded-xl transition-all duration-300 relative z-10",
-                  isActive ? "text-white" : "text-slate-500 hover:text-slate-200"
+                  isActive ? "text-white" : "text-zinc-500 hover:text-zinc-200"
                 )}>
                   <item.icon size={18} className={cn(
                     "transition-transform duration-300 group-hover:scale-110",
-                    isActive ? "text-orange-500" : "text-slate-600"
+                    isActive ? "text-orange-500" : "text-zinc-600"
                   )} />
                   <span className="font-bold text-[11px] uppercase tracking-widest">{item.label}</span>
                   
@@ -65,19 +63,19 @@ export function Sidebar() {
         <div className="p-4 mt-auto">
           <Link href="/settings" className={cn(
             "flex items-center gap-3 px-4 py-3.5 rounded-xl transition-all duration-300 border border-transparent",
-            pathname === '/settings' ? "bg-white/5 border-white/5 text-white" : "text-slate-500 hover:text-slate-200 hover:bg-white/5"
+            pathname === '/settings' ? "bg-zinc-900 border-zinc-800 text-white" : "text-zinc-500 hover:text-zinc-200 hover:bg-zinc-900"
           )}>
             <Settings size={18} />
             <span className="font-bold text-[11px] uppercase tracking-widest">Settings</span>
           </Link>
           
-          <div className="mt-6 p-5 rounded-2xl bg-orange-500/5 border border-orange-500/10 relative overflow-hidden group">
+          <div className="mt-6 p-5 rounded-2xl bg-zinc-950 border border-zinc-800 relative overflow-hidden group shadow-md">
             <div className="absolute inset-0 bg-orange-500/0 group-hover:bg-orange-500/[0.02] transition-colors" />
             <div className="flex items-center gap-2 mb-3 relative z-10">
               <div className="w-1.5 h-1.5 rounded-full bg-orange-500" />
               <span className="text-[10px] font-black text-orange-500 uppercase tracking-widest">CORE ONLINE</span>
             </div>
-            <p className="text-[9px] text-slate-500 leading-relaxed font-mono uppercase tracking-tighter relative z-10">
+            <p className="text-[9px] text-zinc-500 leading-relaxed font-mono uppercase tracking-tighter relative z-10">
               BUILD: V1.0.8-INDUSTRIAL <br />
               UPTIME: 99.98%
             </p>

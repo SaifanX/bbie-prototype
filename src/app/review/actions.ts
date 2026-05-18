@@ -24,7 +24,7 @@ function generateUBID(name: string): string {
 }
 
 export async function createNewEntity(
-  _eventId: string,
+  eventId: string,
   sourceRecordId: string,
   sourceName: string,
   sourceAddress: string,
@@ -53,8 +53,17 @@ export async function createNewEntity(
   // 2. Archive source record
   await archiveSourceRecord(sourceRecordId, newBusiness.id, true);
 
+  // 3. Update resolution event status if it exists
+  if (eventId && eventId !== sourceRecordId) {
+    await supabaseAdmin
+      .from('resolution_events')
+      .update({ status: 'approved', ai_reasoning: `Human Reviewer created new entity: ${ubid}`, resolved_at: new Date().toISOString(), resolved_by: 'human_reviewer' })
+      .eq('id', eventId);
+  }
+
   revalidatePath('/review');
   revalidatePath('/dashboard');
+  revalidatePath('/search');
   revalidatePath('/');
   return { success: true, ubid };
 }
@@ -77,15 +86,25 @@ export async function approveMerge(
 
   revalidatePath('/review');
   revalidatePath('/dashboard');
+  revalidatePath('/search');
   revalidatePath('/');
   return { success: true };
 }
 
-export async function flagFraud(_eventId: string, sourceRecordId: string) {
+export async function flagFraud(eventId: string, sourceRecordId: string) {
   // Archive source record as resolved (rejected) so it leaves the active queue
   await archiveSourceRecord(sourceRecordId, null, true);
 
+  // Update resolution event status if it exists
+  if (eventId && eventId !== sourceRecordId) {
+    await supabaseAdmin
+      .from('resolution_events')
+      .update({ status: 'rejected', ai_reasoning: 'Human Reviewer flagged record as incorrect/fraudulent.', resolved_at: new Date().toISOString(), resolved_by: 'human_reviewer' })
+      .eq('id', eventId);
+  }
+
   revalidatePath('/review');
+  revalidatePath('/search');
   revalidatePath('/');
   return { success: true };
 }

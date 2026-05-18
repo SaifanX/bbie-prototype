@@ -35,7 +35,8 @@ export default async function BusinessDetail({ params }: { params: { ubid: strin
   const { data: resolution } = await supabase
     .from('resolution_events')
     .select('*')
-    .eq('ubid', ubid)
+    .eq('potential_business_id', business.id)
+    .limit(1)
     .single();
 
   return (

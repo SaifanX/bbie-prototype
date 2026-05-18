@@ -7,6 +7,7 @@ import { revertRecord, runResolution } from '@/app/live-resolution/actions';
 import { useRouter } from 'next/navigation';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
+import { supabase } from '@/utils/supabase';
 
 function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -22,7 +23,18 @@ export default function GlobalActionHistory() {
   }, []);
 
   useEffect(() => {
-    loadHistory();
+    // Check if the database was reset (0 businesses), and if so, auto-purge localStorage
+    supabase.from('businesses').select('id', { count: 'exact', head: true }).then(({ count, error }) => {
+      if (!error && count === 0) {
+        localStorage.removeItem('bbie_action_history');
+        localStorage.removeItem('bbie_live_current_data');
+        localStorage.removeItem('bbie_live_stats');
+        setHistory([]);
+      } else {
+        loadHistory();
+      }
+    });
+
     window.addEventListener('storage', loadHistory);
     window.addEventListener('bbie_history_change', loadHistory);
     return () => {
@@ -117,7 +129,20 @@ export default function GlobalActionHistory() {
         <span className="text-[10px] font-black text-orange-500 uppercase tracking-[0.3em] flex items-center gap-2">
           <RotateCcw size={10} /> Action History (Global Undo/Redo)
         </span>
-        <span className="text-[9px] text-slate-600">{history.length} actions</span>
+        <div className="flex items-center gap-3">
+          <span className="text-[9px] text-slate-600">{history.length} actions</span>
+          <button 
+            onClick={() => {
+              localStorage.removeItem('bbie_action_history');
+              setHistory([]);
+              window.dispatchEvent(new Event('bbie_history_change'));
+            }}
+            className="px-2 py-1 rounded bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/20 text-[8px] font-black uppercase tracking-widest transition-all"
+            title="Clear action log from browser cache"
+          >
+            Purge Log
+          </button>
+        </div>
       </div>
       <div className="overflow-y-auto space-y-2 custom-scrollbar pr-1 max-h-[160px]">
         {history.map((entry) => (

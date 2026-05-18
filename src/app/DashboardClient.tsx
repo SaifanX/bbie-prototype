@@ -33,13 +33,13 @@ export default function DashboardClient({
     : "0.0";
 
   return (
-    <div className="p-10 space-y-10 min-h-screen relative overflow-y-auto data-grid">
+    <div className="p-10 space-y-10 min-h-screen relative overflow-y-auto bg-[#09090b] text-zinc-100 selection:bg-orange-500/30">
       
       {/* Cinematic Header */}
       <motion.div 
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="flex flex-col lg:flex-row lg:items-end justify-between gap-8 z-10 relative"
+        className="flex flex-col lg:flex-row lg:items-end justify-between gap-8 z-10 relative border-b border-zinc-800 pb-10"
       >
         <div className="space-y-2">
           <div className="flex items-center gap-3">
@@ -51,17 +51,17 @@ export default function DashboardClient({
             </span>
           </div>
           <h1 className="text-6xl font-black text-white tracking-tighter uppercase leading-[0.9]">Master<br/><span className="text-orange-500">Registry</span></h1>
-          <p className="text-slate-400 font-medium max-w-lg mt-4">Unified business intelligence across {formatNumber(fragmentCount)} fragmented data signals.</p>
+          <p className="text-zinc-400 font-medium max-w-lg mt-4">Unified business intelligence across {formatNumber(fragmentCount)} fragmented data signals.</p>
         </div>
         
         <div className="flex gap-4">
-          <div className="glass-card px-8 py-4 text-xs font-black text-slate-500 uppercase tracking-widest border-white/5 bg-white/[0.01] flex items-center gap-2">
+          <div className="bg-zinc-950 px-8 py-4 text-xs font-black text-zinc-500 uppercase tracking-widest border border-zinc-800 rounded-2xl flex items-center gap-2 shadow-lg">
             <Disc size={14} className="text-orange-500 animate-spin-slow" /> System Sync: 100%
           </div>
           {!isSystemInitialized && (
             <Link 
               href="/live-resolution"
-              className="px-10 py-4 bg-orange-600 text-white rounded-xl text-xs font-black uppercase tracking-widest hover:bg-orange-500 transition-all active:scale-95 group"
+              className="px-10 py-4 bg-orange-600 text-white rounded-xl text-xs font-black uppercase tracking-widest hover:bg-orange-500 transition-all active:scale-95 group shadow-lg shadow-orange-500/20"
             >
               <span className="flex items-center gap-3">
                  Fire Resolution Engine <Radio size={16} />
@@ -124,11 +124,11 @@ export default function DashboardClient({
 
       {/* Intelligence Row */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 z-10 relative">
-        <div className="lg:col-span-2 glass-card p-8 flex flex-col gap-6">
+        <div className="lg:col-span-2 bg-[#121215] border border-zinc-800 rounded-3xl p-8 flex flex-col gap-6 shadow-xl">
           <div className="flex items-center justify-between">
             <div>
               <h3 className="text-lg font-black text-white uppercase tracking-tight">Resolution Confidence Stream</h3>
-              <p className="text-xs text-slate-500 font-medium uppercase tracking-widest mt-1">Real-time match accuracy from recent events</p>
+              <p className="text-xs text-zinc-500 font-medium uppercase tracking-widest mt-1">Real-time match accuracy from recent events</p>
             </div>
             <div className="flex gap-2">
                <div className="flex items-center gap-2 px-4 py-1.5 rounded-lg bg-orange-500/5 border border-orange-500/20">
@@ -151,22 +151,22 @@ export default function DashboardClient({
                 )}
               />
             )) : (
-              <div className="w-full h-full border-2 border-dashed border-white/5 rounded-xl flex items-center justify-center opacity-10">
+              <div className="w-full h-full border-2 border-dashed border-zinc-800 rounded-xl flex items-center justify-center opacity-10">
                  <span className="text-[10px] font-black uppercase tracking-[0.3em]">Waiting for Stream Ingestion</span>
               </div>
             )}
           </div>
           
-          <div className="flex items-center justify-between pt-6 border-t border-white/5">
+          <div className="flex items-center justify-between pt-6 border-t border-zinc-800">
              <div className="flex items-center gap-8">
                 <div className="flex flex-col">
-                   <span className="text-[10px] font-black text-slate-600 uppercase tracking-widest">Master Link Rate</span>
+                   <span className="text-[10px] font-black text-zinc-600 uppercase tracking-widest">Master Link Rate</span>
                    <span className="text-2xl font-black text-white mt-1">
                      {isSystemInitialized ? ((activeRecords / (activeRecords + fragmentCount)) * 100).toFixed(1) : "0.0"}%
                    </span>
                 </div>
                 <div className="flex flex-col">
-                   <span className="text-[10px] font-black text-slate-600 uppercase tracking-widest">Avg Confidence</span>
+                   <span className="text-[10px] font-black text-zinc-600 uppercase tracking-widest">Avg Confidence</span>
                    <span className="text-2xl font-black text-orange-500 mt-1">{avgConfidence}%</span>
                 </div>
              </div>
@@ -176,7 +176,7 @@ export default function DashboardClient({
           </div>
         </div>
 
-        <div className="glass-card p-8 flex flex-col gap-6 border-white/5">
+        <div className="bg-[#121215] border border-zinc-800 rounded-3xl p-8 flex flex-col gap-6 shadow-xl">
           <div className="flex items-center justify-between">
             <h3 className="text-lg font-black text-white uppercase tracking-tight">System Anomalies</h3>
             <AlertTriangle className="text-orange-500" size={20} />
@@ -200,7 +200,7 @@ export default function DashboardClient({
             )}
           </div>
           
-          <button className="w-full py-4 bg-white/[0.02] border border-white/10 rounded-xl text-[10px] font-black text-slate-400 uppercase tracking-widest hover:border-orange-500 hover:text-orange-500 transition-all mt-auto">
+          <button className="w-full py-4 bg-zinc-950 border border-zinc-800 rounded-xl text-[10px] font-black text-zinc-400 uppercase tracking-widest hover:border-orange-500 hover:text-orange-500 transition-all mt-auto">
             Audit Integrity Logs
           </button>
         </div>
@@ -218,7 +218,7 @@ export default function DashboardClient({
                 <h2 className="text-2xl font-black text-white uppercase tracking-tighter">
                   {isSystemInitialized ? "Verified Master Registry" : "Detected Business Fragments"}
                 </h2>
-                <span className="text-[10px] font-mono text-slate-600 uppercase tracking-widest">
+                <span className="text-[10px] font-mono text-zinc-600 uppercase tracking-widest">
                   {isSystemInitialized ? `Synchronizing ${formatNumber(totalBusinesses)} identities` : `${formatNumber(fragmentCount)} records awaiting resolution`}
                 </span>
               </div>
@@ -235,7 +235,7 @@ export default function DashboardClient({
               />
             ))}
             {(!dirtyRecords?.length && !recentEvents?.length) && (
-              <div className="col-span-full py-32 glass-card flex flex-col items-center justify-center text-center opacity-10">
+              <div className="col-span-full py-32 bg-[#121215] border border-zinc-800 rounded-3xl flex flex-col items-center justify-center text-center opacity-10 shadow-xl">
                  <Disc size={64} className="mb-6 animate-spin-slow" />
                  <p className="text-xs font-black uppercase tracking-[0.5em]">Awaiting Data Ingestion</p>
               </div>
@@ -260,7 +260,7 @@ function ResolutionCard({ event, delay, isDirty }: any) {
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay, duration: 0.4 }}
       className={cn(
-        "glass-card flex flex-col gap-6 group cursor-pointer transition-all relative overflow-hidden",
+        "bg-[#121215] border border-zinc-800 rounded-3xl flex flex-col gap-6 group cursor-pointer transition-all relative overflow-hidden shadow-lg",
         isDirty ? "border-orange-500/10 bg-orange-500/[0.01]" : "hover:border-orange-500/40"
       )}
     >
@@ -270,7 +270,7 @@ function ResolutionCard({ event, delay, isDirty }: any) {
         <div className="flex items-center justify-between relative z-10">
           <div className="flex items-center gap-2">
              <div className={cn("w-1.5 h-1.5 rounded-full", "bg-orange-500")} />
-             <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500">
+             <span className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500">
                {isDirty ? "UNRESOLVED" : "LINKED IDENTITY"}
              </span>
           </div>
@@ -289,23 +289,23 @@ function ResolutionCard({ event, delay, isDirty }: any) {
         <div className="relative z-10">
           <h4 className={cn(
             "font-black truncate text-base uppercase tracking-tight transition-colors leading-none",
-            isDirty ? "text-slate-100" : "text-white group-hover:text-orange-500"
+            isDirty ? "text-zinc-100" : "text-white group-hover:text-orange-500"
           )}>
              {source.entity_name}
           </h4>
           <div className="flex items-center gap-3 mt-4">
-            <span className="text-[9px] font-black px-2 py-0.5 rounded bg-white/5 text-slate-500 border border-white/5 uppercase tracking-tighter">
+            <span className="text-[9px] font-black px-2 py-0.5 rounded bg-zinc-900 text-zinc-500 border border-zinc-800 uppercase tracking-tighter">
               {(source.department || 'GOVT_SOURCE').replace('_', ' ')}
             </span>
-            <span className="text-[10px] font-black text-slate-600 uppercase tracking-widest">
+            <span className="text-[10px] font-black text-zinc-600 uppercase tracking-widest">
               {isDirty ? "Sync Pending" : "Unified Profile"}
             </span>
           </div>
         </div>
 
-        <div className="mt-auto pt-6 border-t border-white/5 flex items-center justify-between relative z-10">
+        <div className="mt-auto pt-6 border-t border-zinc-800 flex items-center justify-between relative z-10">
           <div className="flex-1 max-w-[120px]">
-             <div className="h-1 w-full bg-white/5 rounded-full overflow-hidden">
+             <div className="h-1 w-full bg-zinc-900 rounded-full overflow-hidden">
                 <motion.div 
                   initial={{ width: 0 }}
                   animate={{ width: isDirty ? "0%" : `${score}%` }}
@@ -331,7 +331,7 @@ function MetricCard({ title, value, icon, color, trend }: any) {
     <motion.div 
       initial={{ opacity: 0, scale: 0.98 }}
       animate={{ opacity: 1, scale: 1 }}
-      className="glass-card p-6 flex flex-col gap-5 border-white/5 group relative overflow-hidden"
+      className="bg-[#121215] border border-zinc-800 rounded-3xl p-6 flex flex-col gap-5 group relative overflow-hidden shadow-lg"
     >
       <div className="absolute top-0 right-0 p-4 opacity-[0.03] group-hover:opacity-[0.08] transition-opacity pointer-events-none">
          {React.cloneElement(icon as React.ReactElement, { size: 64 } as any)}
@@ -339,15 +339,15 @@ function MetricCard({ title, value, icon, color, trend }: any) {
 
       <div className={cn(
         "w-12 h-12 rounded-xl flex items-center justify-center border", 
-        isOrange ? "text-orange-500 bg-orange-500/10 border-orange-500/20" : "text-slate-500 bg-white/[0.02] border-white/10"
+        isOrange ? "text-orange-500 bg-orange-500/10 border-orange-500/20" : "text-zinc-500 bg-zinc-900 border-zinc-800"
       )}>
         {icon}
       </div>
       <div>
-        <h3 className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em]">{title}</h3>
+        <h3 className="text-[10px] font-black text-zinc-500 uppercase tracking-[0.2em]">{title}</h3>
         <div className="text-4xl font-black text-white tracking-tighter mt-1.5 italic">{value}</div>
-        <p className="text-[9px] font-bold text-slate-600 uppercase tracking-tighter mt-3 flex items-center gap-2">
-           <Disc size={10} className={isOrange ? "text-orange-500" : "text-slate-800"} /> {trend}
+        <p className="text-[9px] font-bold text-zinc-600 uppercase tracking-tighter mt-3 flex items-center gap-2">
+           <Disc size={10} className={isOrange ? "text-orange-500" : "text-zinc-800"} /> {trend}
         </p>
       </div>
     </motion.div>
@@ -356,7 +356,7 @@ function MetricCard({ title, value, icon, color, trend }: any) {
 
 function AnomalyItem({ type, entity, severity }: any) {
   return (
-    <div className="p-4 bg-white/[0.01] border border-white/5 rounded-xl flex items-center justify-between group hover:bg-orange-500/[0.02] hover:border-orange-500/20 transition-all">
+    <div className="p-4 bg-zinc-900 border border-zinc-800 rounded-xl flex items-center justify-between group hover:bg-orange-500/[0.02] hover:border-orange-500/20 transition-all shadow-md">
       <div className="flex items-center gap-3">
         <div className={cn(
           "w-1.5 h-1.5 rounded-full",
@@ -364,10 +364,10 @@ function AnomalyItem({ type, entity, severity }: any) {
         )} />
         <div className="flex flex-col">
           <span className="text-[10px] font-black text-white uppercase tracking-tight">{type}</span>
-          <span className="text-[9px] font-medium text-slate-500 uppercase truncate max-w-[150px]">{entity}</span>
+          <span className="text-[9px] font-medium text-zinc-500 uppercase truncate max-w-[150px]">{entity}</span>
         </div>
       </div>
-      <ArrowRight size={12} className="text-slate-700 group-hover:text-orange-500 transition-colors" />
+      <ArrowRight size={12} className="text-zinc-700 group-hover:text-orange-500 transition-colors" />
     </div>
   );
 }

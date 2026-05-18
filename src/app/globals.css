@@ -6,11 +6,11 @@
     --font-sans: 'Space Grotesk', sans-serif;
     --font-mono: 'JetBrains Mono', monospace;
     
-    --color-background: #080808;
-    --color-glass: rgba(15, 15, 15, 0.8);
-    --color-glass-border: rgba(255, 255, 255, 0.15);
-    --color-accent: #ff6b00;
-    --color-accent-soft: rgba(255, 107, 0, 0.1);
+    --color-background: #09090b;
+    --color-glass: #121215;
+    --color-glass-border: #27272a;
+    --color-accent: #f97316;
+    --color-accent-soft: #18181b;
   }
 }
 
@@ -18,7 +18,7 @@
 @layer base {
   body {
     background-color: var(--color-background);
-    color: #a0a0a0;
+    color: #a1a1aa;
     overflow-x: hidden;
     font-family: var(--font-sans);
   }
@@ -33,18 +33,16 @@
 /* Custom Components */
 @layer components {
   .glass-card {
-    background-color: #121214;
-    border: 1px solid var(--color-glass-border);
-    border-radius: 0.75rem;
+    background-color: #121215;
+    border: 1px solid #27272a;
+    border-radius: 1.5rem;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
   .glass-card:hover {
-    border-color: rgba(255, 107, 0, 0.3);
-    background-color: rgba(255, 107, 0, 0.02);
+    border-color: #f97316;
+    background-color: #18181b;
   }
-
-
 }
 
 /* Custom Utilities */
@@ -53,20 +51,12 @@
     animation: float 6s ease-in-out infinite;
   }
 
-
-
   .data-grid {
-    background-image: linear-gradient(rgba(255, 107, 0, 0.03) 1px, transparent 1px),
-                      linear-gradient(90deg, rgba(255, 107, 0, 0.03) 1px, transparent 1px);
+    background-image: linear-gradient(#18181b 1px, transparent 1px),
+                      linear-gradient(90deg, #18181b 1px, transparent 1px);
     background-size: 60px 60px;
   }
 }
-
-@keyframes gradient {
-  0% { background-position: 0% center; }
-  100% { background-position: 200% center; }
-}
-
 
 @keyframes float {
   0% { transform: translateY(0px); }
@@ -84,10 +74,10 @@
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #252525;
+  background: #27272a;
   border-radius: 9999px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #ff6b00;
+  background: #f97316;
 }

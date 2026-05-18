@@ -11,23 +11,23 @@ function cn(...inputs: ClassValue[]) {
 
 export default function SettingsPage() {
   return (
-    <div className="p-10 space-y-10 min-h-screen relative overflow-y-auto">
+    <div className="p-10 space-y-10 min-h-screen relative overflow-y-auto bg-[#09090b] text-zinc-100 selection:bg-orange-500/30">
       
       {/* Background Decor */}
       <div className="absolute top-0 right-0 p-10 opacity-5 pointer-events-none">
-        <Settings size={300} className="text-indigo-500" />
+        <Settings size={300} className="text-orange-500" />
       </div>
 
-      <div className="flex justify-between items-end z-10 relative max-w-6xl mx-auto w-full">
+      <div className="flex justify-between items-end z-10 relative max-w-6xl mx-auto w-full border-b border-zinc-800 pb-10">
         <div>
           <div className="flex items-center gap-2 mb-2">
-            <Cpu size={14} className="text-indigo-400" />
-            <span className="text-[10px] font-black text-indigo-400 uppercase tracking-[0.4em]">System Parameters</span>
+            <Cpu size={14} className="text-orange-500" />
+            <span className="text-[10px] font-black text-orange-500 uppercase tracking-[0.4em]">System Parameters</span>
           </div>
           <h1 className="text-5xl font-black text-white uppercase tracking-tighter">Configuration</h1>
-          <p className="text-slate-500 mt-2 font-medium">Fine-tune the system processing, API connections, and security settings.</p>
+          <p className="text-zinc-500 mt-2 font-medium">Fine-tune the system processing, API connections, and security settings.</p>
         </div>
-        <button className="px-8 py-4 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl font-black uppercase tracking-widest transition-all flex items-center gap-3 shadow-xl shadow-indigo-500/20 active:scale-95">
+        <button className="px-8 py-4 bg-orange-600 hover:bg-orange-500 text-white rounded-xl font-black uppercase tracking-widest transition-all flex items-center gap-3 shadow-lg shadow-orange-500/20 active:scale-95">
           <Save size={18} /> Commit Changes
         </button>
       </div>
@@ -36,17 +36,17 @@ export default function SettingsPage() {
         
         {/* Navigation Sidebar - 3 Cols */}
         <div className="lg:col-span-3 space-y-3">
-          <SettingNav icon={<Sliders size={18} />} label="PROCESSING_ENGINE" />
+          <SettingNav icon={<Sliders size={18} />} label="PROCESSING_ENGINE" active />
           <SettingNav icon={<Key size={18} />} label="API_CONNECTIONS" />
           <SettingNav icon={<Webhook size={18} />} label="DATA_FLOW" />
           <SettingNav icon={<ShieldCheck size={18} />} label="SECURITY_ROLES" />
           
-          <div className="mt-8 p-6 glass-card border-indigo-500/20 bg-indigo-500/5">
+          <div className="mt-8 p-6 bg-zinc-950 border border-orange-500/20 rounded-2xl bg-orange-500/5 shadow-md">
              <div className="flex items-center gap-2 mb-4">
-                <AlertTriangle size={14} className="text-indigo-400" />
-                <span className="text-[10px] font-black text-indigo-400 uppercase tracking-widest">Admin Status</span>
+                <AlertTriangle size={14} className="text-orange-400" />
+                <span className="text-[10px] font-black text-orange-400 uppercase tracking-widest">Admin Status</span>
              </div>
-             <p className="text-[10px] text-slate-500 font-medium leading-relaxed">
+             <p className="text-[10px] text-zinc-500 font-medium leading-relaxed">
                 You are currently in **ADMINISTRATOR** mode. Changes made here will impact the entire system in real-time.
              </p>
           </div>
@@ -59,10 +59,10 @@ export default function SettingsPage() {
           <motion.section 
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
-            className="glass-card p-8"
+            className="bg-[#121215] border border-zinc-800 p-8 rounded-3xl shadow-xl"
           >
-            <div className="flex items-center gap-3 mb-8 pb-4 border-b border-white/5">
-               <Zap size={20} className="text-indigo-500" />
+            <div className="flex items-center gap-3 mb-8 pb-4 border-b border-zinc-800">
+               <Zap size={20} className="text-orange-500" />
                <h2 className="text-xl font-black text-white uppercase tracking-tighter">Processing Thresholds</h2>
             </div>
             
@@ -71,15 +71,15 @@ export default function SettingsPage() {
                 <div className="flex justify-between items-end">
                   <div className="space-y-1">
                     <label className="text-sm font-black text-white uppercase tracking-tight">Auto-Merge Confidence</label>
-                    <p className="text-[11px] text-slate-500 font-medium max-w-md">Score threshold above which the system bypasses human review and commits the merge.</p>
+                    <p className="text-[11px] text-zinc-500 font-medium max-w-md">Score threshold above which the system bypasses human review and commits the merge.</p>
                   </div>
-                  <span className="text-xl font-mono font-black text-indigo-400 bg-indigo-500/10 px-3 py-1 rounded-lg">80%</span>
+                  <span className="text-xl font-mono font-black text-orange-400 bg-orange-500/10 px-3 py-1 rounded-lg">80%</span>
                 </div>
                 <div className="relative">
                    <div className="absolute inset-0 flex items-center">
-                      <div className="w-full h-1 bg-white/5 rounded-full" />
+                      <div className="w-full h-1 bg-zinc-800 rounded-full" />
                    </div>
-                   <input type="range" min="0" max="100" defaultValue="80" className="relative w-full accent-indigo-500 h-2 bg-transparent appearance-none cursor-pointer" />
+                   <input type="range" min="0" max="100" defaultValue="80" className="relative w-full accent-orange-500 h-2 bg-transparent appearance-none cursor-pointer" />
                 </div>
               </div>
 
@@ -87,15 +87,15 @@ export default function SettingsPage() {
                 <div className="flex justify-between items-end">
                   <div className="space-y-1">
                     <label className="text-sm font-black text-white uppercase tracking-tight">Fuzzy Match Sensitivity</label>
-                    <p className="text-[11px] text-slate-500 font-medium max-w-md">PostgreSQL trigram strictness index. Lower values allow broader matching before AI classification.</p>
+                    <p className="text-[11px] text-zinc-500 font-medium max-w-md">PostgreSQL trigram strictness index. Lower values allow broader matching before AI classification.</p>
                   </div>
-                  <span className="text-xl font-mono font-black text-emerald-400 bg-emerald-500/10 px-3 py-1 rounded-lg">0.5</span>
+                  <span className="text-xl font-mono font-black text-orange-400 bg-orange-500/10 px-3 py-1 rounded-lg">0.5</span>
                 </div>
                 <div className="relative">
                    <div className="absolute inset-0 flex items-center">
-                      <div className="w-full h-1 bg-white/5 rounded-full" />
+                      <div className="w-full h-1 bg-zinc-800 rounded-full" />
                    </div>
-                   <input type="range" min="0" max="1" step="0.1" defaultValue="0.5" className="relative w-full accent-emerald-500 h-2 bg-transparent appearance-none cursor-pointer" />
+                   <input type="range" min="0" max="1" step="0.1" defaultValue="0.5" className="relative w-full accent-orange-500 h-2 bg-transparent appearance-none cursor-pointer" />
                 </div>
               </div>
             </div>
@@ -106,10 +106,10 @@ export default function SettingsPage() {
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.1 }}
-            className="glass-card p-8"
+            className="bg-[#121215] border border-zinc-800 p-8 rounded-3xl shadow-xl"
           >
-            <div className="flex items-center gap-3 mb-8 pb-4 border-b border-white/5">
-               <Fingerprint size={20} className="text-indigo-500" />
+            <div className="flex items-center gap-3 mb-8 pb-4 border-b border-zinc-800">
+               <Fingerprint size={20} className="text-orange-500" />
                <h2 className="text-xl font-black text-white uppercase tracking-tighter">Engine Features</h2>
             </div>
             
@@ -143,26 +143,26 @@ function SettingNav({ icon, label, active = false }: any) {
     <button className={cn(
       "w-full flex items-center gap-4 px-6 py-4 rounded-xl text-xs font-black uppercase tracking-widest transition-all border",
       active 
-        ? "bg-indigo-600/10 text-white border-indigo-500/30" 
-        : "text-slate-500 border-transparent hover:bg-white/5 hover:text-slate-300"
+        ? "bg-orange-500/10 text-white border-orange-500/30 shadow-md" 
+        : "text-zinc-500 border-transparent hover:bg-zinc-900 hover:text-zinc-300"
     )}>
       {icon}
       <span>{label}</span>
-      {active && <motion.div layoutId="nav-dot" className="ml-auto w-1.5 h-1.5 rounded-full bg-indigo-500 shadow-[0_0_8px_#6366f1]" />}
+      {active && <motion.div layoutId="nav-dot" className="ml-auto w-1.5 h-1.5 rounded-full bg-orange-500 shadow-sm" />}
     </button>
   );
 }
 
 function ToggleRow({ title, desc, active }: any) {
   return (
-    <div className="flex items-center justify-between p-4 rounded-xl hover:bg-white/5 transition-colors group">
+    <div className="flex items-center justify-between p-4 rounded-xl hover:bg-zinc-900 transition-colors group">
       <div>
-        <div className="text-sm font-black text-white uppercase tracking-tight group-hover:text-indigo-400 transition-colors">{title}</div>
-        <div className="text-[11px] text-slate-500 font-medium mt-1">{desc}</div>
+        <div className="text-sm font-black text-white uppercase tracking-tight group-hover:text-orange-400 transition-colors">{title}</div>
+        <div className="text-[11px] text-zinc-500 font-medium mt-1">{desc}</div>
       </div>
       <button className={cn(
         "w-12 h-6 rounded-full relative transition-all",
-        active ? "bg-indigo-600 shadow-[0_0_10px_rgba(99,102,241,0.4)]" : "bg-slate-800"
+        active ? "bg-orange-500 shadow-sm" : "bg-zinc-800"
       )}>
         <motion.div 
           animate={{ x: active ? 24 : 4 }}

@@ -9,10 +9,10 @@ export default async function DashboardPage() {
     .from('businesses')
     .select('*', { count: 'exact', head: true });
 
+  // Resolved source fragments are stored in source_records_archive
   const { count: activeRecords } = await supabase
-    .from('source_records')
-    .select('*', { count: 'exact', head: true })
-    .not('business_id', 'is', null);
+    .from('source_records_archive')
+    .select('*', { count: 'exact', head: true });
 
   const { count: pendingReviews } = await supabase
     .from('resolution_events')
@@ -89,7 +89,7 @@ export default async function DashboardPage() {
   return (
     <DashboardClient 
       totalBusinesses={totalBusinesses}
-      activeRecords={activeRecords}
+      activeRecords={activeRecords || 0}
       pendingReviews={pendingReviews}
       recentEvents={recentEvents}
       dirtyRecords={dirtyRecords}

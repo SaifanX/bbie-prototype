@@ -21,17 +21,17 @@ export interface TimelineEvent {
 export default function ForensicTimeline({ events }: { events: TimelineEvent[] }) {
   if (!events || events.length === 0) {
     return (
-      <div className="p-10 text-center border border-dashed border-white/10 rounded-3xl bg-black/20">
-         <Calendar size={48} className="text-slate-700 mx-auto mb-4" />
-         <p className="text-xs font-black text-slate-500 uppercase tracking-widest">No activity events recorded</p>
+      <div className="p-10 text-center border border-dashed border-zinc-800 rounded-3xl bg-zinc-950">
+         <Calendar size={48} className="text-zinc-700 mx-auto mb-4" />
+         <p className="text-xs font-black text-zinc-500 uppercase tracking-widest">No activity events recorded</p>
       </div>
     )
   }
 
   return (
-    <div className="relative pl-8 space-y-10">
+    <div className="relative pl-8 space-y-10 selection:bg-orange-500/30">
       {/* The Line */}
-      <div className="absolute left-3 top-2 bottom-2 w-px bg-gradient-to-b from-orange-500/50 via-slate-800 to-transparent" />
+      <div className="absolute left-3 top-2 bottom-2 w-px bg-zinc-800" />
 
       {events.map((event, idx) => (
         <motion.div 
@@ -43,12 +43,12 @@ export default function ForensicTimeline({ events }: { events: TimelineEvent[] }
         >
           {/* The Dot */}
           <div className={cn(
-            "absolute -left-[25px] w-4 h-4 rounded-full border-4 border-black z-10 transition-transform group-hover:scale-125 shadow-[0_0_15px_rgba(255,107,0,0.3)]",
+            "absolute -left-[25px] w-4 h-4 rounded-full border-4 border-black z-10 transition-transform group-hover:scale-125",
             event.severity === 'high' ? "bg-red-500" : 
             event.severity === 'medium' ? "bg-orange-500" : "bg-orange-600"
           )} />
 
-          <div className="glass-card bg-white/[0.02] border-white/5 p-6 hover:bg-orange-500/[0.04] transition-all hover:border-orange-500/20">
+          <div className="bg-zinc-950 border border-zinc-800 p-6 rounded-2xl hover:bg-orange-500/[0.04] transition-all hover:border-orange-500/20 shadow-md">
             <div className="flex justify-between items-start mb-4">
                <div className="flex items-center gap-3">
                   <div className={cn(
@@ -61,17 +61,17 @@ export default function ForensicTimeline({ events }: { events: TimelineEvent[] }
                   </div>
                   <div>
                     <h4 className="text-xs font-black text-white uppercase tracking-widest italic">{event.event_type.replace('_', ' ')}</h4>
-                    <span className="text-[10px] font-mono text-slate-500 uppercase tracking-tighter">{event.department}</span>
+                    <span className="text-[10px] font-mono text-zinc-500 uppercase tracking-tighter">{event.department}</span>
                   </div>
                </div>
                <div className="text-right">
-                  <div className="text-[10px] font-black text-slate-400 uppercase tracking-tighter">
+                  <div className="text-[10px] font-black text-zinc-400 uppercase tracking-tighter">
                     {new Date(event.event_date).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}
                   </div>
-                  <span className="text-[8px] font-mono text-slate-600 block">{new Date(event.event_date).toLocaleTimeString()}</span>
+                  <span className="text-[8px] font-mono text-zinc-600 block">{new Date(event.event_date).toLocaleTimeString()}</span>
                </div>
             </div>
-            <p className="text-xs text-slate-400 leading-relaxed font-medium">
+            <p className="text-xs text-zinc-400 leading-relaxed font-medium">
               "{event.description}"
             </p>
           </div>

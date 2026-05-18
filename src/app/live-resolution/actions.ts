@@ -4,6 +4,7 @@ import { createClient } from '@supabase/supabase-js';
 import { processRecord, ResolutionResult } from '@/utils/engine';
 import { supabase } from '@/utils/supabase';
 import { restoreSourceRecord } from '@/utils/archive';
+import { revalidatePath } from 'next/cache';
 
 const supabaseAdmin = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -15,7 +16,12 @@ const supabaseAdmin = createClient(
  */
 export async function runResolution(recordId: string): Promise<ResolutionResult> {
   try {
-    return await processRecord(recordId);
+    const result = await processRecord(recordId);
+    revalidatePath('/');
+    revalidatePath('/search');
+    revalidatePath('/dashboard');
+    revalidatePath('/review');
+    return result;
   } catch (error) {
     console.error(`Resolution Failed for ${recordId}:`, error);
     throw new Error("Engine process failure");
@@ -70,6 +76,10 @@ export async function revertRecord(sourceRecordId: string, businessId: string | 
     .delete()
     .eq('source_record_id', sourceRecordId);
 
+  revalidatePath('/');
+  revalidatePath('/search');
+  revalidatePath('/dashboard');
+  revalidatePath('/review');
   return { success: true };
 }
 

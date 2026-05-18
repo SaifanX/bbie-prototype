@@ -15,9 +15,9 @@ interface Event {
 export default function ActivityTimeline({ events }: { events: Event[] }) {
   if (!events || events.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center p-12 glass-card bg-white/[0.02] border-white/5">
-        <Calendar size={48} className="text-slate-700 mb-4" />
-        <p className="text-slate-500 font-medium">No activity events detected for this period.</p>
+      <div className="flex flex-col items-center justify-center p-12 bg-zinc-950 border border-zinc-800 rounded-2xl">
+        <Calendar size={48} className="text-zinc-700 mb-4" />
+        <p className="text-zinc-500 font-medium">No activity events detected for this period.</p>
       </div>
     )
   }
@@ -27,7 +27,7 @@ export default function ActivityTimeline({ events }: { events: Event[] }) {
   );
 
   return (
-    <div className="relative pl-8 space-y-8 before:absolute before:left-[11px] before:top-2 before:bottom-2 before:w-[2px] before:bg-gradient-to-b before:from-orange-500 before:via-orange-500/20 before:to-transparent">
+    <div className="relative pl-8 space-y-8 before:absolute before:left-[11px] before:top-2 before:bottom-2 before:w-[2px] before:bg-zinc-800 selection:bg-orange-500/30">
       {sortedEvents.map((event, idx) => (
         <motion.div 
           key={event.id}
@@ -41,7 +41,7 @@ export default function ActivityTimeline({ events }: { events: Event[] }) {
              <EventIcon type={event.event_type} />
           </div>
 
-          <div className="glass-card bg-white/[0.03] border-white/5 p-5 hover:bg-orange-500/[0.04] transition-all group">
+          <div className="bg-zinc-950 border border-zinc-800 p-5 rounded-2xl hover:bg-orange-500/[0.04] transition-all group shadow-md">
             <div className="flex justify-between items-start mb-2">
               <div className="flex flex-col">
                  <span className="text-[10px] font-black text-orange-400 uppercase tracking-widest mb-1">{event.event_type.replace('_', ' ')}</span>
@@ -49,18 +49,18 @@ export default function ActivityTimeline({ events }: { events: Event[] }) {
                    {event.department.replace('_', ' ')} Update
                  </h4>
               </div>
-              <span className="text-[10px] font-mono text-slate-500 bg-white/5 px-2 py-1 rounded border border-white/5" suppressHydrationWarning>
+              <span className="text-[10px] font-mono text-zinc-500 bg-zinc-900 px-2 py-1 rounded border border-zinc-800" suppressHydrationWarning>
                 {new Date(event.event_date).toLocaleDateString('en-GB')}
               </span>
             </div>
             
-            <p className="text-xs text-slate-400 leading-relaxed font-medium">
+            <p className="text-xs text-zinc-400 leading-relaxed font-medium">
               {event.metadata?.description || `Activity detected in ${event.department} systems.`}
             </p>
 
             {event.metadata?.confidence && (
               <div className="mt-4 flex items-center gap-2">
-                <div className="h-1 flex-1 bg-white/5 rounded-full overflow-hidden">
+                <div className="h-1 flex-1 bg-zinc-900 rounded-full overflow-hidden">
                    <div className="h-full bg-orange-500" style={{ width: `${event.metadata.confidence * 100}%` }} />
                 </div>
                 <span className="text-[9px] font-black text-orange-500 uppercase tracking-widest">{Math.round(event.metadata.confidence * 100)}% INTEGRITY</span>
