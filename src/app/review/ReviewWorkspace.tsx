@@ -26,6 +26,9 @@ type PendingEvent = {
     pincode: string;
     gstin: string;
     pan: string;
+    original_kannada_name?: string;
+    original_kannada_address?: string;
+    translation_method?: string;
   };
   target: {
     id: string;

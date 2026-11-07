@@ -73,7 +73,7 @@ export async function POST(request: NextRequest) {
     const limit = Math.min(records.length, 50);
     
     for (let i = 0; i < limit; i++) {
-      const row = records[i];
+      const row = records[i] as Record<string, any>;
       
       // Apply column mapping if provided
       let entity_name = row[columnMapping.entity_name || 'entity_name'] || row['name'] || row['Name'] || row['business_name'] || '';
