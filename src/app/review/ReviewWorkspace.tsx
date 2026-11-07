@@ -2,7 +2,7 @@
 
 import { useState, useTransition, useEffect, useCallback } from 'react'
 import { motion, AnimatePresence, LayoutGroup } from 'framer-motion'
-import { CheckCircle2, XCircle, FileText, Building2, Fingerprint, Loader2, ShieldCheck, Zap, AlertTriangle, ArrowRight, Info, ShieldAlert, Cpu, Command, Plus } from 'lucide-react'
+import { CheckCircle2, XCircle, FileText, Building2, Fingerprint, Loader2, ShieldCheck, Zap, AlertTriangle, ArrowRight, Info, ShieldAlert, Cpu, Command, Plus, Sparkles } from 'lucide-react'
 import { approveMerge, createNewEntity, flagFraud } from './actions'
 import { useRouter } from 'next/navigation'
 import { clsx, type ClassValue } from 'clsx'
@@ -85,7 +85,10 @@ export default function ReviewWorkspace({
           address: u.raw_data?.address || 'N/A',
           pincode: u.pincode || '',
           gstin: u.raw_data?.gstin || 'N/A',
-          pan: u.raw_data?.pan || 'N/A'
+          pan: u.raw_data?.pan || 'N/A',
+          original_kannada_name: u.raw_data?.original_kannada_name,
+          original_kannada_address: u.raw_data?.original_kannada_address,
+          translation_method: u.raw_data?.translation_method
         },
         target: null,
         matched_fields: [] as string[]
@@ -340,13 +343,23 @@ export default function ReviewWorkspace({
                   </div>
 
                   <div className="space-y-8 relative z-10 flex-1">
-                     <DataField 
-                        label="Entity Name (Dirty)" 
-                        value={selectedEvent.source.entity_name} 
-                        compareValue={selectedEvent.target?.primary_name}
-                        isMismatched={!selectedEvent.matched_fields.includes('Name')}
-                        color="amber"
-                     />
+                     <div className="flex flex-col gap-2">
+                       <DataField 
+                          label="Entity Name (Dirty)" 
+                          value={selectedEvent.source.entity_name} 
+                          compareValue={selectedEvent.target?.primary_name}
+                          isMismatched={!selectedEvent.matched_fields.includes('Name')}
+                          color="amber"
+                       />
+                       {selectedEvent.source.original_kannada_name && (
+                         <div className="flex items-center gap-2 mt-1.5 px-3 py-1.5 bg-orange-500/10 border border-orange-500/20 rounded-xl max-w-fit">
+                           <Sparkles size={11} className="text-orange-500" />
+                           <span className="text-[9px] font-black text-orange-500 uppercase tracking-widest">
+                             Kannada: {selectedEvent.source.original_kannada_name} (Normalized via {selectedEvent.source.translation_method || 'AI'})
+                           </span>
+                         </div>
+                       )}
+                     </div>
                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 sm:gap-8">
                         <DataField label="Department Source" value={selectedEvent.source.department.replace('_', ' ')} color="amber" />
                         <DataField label="Source ID" value={selectedEvent.source.id.split('-')[1]} color="amber" mono />
@@ -355,13 +368,23 @@ export default function ReviewWorkspace({
                         <DataField label="GSTIN (Signal)" value={selectedEvent.source.gstin} color="amber" mono />
                         <DataField label="PAN (Signal)" value={selectedEvent.source.pan} color="amber" mono />
                      </div>
-                     <DataField 
-                        label="Reported Address" 
-                        value={selectedEvent.source.address} 
-                        compareValue={selectedEvent.target?.address}
-                        isMismatched={!selectedEvent.matched_fields.includes('Address')}
-                        color="amber"
-                     />
+                     <div className="flex flex-col gap-2">
+                       <DataField 
+                          label="Reported Address" 
+                          value={selectedEvent.source.address} 
+                          compareValue={selectedEvent.target?.address}
+                          isMismatched={!selectedEvent.matched_fields.includes('Address')}
+                          color="amber"
+                       />
+                       {selectedEvent.source.original_kannada_address && (
+                         <div className="flex items-center gap-2 mt-1.5 px-3 py-1.5 bg-orange-500/10 border border-orange-500/20 rounded-xl max-w-fit">
+                           <Sparkles size={11} className="text-orange-500" />
+                           <span className="text-[9px] font-black text-orange-500 uppercase tracking-widest">
+                             Kannada Address: {selectedEvent.source.original_kannada_address}
+                           </span>
+                         </div>
+                       )}
+                     </div>
                   </div>
                </div>
 

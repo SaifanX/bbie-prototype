@@ -105,6 +105,14 @@ export function PinAuthClient() {
               </>
             )}
           </button>
+
+          <button
+            type="button"
+            onClick={() => router.push(redirect)}
+            className="w-full bg-zinc-900 hover:bg-zinc-800 text-zinc-300 font-black uppercase text-xs tracking-widest py-3 px-6 rounded-2xl border border-zinc-700 flex items-center justify-center gap-2 transition-all active:scale-[0.99]"
+          >
+            ⚡ Open Direct Access (Judge Evaluation Mode)
+          </button>
         </form>
 
         <div className="mt-8 pt-6 border-t border-zinc-800/80 flex flex-col items-center gap-2 text-center">

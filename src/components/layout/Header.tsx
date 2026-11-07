@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { Bell, Search, LogOut, User, Settings, AlertTriangle, Shield, Zap, Menu } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -63,6 +64,14 @@ export function Header({ onOpenSidebar = () => {} }: { onOpenSidebar?: () => voi
       </div>
 
       <div className="flex items-center gap-4 sm:gap-6 shrink-0 ml-4">
+        {/* Judge Demo Quick Launcher */}
+        <Link 
+          href="/live-resolution?judgeDemo=true"
+          className="flex items-center gap-2 px-3.5 py-1.5 bg-gradient-to-r from-orange-500/20 via-amber-500/20 to-orange-500/20 hover:from-orange-500 hover:to-amber-500 text-orange-400 hover:text-zinc-950 border border-orange-500/40 rounded-full text-[11px] font-black uppercase tracking-wider transition-all shadow-md active:scale-95 group animate-pulse"
+        >
+          <Zap size={13} className="text-orange-500 group-hover:text-zinc-950 fill-current" />
+          <span>⚡ Judge Demo</span>
+        </Link>
         {/* Clock HUD */}
         <div className="text-right hidden sm:block min-w-[100px]">
           {mounted ? (

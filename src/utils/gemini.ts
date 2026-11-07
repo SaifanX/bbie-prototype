@@ -1,5 +1,6 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { maskPII } from "./privacy";
+import { translateKannadaToEnglishOffline } from "./normalize";
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || "");
 
@@ -119,6 +120,31 @@ export async function generateActivityVerdict(status: string, eventSummary: stri
   } catch (error) {
     console.warn("⚠️ Gemini Activity Verdict API timeout/error. Utilizing rigged cinematic activity fallback.");
     return RIGGED_ACTIVITY_VERDICTS[Math.floor(Math.random() * RIGGED_ACTIVITY_VERDICTS.length)];
+  }
+}
+
+/**
+ * Translates Kannada business names or addresses to English using Gemini.
+ * Backed by a 2.5-second timeout and offline dictionary/transliteration fallback.
+ */
+export async function translateKannadaToEnglish(text: string): Promise<string> {
+  if (!text) return '';
+  try {
+    const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+    const prompt = `Translate this Kannada business name or address to English. Return ONLY the translated English name/address, nothing else. No explanation, no punctuation, just the translation.
+    Input: "${text}"`;
+
+    // Race between real API call and a 2.5-second timeout
+    const result = await Promise.race([
+      model.generateContent(prompt),
+      new Promise((_, reject) => setTimeout(() => reject(new Error("Demo Timeout")), 2500))
+    ]) as any;
+
+    const translated = result.response.text().trim();
+    return translated || translateKannadaToEnglishOffline(text);
+  } catch (error) {
+    console.warn("⚠️ Gemini Translation API timeout/error. Utilizing offline translation mapping fallback.");
+    return translateKannadaToEnglishOffline(text);
   }
 }
 

@@ -1,7 +1,8 @@
 import { createClient } from '@supabase/supabase-js';
-import { generateEmbedding, generateMatchVerdict } from './gemini';
+import { generateEmbedding, generateMatchVerdict, translateKannadaToEnglish } from './gemini';
 import { calculateMatch } from './matcher';
 import { archiveSourceRecord } from './archive';
+import { hasKannada } from './normalize';
 
 // Read-only anon client for SELECT queries
 import { supabase } from './supabase';
@@ -9,7 +10,7 @@ import { supabase } from './supabase';
 // Admin client for all WRITE operations (bypasses RLS)
 const supabaseAdmin = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
+  process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'placeholder'
 );
 
 async function logStep(message: string, stage: string, severity: 'info' | 'warn' | 'error' = 'info') {
@@ -62,6 +63,48 @@ export async function processRecord(recordId: string): Promise<ResolutionResult>
     throw new Error(`Record ${recordId} not found`);
   }
 
+  // Multilingual Normalization (Kannada -> English)
+  let entityName = record.entity_name;
+  let addressVal = record.address || '';
+  let nameTranslated = false;
+  let addrTranslated = false;
+
+  if (hasKannada(entityName)) {
+    const original = entityName;
+    entityName = await translateKannadaToEnglish(original);
+    nameTranslated = true;
+    await logStep(`Translated Kannada entity name "${original}" to "${entityName}"`, 'normalization');
+  }
+
+  if (hasKannada(addressVal)) {
+    const original = addressVal;
+    addressVal = await translateKannadaToEnglish(original);
+    addrTranslated = true;
+    await logStep(`Translated Kannada address "${original}" to "${addressVal}"`, 'normalization');
+  }
+
+  if (nameTranslated || addrTranslated) {
+    const updatedRawData = {
+      ...(record.raw_data || {}),
+      original_kannada_name: nameTranslated ? record.entity_name : undefined,
+      original_kannada_address: addrTranslated ? record.address : undefined,
+      translation_method: 'Gemini 2.5 Flash'
+    };
+
+    await supabaseAdmin
+      .from('source_records')
+      .update({
+        entity_name: entityName,
+        address: addressVal,
+        raw_data: updatedRawData
+      })
+      .eq('id', recordId);
+
+    record.entity_name = entityName;
+    record.address = addressVal;
+    record.raw_data = updatedRawData;
+  }
+
   await logStep(`Ingesting record: ${record.entity_name} [${record.department}]`, 'ingestion');
 
   // --- TIER 1: DIRECT IDENTIFIER MATCH ---
@@ -102,7 +145,7 @@ export async function processRecord(recordId: string): Promise<ResolutionResult>
   let highestScore = 0;
 
   try {
-    const denseString = `${record.entity_name} | ${record.address || ''} | ${record.pincode || ''}`;
+    const denseString = `${record.entity_name} | ${record.address || ''} | ${record.pincode || record.raw_data?.pincode || ''}`;
     const embedding = await generateEmbedding(denseString);
 
     const { data: matches } = await supabase.rpc('match_businesses', {
@@ -122,7 +165,7 @@ export async function processRecord(recordId: string): Promise<ResolutionResult>
       if (candidateBusinesses) {
         for (const business of candidateBusinesses) {
           const result = calculateMatch(
-            { name: record.entity_name, address: record.address, pan: record.pan, gstin: record.gstin, pincode: record.pincode },
+            { name: record.entity_name, address: record.address, pan: record.pan, gstin: record.gstin, pincode: record.pincode || record.raw_data?.pincode },
             { name: business.name, address: business.address, pan: business.pan, gstin: business.gstin, pincode: business.pincode }
           );
           if (result.score > highestScore) {
@@ -191,7 +234,7 @@ export async function processRecord(recordId: string): Promise<ResolutionResult>
         ubid,
         name: record.entity_name,
         address: record.address || record.raw_data?.address || 'Address Pending',
-        pincode: record.pincode || '',
+        pincode: record.pincode || record.raw_data?.pincode || '',
         pan: record.pan || null,
         gstin: record.gstin || null,
         status: 'active',

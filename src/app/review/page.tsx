@@ -36,7 +36,10 @@ export default async function HumanReviewPage() {
         address: source.address || source.raw_data?.address || 'Address Pending',
         pincode: source.pincode || '',
         gstin: source.gstin || source.raw_data?.gstin || 'N/A',
-        pan: source.pan || source.raw_data?.pan || 'N/A'
+        pan: source.pan || source.raw_data?.pan || 'N/A',
+        original_kannada_name: source.raw_data?.original_kannada_name,
+        original_kannada_address: source.raw_data?.original_kannada_address,
+        translation_method: source.raw_data?.translation_method
       },
       target: business ? {
         id: business.id,

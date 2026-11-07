@@ -5,7 +5,7 @@ import { randomUUID } from 'crypto';
 dotenv.config({ path: '.env.local' });
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
+const supabaseKey = (process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY)!;
 const supabase = createClient(supabaseUrl, supabaseKey);
 
 const SURNAMES = ["Gowda", "Shetty", "Murthy", "Rao", "Singh", "Gupta", "Agarwal", "Iyer", "Menon", "Patil", "Deshmukh", "Reddy", "Naidu", "Chauhan", "Mehta", "Shah", "Kulkarni", "Joshi", "Bose", "Chatterjee"];
@@ -16,6 +16,79 @@ const AREAS = ["Peenya", "BTM Layout", "Yeshwanthpur", "Whitefield", "Electronic
 const genPAN = () => `ABCDE${Math.floor(1000 + Math.random() * 9000)}F`;
 const genGSTIN = (pan: string) => `29${pan}1Z5`;
 const DEPARTMENTS = ["Factories_&_Boilers", "Labour_Department", "Shops_&_Establishments", "Commercial_Taxes"];
+
+const KANNADA_TRANSLATION_MAP: Record<string, string> = {
+  "Gowda": "ಗೌಡ",
+  "Shetty": "ಶೆಟ್ಟಿ",
+  "Murthy": "ಮೂರ್ತಿ",
+  "Rao": "ರಾವ್",
+  "Singh": "ಸಿಂಗ್",
+  "Gupta": "ಗುಪ್ತಾ",
+  "Agarwal": "ಅಗರ್ವಾಲ್",
+  "Iyer": "ಅಯ್ಯರ್",
+  "Menon": "ಮೆನನ್",
+  "Patil": "ಪಾಟೀಲ್",
+  "Deshmukh": "ದೇಶ್‌ಮುಖ್",
+  "Reddy": "ರೆಡ್ಡಿ",
+  "Naidu": "ನಾಯ್ಡು",
+  "Chauhan": "ಚೌಹಾಣ್",
+  "Mehta": "ಮೆಹ್ತಾ",
+  "Shah": "ಶಾ",
+  "Kulkarni": "ಕುಲಕರ್ಣಿ",
+  "Joshi": "ಜೋಶಿ",
+  "Bose": "ಬೋಸ್",
+  "Chatterjee": "ಚಟರ್ಜಿ",
+  "Enterprises": "ಎಂಟರ್‌ಪ್ರೈಸಸ್",
+  "Traders": "ಟ್ರೇಡರ್ಸ್",
+  "Solutions": "ಸೊಲ್ಯೂಷನ್ಸ್",
+  "Industries": "ಇಂಡಸ್ಟ್ರೀಸ್",
+  "Logistics": "ಲಾಜಿಸ್ಟಿಕ್ಸ್",
+  "Ventures": "ವೆಂಚರ್ಸ್",
+  "Agro": "ಆಗ್ರೋ",
+  "Infratech": "ಇನ್ಫ್ರಾಟೆಕ್",
+  "Digital": "ಡಿಜಿಟಲ್",
+  "Systems": "ಸಿಸ್ಟಮ್ಸ್",
+  "Manufacturing": "ಮ್ಯಾನುಫ್ಯಾಕ್ಚರಿಂಗ್",
+  "Textiles": "ಟೆಕ್ಸ್‌ಟೈಲ್ಸ್",
+  "Associates": "ಅಸೋಸಿಯೇಟ್ಸ್",
+  "Group": "ಗ್ರೂಪ್",
+  "Agency": "ಏಜೆನ್ಸಿ",
+  "Works": "ವರ್ಕ್ಸ್",
+  "Corporation": "ಕಾರ್ಪೊರೇಷನ್",
+  "Engineering": "ಇಂಜಿನಿಯರಿಂಗ್",
+  "Consultancy": "ಕನ್ಸಲ್ಟೆನ್ಸಿ",
+  "Global": "ಗ್ಲೋಬಲ್",
+  "Peenya": "ಪೀಣ್ಯ",
+  "BTM Layout": "ಬಿಟಿಎಂ ಲೇಔಟ್",
+  "Yeshwanthpur": "ಯಶವಂತಪುರ",
+  "Whitefield": "ವೈಟ್‌ಫೀಲ್ಡ್",
+  "Electronic City": "ಎಲೆಕ್ಟ್ರಾನಿಕ್ ಸಿಟಿ",
+  "Rajajinagar": "ರಾಜಾಜಿನಗರ",
+  "Jayanagar": "ಜಯನಗರ",
+  "Koramangala": "ಕೋರಮಂಗಲ",
+  "Indiranagar": "ಇಂದಿರಾನಗರ",
+  "Malleshwaram": "ಮಲ್ಲೇಶ್ವರಂ",
+  "Bommasandra": "ಬೊಮ್ಮಸಂದ್ರ",
+  "HSR Layout": "ಎಚ್‌ಎಸ್‌ಆರ್ ಲೇಔಟ್",
+  "Bangalore": "ಬೆಂಗಳೂರು",
+  "Bengaluru": "ಬೆಂಗಳೂರು",
+  "& Sons": "ಮತ್ತು ಪುತ್ರರು",
+  "&": "ಮತ್ತು",
+  "and": "ಮತ್ತು",
+  "Sons": "ಪುತ್ರರು",
+  "Pvt Ltd": "ಪ್ರೈವೇಟ್ ಲಿಮಿಟೆಡ್",
+  "Pvt": "ಪ್ರೈವೇಟ್",
+  "Ltd": "ಲಿಮಿಟೆಡ್"
+};
+
+function translateToKannadaOffline(text: string): string {
+  let result = text;
+  Object.entries(KANNADA_TRANSLATION_MAP).forEach(([eng, kan]) => {
+    const regex = new RegExp(`\\b${eng}\\b`, 'gi');
+    result = result.replace(regex, kan);
+  });
+  return result;
+}
 
 function sparseMask(text: string): string {
   return text.split(' ').map(word => {
@@ -31,7 +104,11 @@ async function seedData() {
   await supabase.from('source_records').delete().neq('id', '00000000-0000-0000-0000-000000000000');
   await supabase.from('resolution_events').delete().neq('id', '00000000-0000-0000-0000-000000000000');
   await supabase.from('activity_events').delete().neq('id', '00000000-0000-0000-0000-000000000000');
-  await supabase.from('system_logs').delete().neq('id', '00000000-0000-0000-0000-000000000000');
+  await supabase.from('system_logs').delete().neq('stage', 'PIN_CONFIG');
+  const { data: pinCfg } = await supabase.from('system_logs').select('id').eq('stage', 'PIN_CONFIG').limit(1);
+  if (!pinCfg || pinCfg.length === 0) {
+    await supabase.from('system_logs').insert({ stage: 'PIN_CONFIG', message: 'Chess@ble', severity: 'info' });
+  }
 
   console.log("🌱 Generating 100 UNIQUE realistic business identities...");
   
@@ -73,6 +150,9 @@ async function seedData() {
 
   for (const seed of goldenSeeds) {
     const fragmentCount = 3;
+    // Determine if this seed should generate a Kannada fragment (approx ~30% of seeds)
+    const shouldBeKannada = (seed.pan.charCodeAt(5) % 3 === 0);
+
     for (let f = 0; f < fragmentCount; f++) {
       const dept = DEPARTMENTS[f % DEPARTMENTS.length];
       let entityName = seed.name;
@@ -92,6 +172,14 @@ async function seedData() {
           .replace(" & Sons ", " & S ");
       }
       
+      let addressVal = seed.address + (f === 1 ? `, ${seed.pincode}` : "");
+
+      // Translate third fragment (f === 2) to Kannada if matched
+      if (shouldBeKannada && f === 2) {
+        entityName = translateToKannadaOffline(entityName);
+        addressVal = translateToKannadaOffline(addressVal);
+      }
+
       const recordId = randomUUID();
       sourceRecords.push({
         id: recordId,
@@ -100,7 +188,7 @@ async function seedData() {
         source_id: `SRC-${f}-${seed.pan || 'NA'}`,
         pan: f === 0 ? seed.pan : (Math.random() > 0.4 ? seed.pan : null),
         gstin: f === 0 ? seed.gstin : (Math.random() > 0.4 ? seed.gstin : null),
-        address: seed.address + (f === 1 ? `, ${seed.pincode}` : ""),
+        address: addressVal,
         resolved: false,
         raw_data: {
           original_name: seed.name,
@@ -109,7 +197,8 @@ async function seedData() {
           gstin: seed.gstin,
           address: seed.address,
           pincode: seed.pincode,
-          sector: seed.sector
+          sector: seed.sector,
+          language: shouldBeKannada && f === 2 ? 'Kannada' : 'English'
         }
       });
 

@@ -2,12 +2,13 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Home, Search, Activity, Users, Settings, Database, Cpu, Fingerprint } from 'lucide-react';
+import { Home, Search, Activity, Users, Settings, Database, Cpu, Fingerprint, Upload, Zap } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { cn } from '@/utils/cn';
 
 const navItems = [
   { href: '/dashboard', icon: Home, label: 'Governance Hub' },
+  { href: '/dashboard/ingest', icon: Upload, label: 'Data Ingestion' },
   { href: '/live-resolution', icon: Activity, label: 'Live Resolution' },
   { href: '/search', icon: Search, label: 'Registry Search' },
   { href: '/intelligence', icon: Database, label: 'Intelligence Hub' },
@@ -70,6 +71,18 @@ export function Sidebar({ isOpen = false, onClose = () => {} }: { isOpen?: boole
                 </Link>
               );
             })}
+          </div>
+
+          {/* Quick Launch Judge Demo */}
+          <div className="px-3 py-2">
+            <Link 
+              href="/live-resolution?judgeDemo=true" 
+              onClick={onClose}
+              className="flex items-center gap-2.5 px-4 py-3 rounded-2xl bg-gradient-to-r from-orange-500/15 via-amber-500/15 to-orange-500/15 border border-orange-500/40 text-orange-400 hover:text-zinc-950 hover:from-orange-500 hover:to-amber-500 transition-all font-black text-[11px] uppercase tracking-wider group shadow-lg shadow-orange-500/10 active:scale-95"
+            >
+              <Zap size={15} className="text-orange-500 group-hover:text-zinc-950 fill-current transition-colors animate-pulse" />
+              <span>⚡ Judge Evaluation Demo</span>
+            </Link>
           </div>
 
           <div className="p-4 mt-auto">

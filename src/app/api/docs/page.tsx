@@ -2,11 +2,57 @@
 
 import { motion } from 'framer-motion';
 import { Book, Shield, Code, ArrowRight, CheckCircle2, Globe, Database, Server, Key, Lock, Search, FileText, ChevronRight, Cpu, Terminal, AlertTriangle, FileCode, Layers, HelpCircle, UserCheck } from 'lucide-react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { useState } from 'react';
 
 export default function APIDocsPage() {
   const [activeTab, setActiveTab] = useState<'curl' | 'python' | 'typescript' | 'go'>('curl');
+  const [activeSection, setActiveSection] = useState<string>('overview');
+
+  useEffect(() => {
+    const sections = [
+      'overview',
+      'architecture',
+      'auth',
+      'rate-limits',
+      'ingest-api',
+      'ingest-csv-api',
+      'resolve-api',
+      'dossier-api',
+      'arbitration-api',
+      'sdks',
+      'errors',
+      'safeguards',
+      'compliance',
+      'onboarding'
+    ];
+
+    const observerOptions = {
+      root: null,
+      rootMargin: '-20% 0px -60% 0px',
+      threshold: 0
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          setActiveSection(entry.target.id);
+        }
+      });
+    }, observerOptions);
+
+    sections.forEach((id) => {
+      const element = document.getElementById(id);
+      if (element) observer.observe(element);
+    });
+
+    return () => {
+      sections.forEach((id) => {
+        const element = document.getElementById(id);
+        if (element) observer.unobserve(element);
+      });
+    };
+  }, []);
 
   const scrollToSection = (id: string) => {
     const element = document.getElementById(id);
@@ -25,7 +71,7 @@ export default function APIDocsPage() {
   return (
     <div className="min-h-screen bg-[#09090b] text-zinc-100 font-sans selection:bg-orange-500/30">
       
-      <nav className="relative z-10 p-8 border-b border-zinc-800 bg-[#09090b] sticky top-0">
+      <nav className="sticky top-0 z-50 p-8 border-b border-zinc-800 bg-[#09090b]">
         <div className="max-w-7xl mx-auto flex justify-between items-center">
           <Link href="/api" className="flex items-center gap-3 group">
             <div className="w-10 h-10 bg-orange-500 rounded-xl flex items-center justify-center group-hover:scale-105 transition-transform">
@@ -57,10 +103,10 @@ export default function APIDocsPage() {
                    <Layers size={12} className="text-orange-500" /> Core Concepts
                  </h4>
                  <div className="space-y-1">
-                    <SidebarLink label="Executive Overview" onClick={() => scrollToSection('overview')} active />
-                    <SidebarLink label="Architectural Vision" onClick={() => scrollToSection('architecture')} />
-                    <SidebarLink label="Authentication & Security" onClick={() => scrollToSection('auth')} />
-                    <SidebarLink label="Rate Limits & Tiers" onClick={() => scrollToSection('rate-limits')} />
+                    <SidebarLink label="Executive Overview" onClick={() => scrollToSection('overview')} active={activeSection === 'overview'} />
+                    <SidebarLink label="Architectural Vision" onClick={() => scrollToSection('architecture')} active={activeSection === 'architecture'} />
+                    <SidebarLink label="Authentication & Security" onClick={() => scrollToSection('auth')} active={activeSection === 'auth'} />
+                    <SidebarLink label="Rate Limits & Tiers" onClick={() => scrollToSection('rate-limits')} active={activeSection === 'rate-limits'} />
                  </div>
               </div>
 
@@ -69,9 +115,11 @@ export default function APIDocsPage() {
                    <Code size={12} className="text-orange-500" /> REST API Endpoints
                  </h4>
                  <div className="space-y-1">
-                    <SidebarLink label="POST /v1/resolve" onClick={() => scrollToSection('resolve-api')} />
-                    <SidebarLink label="GET /v1/business/:ubid" onClick={() => scrollToSection('dossier-api')} />
-                    <SidebarLink label="POST /v1/arbitration" onClick={() => scrollToSection('arbitration-api')} />
+                     <SidebarLink label="POST /v1/ingest" onClick={() => scrollToSection('ingest-api')} active={activeSection === 'ingest-api'} />
+                     <SidebarLink label="POST /v1/ingest/csv" onClick={() => scrollToSection('ingest-csv-api')} active={activeSection === 'ingest-csv-api'} />
+                     <SidebarLink label="POST /v1/resolve" onClick={() => scrollToSection('resolve-api')} active={activeSection === 'resolve-api'} />
+                     <SidebarLink label="GET /v1/business/:ubid" onClick={() => scrollToSection('dossier-api')} active={activeSection === 'dossier-api'} />
+                     <SidebarLink label="POST /v1/arbitration" onClick={() => scrollToSection('arbitration-api')} active={activeSection === 'arbitration-api'} />
                  </div>
               </div>
 
@@ -80,8 +128,8 @@ export default function APIDocsPage() {
                    <FileCode size={12} className="text-orange-500" /> Client SDKs & Code
                  </h4>
                  <div className="space-y-1">
-                    <SidebarLink label="Multi-Language SDKs" onClick={() => scrollToSection('sdks')} />
-                    <SidebarLink label="Error Codes & Matrix" onClick={() => scrollToSection('errors')} />
+                    <SidebarLink label="Multi-Language SDKs" onClick={() => scrollToSection('sdks')} active={activeSection === 'sdks'} />
+                    <SidebarLink label="Error Codes & Matrix" onClick={() => scrollToSection('errors')} active={activeSection === 'errors'} />
                  </div>
               </div>
 
@@ -90,9 +138,9 @@ export default function APIDocsPage() {
                    <Shield size={12} className="text-orange-500" /> Governance & Pilot
                  </h4>
                  <div className="space-y-1">
-                    <SidebarLink label="Sovereignty Shield" onClick={() => scrollToSection('safeguards')} />
-                    <SidebarLink label="DPDP Act Compliance" onClick={() => scrollToSection('compliance')} />
-                    <SidebarLink label="Pilot Onboarding Checklist" onClick={() => scrollToSection('onboarding')} />
+                    <SidebarLink label="Sovereignty Shield" onClick={() => scrollToSection('safeguards')} active={activeSection === 'safeguards'} />
+                    <SidebarLink label="DPDP Act Compliance" onClick={() => scrollToSection('compliance')} active={activeSection === 'compliance'} />
+                    <SidebarLink label="Pilot Onboarding Checklist" onClick={() => scrollToSection('onboarding')} active={activeSection === 'onboarding'} />
                  </div>
               </div>
            </div>
@@ -273,6 +321,93 @@ export default function APIDocsPage() {
               </div>
            </section>
 
+           {/* Section: POST /v1/ingest */}
+           <section id="ingest-api" className="space-y-8 pt-10 border-t border-zinc-800">
+              <div className="space-y-4">
+                 <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 rounded-xl bg-orange-500/10 border border-orange-500/20 flex items-center justify-center text-orange-500 font-mono text-xs font-bold">
+                       POST
+                    </div>
+                    <h2 className="text-3xl font-black text-white uppercase tracking-tighter">Sovereign Data Ingestion</h2>
+                 </div>
+                 <div className="flex items-center gap-4 bg-zinc-950 border border-zinc-800 p-4 rounded-xl font-mono text-xs">
+                    <span className="px-2 py-0.5 bg-orange-500/20 border border-orange-500/30 text-orange-500 rounded font-bold">POST</span>
+                    <span className="text-white font-bold">https://bbie-ai4bharat.netlify.app/api/v1/ingest</span>
+                 </div>
+                 <p className="text-zinc-400 font-medium leading-relaxed">
+                    Allows external departmental registries (such as Factories or Labour databases) to securely push raw business records to BBIE. If Kannada characters are detected, the payload is automatically translated and normalized to English before ingestion. The engine then queues the record for matching in the background.
+                 </p>
+              </div>
+
+              {/* Ingest request schema */}
+              <div className="space-y-4">
+                 <h4 className="text-xs font-black text-white uppercase tracking-widest">Request Body Schema (application/json)</h4>
+                 <div className="bg-[#121215] border border-zinc-800 rounded-2xl overflow-hidden shadow-xl">
+                    <table className="w-full text-left border-collapse">
+                       <thead>
+                          <tr className="border-b border-zinc-800 bg-zinc-900 text-[10px] font-black text-zinc-400 uppercase tracking-widest">
+                             <th className="p-4">Parameter</th>
+                             <th className="p-4">Type</th>
+                             <th className="p-4">Requirement</th>
+                             <th className="p-4">Description</th>
+                          </tr>
+                       </thead>
+                       <tbody className="text-xs font-mono divide-y divide-zinc-800 text-zinc-300">
+                          <tr>
+                             <td className="p-4 font-bold text-orange-500">entity_name</td>
+                             <td className="p-4 text-zinc-500">string</td>
+                             <td className="p-4 text-orange-500 font-bold">Required</td>
+                             <td className="p-4 font-sans text-zinc-400">The legal or trade name of the entity. Supports Kannada (e.g. `ಕೃಷ್ಣ ಲಾಜಿಸ್ಟಿಕ್ಸ್`) which gets translated.</td>
+                          </tr>
+                          <tr>
+                             <td className="p-4 font-bold text-orange-500">department</td>
+                             <td className="p-4 text-zinc-500">string</td>
+                             <td className="p-4 text-orange-500 font-bold">Required</td>
+                             <td className="p-4 font-sans text-zinc-400">Department identifier (e.g. `Factories_&_Boilers`, `Labour_Department`).</td>
+                          </tr>
+                          <tr>
+                             <td className="p-4 font-bold text-zinc-300">source_id</td>
+                             <td className="p-4 text-zinc-500">string</td>
+                             <td className="p-4 text-zinc-500">Optional</td>
+                             <td className="p-4 font-sans text-zinc-400">Specific record ID in the source system.</td>
+                          </tr>
+                          <tr>
+                             <td className="p-4 font-bold text-zinc-300">address</td>
+                             <td className="p-4 text-zinc-500">string</td>
+                             <td className="p-4 text-zinc-500">Optional</td>
+                             <td className="p-4 font-sans text-zinc-400">Physical premises address. Supports Kannada.</td>
+                          </tr>
+                          <tr>
+                             <td className="p-4 font-bold text-zinc-300">pincode</td>
+                             <td className="p-4 text-zinc-500">string</td>
+                             <td className="p-4 text-zinc-500">Optional</td>
+                             <td className="p-4 font-sans text-zinc-400">6-digit PIN code.</td>
+                          </tr>
+                       </tbody>
+                    </table>
+                 </div>
+              </div>
+           </section>
+
+           {/* Section: POST /v1/ingest/csv */}
+           <section id="ingest-csv-api" className="space-y-8 pt-10 border-t border-zinc-800">
+              <div className="space-y-4">
+                 <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 rounded-xl bg-orange-500/10 border border-orange-500/20 flex items-center justify-center text-orange-500 font-mono text-xs font-bold">
+                       POST
+                    </div>
+                    <h2 className="text-3xl font-black text-white uppercase tracking-tighter">Batch CSV Ingestion</h2>
+                 </div>
+                 <div className="flex items-center gap-4 bg-zinc-950 border border-zinc-800 p-4 rounded-xl font-mono text-xs">
+                    <span className="px-2 py-0.5 bg-orange-500/20 border border-orange-500/30 text-orange-500 rounded font-bold">POST</span>
+                    <span className="text-white font-bold">https://bbie-ai4bharat.netlify.app/api/v1/ingest/csv</span>
+                 </div>
+                 <p className="text-zinc-400 font-medium leading-relaxed">
+                    Accepts a `multipart/form-data` payload containing a CSV registry file, parses and translates Kannada text, bulk-inserts them into source records, and processes them.
+                 </p>
+              </div>
+           </section>
+
            {/* Section: POST /v1/resolve */}
            <section id="resolve-api" className="space-y-8 pt-10 border-t border-zinc-800">
               <div className="space-y-4">
@@ -284,7 +419,7 @@ export default function APIDocsPage() {
                  </div>
                  <div className="flex items-center gap-4 bg-zinc-950 border border-zinc-800 p-4 rounded-xl font-mono text-xs">
                     <span className="px-2 py-0.5 bg-orange-500/20 border border-orange-500/30 text-orange-500 rounded font-bold">POST</span>
-                    <span className="text-white font-bold">https://api.bbie.gov.in/v1/resolve</span>
+                    <span className="text-white font-bold">https://bbie-ai4bharat.netlify.app/api/v1/resolve</span>
                  </div>
                  <p className="text-zinc-400 font-medium leading-relaxed">
                     Submits unverified, fragmented business data into the BBIE Confidence Engine. The engine evaluates semantic similarity, cross-references historical registry collisions, and returns a high-confidence UBID match.
@@ -404,7 +539,7 @@ export default function APIDocsPage() {
                  </div>
                  <div className="flex items-center gap-4 bg-zinc-950 border border-zinc-800 p-4 rounded-xl font-mono text-xs">
                     <span className="px-2 py-0.5 bg-orange-500/20 border border-orange-500/30 text-orange-500 rounded font-bold">GET</span>
-                    <span className="text-white font-bold">https://api.bbie.gov.in/v1/business/:ubid</span>
+                    <span className="text-white font-bold">https://bbie-ai4bharat.netlify.app/api/v1/business/:ubid</span>
                  </div>
                  <p className="text-zinc-400 font-medium leading-relaxed">
                     Fetches the comprehensive Golden Record and forensic resolution history for a specific Unique Bharat Business ID (UBID). Used for underwriting, regulatory audits, and deep compliance checks.
@@ -501,7 +636,7 @@ export default function APIDocsPage() {
                  </div>
                  <div className="flex items-center gap-4 bg-zinc-950 border border-zinc-800 p-4 rounded-xl font-mono text-xs">
                     <span className="px-2 py-0.5 bg-orange-500/20 border border-orange-500/30 text-orange-500 rounded font-bold">POST</span>
-                    <span className="text-white font-bold">https://api.bbie.gov.in/v1/arbitration</span>
+                    <span className="text-white font-bold">https://bbie-ai4bharat.netlify.app/api/v1/arbitration</span>
                  </div>
                  <p className="text-zinc-400 font-medium leading-relaxed">
                     Allows authorized human reviewers and pilot program judges to submit manual arbitration decisions, overriding AI confidence matches or splitting incorrectly merged clusters.
@@ -605,7 +740,7 @@ export default function APIDocsPage() {
 
                  <div className="p-6 bg-zinc-950 font-mono text-xs overflow-x-auto custom-scrollbar">
                     {activeTab === 'curl' && (
-                       <pre className="text-orange-400">{`curl -X POST https://api.bbie.gov.in/v1/resolve \\
+                       <pre className="text-orange-400">{`curl -X POST https://bbie-ai4bharat.netlify.app/api/v1/resolve \\
   -H "Authorization: Bearer PILOT_KEY_7719283" \\
   -H "X-BBIE-CLIENT-ID: PILOT_MINISTRY_01" \\
   -H "X-SOVEREIGNTY-MODE: FULL_MASK" \\
@@ -620,7 +755,7 @@ export default function APIDocsPage() {
                        <pre className="text-orange-400">{`import requests
 import json
 
-url = "https://api.bbie.gov.in/v1/resolve"
+url = "https://bbie-ai4bharat.netlify.app/api/v1/resolve"
 headers = {
     "Authorization": "Bearer PILOT_KEY_7719283",
     "X-BBIE-CLIENT-ID": "PILOT_MINISTRY_01",
@@ -647,7 +782,7 @@ interface ResolveRequest {
 
 async function resolveBusinessIdentity(data: ResolveRequest) {
   try {
-    const response = await axios.post('https://api.bbie.gov.in/v1/resolve', data, {
+    const response = await axios.post('https://bbie-ai4bharat.netlify.app/api/v1/resolve', data, {
       headers: {
         'Authorization': 'Bearer PILOT_KEY_7719283',
         'X-BBIE-CLIENT-ID': 'PILOT_MINISTRY_01',
@@ -674,7 +809,7 @@ import (
 )
 
 func main() {
-	url := "https://api.bbie.gov.in/v1/resolve"
+	url := "https://bbie-ai4bharat.netlify.app/api/v1/resolve"
 	payload, _ := json.Marshal(map[string]interface{}{
 		"entity_name":      "Mphasis Limited",
 		"pincode":          "560001",

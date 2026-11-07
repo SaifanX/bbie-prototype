@@ -2,10 +2,12 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import { calculateMatch } from '@/utils/matcher';
 import { maskPII } from '@/utils/privacy';
+import { translateKannadaToEnglish } from '@/utils/gemini';
+import { hasKannada } from '@/utils/normalize';
 
 const supabaseAdmin = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
+  process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'placeholder'
 );
 
 const rateLimitMap = new Map<string, { count: number; resetTime: number }>();
@@ -32,11 +34,19 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { entity_name, pincode, sovereignty_mask, pan, gstin, address } = body;
+    let { entity_name, pincode, sovereignty_mask, pan, gstin, address } = body;
 
 
     if (!entity_name) {
       return NextResponse.json({ error: 'entity_name is required' }, { status: 400 });
+    }
+
+    // Multilingual Translation (Kannada -> English)
+    if (hasKannada(entity_name)) {
+      entity_name = await translateKannadaToEnglish(entity_name);
+    }
+    if (address && hasKannada(address)) {
+      address = await translateKannadaToEnglish(address);
     }
 
     // 1. Fetch potential candidates from Supabase

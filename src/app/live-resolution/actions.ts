@@ -8,7 +8,7 @@ import { revalidatePath } from 'next/cache';
 
 const supabaseAdmin = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
+  process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 );
 
 /**
@@ -40,6 +40,38 @@ export async function getUnresolvedRecords() {
 
   if (error) throw error;
   return data;
+}
+
+/**
+ * Ensures there are records ready for the Judge Evaluation Demo.
+ * If unresolved records are low, unresolves a curated batch of records for seamless continuous demos.
+ */
+export async function prepareJudgeDemoRecords() {
+  const { data: unresolved } = await supabase
+    .from('source_records')
+    .select('id, entity_name')
+    .eq('resolved', false)
+    .limit(25);
+
+  if (unresolved && unresolved.length >= 5) {
+    return unresolved;
+  }
+
+  const { data: recordsToReset } = await supabaseAdmin
+    .from('source_records')
+    .select('id, entity_name')
+    .limit(20);
+
+  if (recordsToReset && recordsToReset.length > 0) {
+    const ids = recordsToReset.map(r => r.id);
+    await supabaseAdmin
+      .from('source_records')
+      .update({ resolved: false, business_id: null })
+      .in('id', ids);
+    return recordsToReset;
+  }
+
+  return [];
 }
 
 /**
@@ -82,4 +114,3 @@ export async function revertRecord(sourceRecordId: string, businessId: string | 
   revalidatePath('/review');
   return { success: true };
 }
-

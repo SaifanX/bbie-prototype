@@ -155,7 +155,7 @@ export default function APIHubPage() {
 }
 
 function APIConsole() {
-  const [activeTab, setActiveTab] = useState<'resolve' | 'search' | 'dossier'>('resolve');
+  const [activeTab, setActiveTab] = useState<'resolve' | 'search' | 'dossier' | 'ingest'>('resolve');
   
   // Resolve Endpoint State
   const [entityName, setEntityName] = useState('Mphasis');
@@ -164,6 +164,10 @@ function APIConsole() {
   const [gstin, setGstin] = useState('29BLRMP1234F1Z5');
   const [address, setAddress] = useState('Bagmane World Technology Center, Mahadevapura');
   const [sovereigntyMask, setSovereigntyMask] = useState(true);
+  
+  // Ingest Endpoint State
+  const [ingestDept, setIngestDept] = useState('Factories_&_Boilers');
+  const [sourceId, setSourceId] = useState('SRC-101');
 
   // Search Endpoint State
   const [searchName, setSearchName] = useState('Mphasis');
@@ -190,7 +194,26 @@ function APIConsole() {
     const startTime = performance.now();
 
     try {
-      if (activeTab === 'resolve') {
+      if (activeTab === 'ingest') {
+        const response = await fetch('/api/v1/ingest', {
+          method: 'POST',
+          headers: { 
+            'Content-Type': 'application/json',
+            'x-bbie-token': 'PILOT_MUNICIPAL_INGEST_991'
+          },
+          body: JSON.stringify({ 
+            entity_name: entityName,
+            department: ingestDept,
+            source_id: sourceId || `EXT-${Date.now()}`,
+            pincode, 
+            pan,
+            gstin,
+            address
+          })
+        });
+        const data = await response.json();
+        setResult(data);
+      } else if (activeTab === 'resolve') {
         const response = await fetch('/api/v1/resolve', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -258,6 +281,17 @@ function APIConsole() {
       {/* Endpoint Tabs */}
       <div className="flex border-b border-zinc-800 bg-zinc-950 overflow-x-auto">
         <button 
+          onClick={() => { setActiveTab('ingest'); setResult(null); }}
+          className={`flex-1 py-4 px-4 flex items-center justify-center gap-2 border-b-2 transition-all font-mono text-xs uppercase tracking-wider font-bold whitespace-nowrap ${
+            activeTab === 'ingest' 
+              ? 'border-orange-500 bg-orange-500/10 text-white shadow-md' 
+              : 'border-transparent text-zinc-500 hover:text-zinc-300 hover:bg-zinc-900'
+          }`}
+        >
+          <span className="px-2 py-0.5 bg-orange-500/20 border border-orange-500/30 text-orange-500 rounded text-[9px] shadow-sm">POST</span>
+          /v1/ingest
+        </button>
+        <button 
           onClick={() => { setActiveTab('resolve'); setResult(null); }}
           className={`flex-1 py-4 px-4 flex items-center justify-center gap-2 border-b-2 transition-all font-mono text-xs uppercase tracking-wider font-bold whitespace-nowrap ${
             activeTab === 'resolve' 
@@ -294,7 +328,102 @@ function APIConsole() {
 
       <div className="p-8 space-y-8">
         {/* Active Tab Configuration */}
-        {activeTab === 'resolve' ? (
+        {activeTab === 'ingest' ? (
+          <div className="space-y-6 animate-fadeIn">
+            <div className="flex flex-wrap items-center justify-between gap-4 border-b border-zinc-800 pb-4">
+              <div>
+                <h4 className="text-sm font-black text-white uppercase tracking-wider">Departmental Data Ingestion API</h4>
+                <p className="text-[10px] text-zinc-400 font-medium mt-1">Submit new source fragments to be translated, normalized, and resolved.</p>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <label className="text-[10px] font-black text-zinc-400 uppercase tracking-widest flex items-center gap-2">
+                  Entity Name (English or Kannada) <span className="text-orange-500">*</span>
+                </label>
+                <input 
+                  value={entityName}
+                  onChange={(e) => setEntityName(e.target.value)}
+                  className="w-full bg-zinc-950 border border-zinc-800 rounded-xl p-3 text-xs font-mono text-white focus:outline-none focus:border-orange-500 shadow-inner"
+                  placeholder="e.g. ಶ್ರೀ ಗೌಡ ಟ್ರೇಡರ್ಸ್"
+                />
+              </div>
+              <div className="space-y-2">
+                <label className="text-[10px] font-black text-zinc-400 uppercase tracking-widest flex items-center gap-2">
+                  Department <span className="text-orange-500">*</span>
+                </label>
+                <select
+                  value={ingestDept}
+                  onChange={(e) => setIngestDept(e.target.value)}
+                  className="w-full bg-zinc-950 border border-zinc-800 rounded-xl p-3 text-xs font-mono text-white focus:outline-none focus:border-orange-500 shadow-inner"
+                >
+                  <option value="Factories_&_Boilers">Factories_&_Boilers</option>
+                  <option value="Labour_Department">Labour_Department</option>
+                  <option value="Shops_&_Establishments">Shops_&_Establishments</option>
+                  <option value="Commercial_Taxes">Commercial_Taxes</option>
+                  <option value="Municipal_Licenses">Municipal_Licenses</option>
+                </select>
+              </div>
+              <div className="space-y-2">
+                <label className="text-[10px] font-black text-zinc-400 uppercase tracking-widest">Pincode</label>
+                <input 
+                  value={pincode}
+                  onChange={(e) => setPincode(e.target.value)}
+                  className="w-full bg-zinc-950 border border-zinc-800 rounded-xl p-3 text-xs font-mono text-white focus:outline-none focus:border-orange-500 shadow-inner"
+                  placeholder="e.g. 560058"
+                />
+              </div>
+              <div className="space-y-2">
+                <label className="text-[10px] font-black text-zinc-400 uppercase tracking-widest">Source Record ID</label>
+                <input 
+                  value={sourceId}
+                  onChange={(e) => setSourceId(e.target.value)}
+                  className="w-full bg-zinc-950 border border-zinc-800 rounded-xl p-3 text-xs font-mono text-white focus:outline-none focus:border-orange-500 shadow-inner"
+                  placeholder="e.g. FAC-12345"
+                />
+              </div>
+              <div className="space-y-2">
+                <label className="text-[10px] font-black text-zinc-400 uppercase tracking-widest">Tax PAN</label>
+                <input 
+                  value={pan}
+                  onChange={(e) => setPan(e.target.value)}
+                  className="w-full bg-zinc-950 border border-zinc-800 rounded-xl p-3 text-xs font-mono text-white focus:outline-none focus:border-orange-500 shadow-inner"
+                  placeholder="e.g. ABCDE1234F"
+                />
+              </div>
+              <div className="space-y-2">
+                <label className="text-[10px] font-black text-zinc-400 uppercase tracking-widest">GSTIN Identifier</label>
+                <input 
+                  value={gstin}
+                  onChange={(e) => setGstin(e.target.value)}
+                  className="w-full bg-zinc-950 border border-zinc-800 rounded-xl p-3 text-xs font-mono text-white focus:outline-none focus:border-orange-500 shadow-inner"
+                  placeholder="e.g. 29ABCDE1234F1Z5"
+                />
+              </div>
+              <div className="md:col-span-2 space-y-2">
+                <label className="text-[10px] font-black text-zinc-400 uppercase tracking-widest">Physical Address (Kannada or English)</label>
+                <input 
+                  value={address}
+                  onChange={(e) => setAddress(e.target.value)}
+                  className="w-full bg-zinc-950 border border-zinc-800 rounded-xl p-3 text-xs font-mono text-white focus:outline-none focus:border-orange-500 shadow-inner"
+                  placeholder="e.g. ಪೀಣ್ಯ ಇಂಡಸ್ಟ್ರಿಯಲ್ ಏರಿಯಾ"
+                />
+              </div>
+            </div>
+
+            {/* Request Payload Preview */}
+            <div className="bg-zinc-950 border border-zinc-800 rounded-2xl p-4 font-mono text-[10px] text-zinc-400 space-y-2 shadow-inner">
+              <div className="flex items-center justify-between text-zinc-500 border-b border-zinc-800 pb-2">
+                <span className="font-bold uppercase tracking-widest text-[9px]">Request Payload Preview</span>
+                <span>application/json</span>
+              </div>
+              <pre className="text-orange-400 overflow-x-auto">
+                {JSON.stringify({ entity_name: entityName, department: ingestDept, source_id: sourceId, pincode, pan, gstin, address }, null, 2)}
+              </pre>
+            </div>
+          </div>
+        ) : activeTab === 'resolve' ? (
           <div className="space-y-6 animate-fadeIn">
             <div className="flex flex-wrap items-center justify-between gap-4 border-b border-zinc-800 pb-4">
               <div>

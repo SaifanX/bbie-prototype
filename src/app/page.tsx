@@ -39,11 +39,11 @@ export default function PresentationLanding() {
   const copySdkCode = () => {
     let code = '';
     if (sdkLang === 'curl') {
-      code = `curl -X POST https://api.bbie.gov.in/v1/resolve \\\n  -H "Authorization: Bearer PILOT_KEY_7719283" \\\n  -H "X-SOVEREIGNTY-MODE: FULL_MASK" \\\n  -d '{"entity_name": "Sri Sai Entp", "pincode": "560001"}'`;
+      code = `curl -X POST https://bbie-ai4bharat.netlify.app/api/v1/resolve \\\n  -H "Authorization: Bearer PILOT_KEY_7719283" \\\n  -H "X-SOVEREIGNTY-MODE: FULL_MASK" \\\n  -d '{"entity_name": "Sri Sai Entp", "pincode": "560001"}'`;
     } else if (sdkLang === 'python') {
-      code = `import requests\n\nurl = "https://api.bbie.gov.in/v1/resolve"\nheaders = {"Authorization": "Bearer PILOT_KEY_7719283", "X-SOVEREIGNTY-MODE": "FULL_MASK"}\npayload = {"entity_name": "Sri Sai Entp", "pincode": "560001"}\n\nresponse = requests.post(url, json=payload, headers=headers)\nprint(response.json())`;
+      code = `import requests\n\nurl = "https://bbie-ai4bharat.netlify.app/api/v1/resolve"\nheaders = {"Authorization": "Bearer PILOT_KEY_7719283", "X-SOVEREIGNTY-MODE": "FULL_MASK"}\npayload = {"entity_name": "Sri Sai Entp", "pincode": "560001"}\n\nresponse = requests.post(url, json=payload, headers=headers)\nprint(response.json())`;
     } else {
-      code = `const response = await fetch('https://api.bbie.gov.in/v1/resolve', {\n  method: 'POST',\n  headers: { 'Authorization': 'Bearer PILOT_KEY_7719283', 'X-SOVEREIGNTY-MODE': 'FULL_MASK', 'Content-Type': 'application/json' },\n  body: JSON.stringify({ entity_name: "Sri Sai Entp", pincode: "560001" })\n});\nconst data = await response.json();`;
+      code = `const response = await fetch('https://bbie-ai4bharat.netlify.app/api/v1/resolve', {\n  method: 'POST',\n  headers: { 'Authorization': 'Bearer PILOT_KEY_7719283', 'X-SOVEREIGNTY-MODE': 'FULL_MASK', 'Content-Type': 'application/json' },\n  body: JSON.stringify({ entity_name: "Sri Sai Entp", pincode: "560001" })\n});\nconst data = await response.json();`;
     }
     navigator.clipboard.writeText(code);
     setCopiedSdk(true);
@@ -63,7 +63,10 @@ export default function PresentationLanding() {
             <span className="hidden md:inline text-zinc-600 font-medium">|</span>
             <span className="hidden md:inline text-zinc-300">Official AI For Bharat Hackathon Prototype</span>
           </div>
-          <div className="flex items-center gap-6">
+          <div className="flex items-center gap-4 sm:gap-6">
+            <Link href="/live-resolution?judgeDemo=true" className="px-3.5 py-1.5 bg-gradient-to-r from-orange-500 to-amber-500 text-zinc-950 font-black uppercase text-[10px] tracking-widest rounded-full hover:brightness-110 shadow-lg shadow-orange-500/20 flex items-center gap-1.5 transition-all active:scale-95 animate-pulse">
+              <Zap size={13} className="fill-black" /> Judge Evaluation Demo
+            </Link>
             <Link href="/dashboard" className="text-zinc-300 hover:text-white transition-colors flex items-center gap-1">
               Dashboard <ArrowUpRight size={14} className="text-orange-500" />
             </Link>
@@ -99,15 +102,22 @@ export default function PresentationLanding() {
             </h1>
             
             <p className="text-base md:text-lg text-zinc-300 font-medium mb-10 leading-relaxed max-w-xl pr-4">
-              Unifying fragmented departmental silos (MCA, GSTN, MSME, EPFO) into a sovereign, cryptographically secure National System of Record. Powered by high-speed semantic matching and zero-knowledge privacy.
+              Unifying fragmented departmental silos (MCA, GSTN, MSME, EPFO) into a sovereign, cryptographically secure National System of Record. Powered by multilingual translation normalization, high-speed semantic matching, and zero-knowledge privacy.
             </p>
 
             <div className="flex flex-wrap items-center gap-4 mb-14">
-              <Link href="/dashboard" className="px-8 py-4 bg-orange-500 text-zinc-950 rounded-2xl font-black uppercase tracking-widest text-xs hover:bg-orange-600 hover:text-white transition-all flex items-center gap-3 group active:scale-95">
-                Access Governance Hub <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
+              <Link 
+                href="/live-resolution?judgeDemo=true" 
+                className="px-8 py-4 bg-gradient-to-r from-orange-500 via-amber-500 to-orange-500 text-zinc-950 rounded-2xl font-black uppercase tracking-widest text-xs hover:brightness-110 transition-all flex items-center gap-3 group active:scale-95 shadow-xl shadow-orange-500/25 border border-orange-400 animate-pulse"
+              >
+                <Zap size={16} className="fill-black text-black group-hover:scale-125 transition-transform" />
+                <span>⚡ Judge Evaluation Demo</span>
               </Link>
-              <a href="#api-widget" className="px-8 py-4 bg-zinc-900 border border-zinc-800 text-white rounded-2xl font-black uppercase tracking-widest text-xs hover:bg-zinc-800 hover:border-zinc-700 transition-all flex items-center gap-3 group active:scale-95">
-                <Terminal size={16} className="text-orange-500 group-hover:rotate-12 transition-transform" /> Test Live API Widget
+              <Link href="/dashboard" className="px-8 py-4 bg-zinc-900 border border-zinc-800 text-white rounded-2xl font-black uppercase tracking-widest text-xs hover:bg-zinc-800 hover:border-zinc-700 transition-all flex items-center gap-3 group active:scale-95">
+                Governance Hub <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
+              </Link>
+              <a href="#api-widget" className="px-6 py-4 bg-zinc-950 border border-zinc-800 text-zinc-400 hover:text-white rounded-2xl font-black uppercase tracking-widest text-xs hover:bg-zinc-900 transition-all flex items-center gap-2 group active:scale-95">
+                <Terminal size={14} className="text-orange-500 group-hover:rotate-12 transition-transform" /> API Console
               </a>
             </div>
 
@@ -472,7 +482,7 @@ export default function PresentationLanding() {
               <div className="p-6 font-mono text-xs md:text-sm leading-relaxed text-zinc-300 overflow-x-auto bg-zinc-950 min-h-[180px] flex items-center shadow-inner">
                 {sdkLang === 'curl' && (
                   <div>
-                    <span className="text-orange-500 font-bold">curl</span> -X POST https://api.bbie.gov.in/v1/resolve \<br />
+                    <span className="text-orange-500 font-bold">curl</span> -X POST https://bbie-ai4bharat.netlify.app/api/v1/resolve \<br />
                     &nbsp;&nbsp;-H <span className="text-zinc-400">&quot;Authorization: Bearer PILOT_KEY_7719283&quot;</span> \<br />
                     &nbsp;&nbsp;-H <span className="text-zinc-400">&quot;X-SOVEREIGN-MODE: FULL_MASK&quot;</span> \<br />
                     &nbsp;&nbsp;-d <span className="text-zinc-200">&apos;&#123;&quot;entity_name&quot;: &quot;Sri Sai Entp&quot;, &quot;pincode&quot;: &quot;560001&quot;&#125;&apos;</span>
@@ -481,7 +491,7 @@ export default function PresentationLanding() {
                 {sdkLang === 'python' && (
                   <div>
                     <span className="text-orange-500 font-bold">import</span> requests<br /><br />
-                    url = <span className="text-zinc-200">&quot;https://api.bbie.gov.in/v1/resolve&quot;</span><br />
+                    url = <span className="text-zinc-200">&quot;https://bbie-ai4bharat.netlify.app/api/v1/resolve&quot;</span><br />
                     headers = &#123;<span className="text-zinc-400">&quot;Authorization&quot;</span>: <span className="text-zinc-200">&quot;Bearer PILOT_KEY_7719283&quot;</span>, <span className="text-zinc-400">&quot;X-SOVEREIGN-MODE&quot;</span>: <span className="text-zinc-200">&quot;FULL_MASK&quot;</span>&#125;<br />
                     payload = &#123;<span className="text-zinc-400">&quot;entity_name&quot;</span>: <span className="text-zinc-200">&quot;Sri Sai Entp&quot;</span>, <span className="text-zinc-400">&quot;pincode&quot;</span>: <span className="text-zinc-200">&quot;560001&quot;</span>&#125;<br /><br />
                     response = requests.post(url, json=payload, headers=headers)<br />
@@ -490,7 +500,7 @@ export default function PresentationLanding() {
                 )}
                 {sdkLang === 'ts' && (
                   <div>
-                    <span className="text-orange-500 font-bold">const</span> response = <span className="text-orange-500 font-bold">await</span> fetch(<span className="text-zinc-200">&apos;https://api.bbie.gov.in/v1/resolve&apos;</span>, &#123;<br />
+                    <span className="text-orange-500 font-bold">const</span> response = <span className="text-orange-500 font-bold">await</span> fetch(<span className="text-zinc-200">&apos;https://bbie-ai4bharat.netlify.app/api/v1/resolve&apos;</span>, &#123;<br />
                     &nbsp;&nbsp;method: <span className="text-zinc-200">&apos;POST&apos;</span>,<br />
                     &nbsp;&nbsp;headers: &#123; <span className="text-zinc-400">&apos;Authorization&apos;</span>: <span className="text-zinc-200">&apos;Bearer PILOT_KEY_7719283&apos;</span>, <span className="text-zinc-400">&apos;X-SOVEREIGN-MODE&apos;</span>: <span className="text-zinc-200">&apos;FULL_MASK&apos;</span>, <span className="text-zinc-400">&apos;Content-Type&apos;</span>: <span className="text-zinc-200">&apos;application/json&apos;</span> &#125;,<br />
                     &nbsp;&nbsp;body: JSON.stringify(&#123; entity_name: <span className="text-zinc-200">&quot;Sri Sai Entp&quot;</span>, pincode: <span className="text-zinc-200">&quot;560001&quot;</span> &#125;)<br />
@@ -608,18 +618,18 @@ export default function PresentationLanding() {
 }
 
 function LiveAPIWidgetConsole() {
-  const [activeTab, setActiveTab] = useState<'resolve' | 'search' | 'dossier'>('resolve');
+  const [activeTab, setActiveTab] = useState<'resolve' | 'ingest' | 'search' | 'dossier'>('resolve');
   
-  // Resolve Endpoint State
-  const [entityName, setEntityName] = useState('Mphasis');
-  const [pincode, setPincode] = useState('560001');
-  const [pan, setPan] = useState('BLRMP1234F');
-  const [gstin, setGstin] = useState('29BLRMP1234F1Z5');
-  const [address, setAddress] = useState('Bagmane World Technology Center, Mahadevapura');
+  // Resolve & Ingest Endpoint State (pre-populated with Kannada example for demo impact)
+  const [entityName, setEntityName] = useState('ಕೃಷ್ಣ ಲಾಜಿಸ್ಟಿಕ್ಸ್');
+  const [pincode, setPincode] = useState('560058');
+  const [pan, setPan] = useState('ABCDE1234F');
+  const [gstin, setGstin] = useState('29ABCDE1234F1Z5');
+  const [address, setAddress] = useState('ಪೀಣ್ಯ ಇಂಡಸ್ಟ್ರಿಯಲ್ ಏರಿಯಾ, ಬೆಂಗಳೂರು');
   const [sovereigntyMask, setSovereigntyMask] = useState(true);
 
   // Search Endpoint State
-  const [searchName, setSearchName] = useState('Mphasis');
+  const [searchName, setSearchName] = useState('Krishna Logistics');
   const [searchPincode, setSearchPincode] = useState('');
   const [searchPan, setSearchPan] = useState('');
   const [searchGstin, setSearchGstin] = useState('');
@@ -628,7 +638,7 @@ function LiveAPIWidgetConsole() {
   const [searchLimit, setSearchLimit] = useState('10');
 
   // Dossier Endpoint State
-  const [ubid, setUbid] = useState('KA-UBID-SLIY-54321');
+  const [ubid, setUbid] = useState('KA-UBID-KRLO-74234');
   const [includeAudit, setIncludeAudit] = useState(true);
 
   const [loading, setLoading] = useState(false);
@@ -654,6 +664,25 @@ function LiveAPIWidgetConsole() {
             gstin,
             address,
             sovereignty_mask: sovereigntyMask 
+          })
+        });
+        const data = await response.json();
+        setResult(data);
+      } else if (activeTab === 'ingest') {
+        const response = await fetch('/api/v1/ingest', {
+          method: 'POST',
+          headers: { 
+            'Content-Type': 'application/json',
+            'x-bbie-token': 'sb_publishable_wN_PGCGaXcCnWGrqzrPjmg_xpnOD0iw'
+          },
+          body: JSON.stringify({ 
+            entity_name: entityName, 
+            pincode, 
+            pan,
+            gstin,
+            address,
+            department: 'Factories_&_Boilers',
+            source_id: `EXT-${Date.now()}`
           })
         });
         const data = await response.json();
@@ -720,6 +749,17 @@ function LiveAPIWidgetConsole() {
         >
           <span className="px-2 py-0.5 bg-orange-500/20 border border-orange-500/30 text-orange-500 rounded text-[9px] shadow-sm">POST</span>
           /v1/resolve
+        </button>
+        <button 
+          onClick={() => { setActiveTab('ingest'); setResult(null); }}
+          className={`flex-1 py-4 px-4 flex items-center justify-center gap-2 border-b-2 transition-all font-mono text-xs uppercase tracking-wider font-bold whitespace-nowrap ${
+            activeTab === 'ingest' 
+              ? 'border-orange-500 bg-orange-500/10 text-white shadow-md' 
+              : 'border-transparent text-zinc-500 hover:text-zinc-300 hover:bg-zinc-900'
+          }`}
+        >
+          <span className="px-2 py-0.5 bg-orange-500/20 border border-orange-500/30 text-orange-500 rounded text-[9px] shadow-sm">POST</span>
+          /v1/ingest
         </button>
         <button 
           onClick={() => { setActiveTab('search'); setResult(null); }}
@@ -824,6 +864,87 @@ function LiveAPIWidgetConsole() {
               </div>
               <pre className="text-orange-400 overflow-x-auto">
                 {JSON.stringify({ entity_name: entityName, pincode, pan, gstin, address, sovereignty_mask: sovereigntyMask }, null, 2)}
+              </pre>
+            </div>
+          </div>
+        ) : activeTab === 'ingest' ? (
+          <div className="space-y-6 animate-fadeIn">
+            <div className="flex flex-wrap items-center justify-between gap-4 border-b border-zinc-800 pb-4">
+              <div>
+                <h4 className="text-sm font-black text-white uppercase tracking-wider">External Business Ingestion</h4>
+                <p className="text-[10px] text-zinc-400 font-medium mt-1">Ingest a new unverified business record from external departments into BBIE.</p>
+              </div>
+              <div className="flex items-center gap-2 px-3 py-1 bg-orange-500/10 border border-orange-500/20 rounded-xl text-[9px] text-orange-500 font-mono font-bold">
+                MANDATES x-bbie-token HEADER
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <label className="text-[10px] font-black text-zinc-400 uppercase tracking-widest flex items-center gap-2">
+                  Entity Name <span className="text-orange-500">*</span>
+                </label>
+                <input 
+                  value={entityName}
+                  onChange={(e) => setEntityName(e.target.value)}
+                  className="w-full bg-zinc-950 border border-zinc-800 rounded-xl p-3 text-xs font-mono text-white focus:outline-none focus:border-orange-500 shadow-inner"
+                  placeholder="e.g. ಕೃಷ್ಣ ಲಾಜಿಸ್ಟಿಕ್ಸ್"
+                />
+              </div>
+              <div className="space-y-2">
+                <label className="text-[10px] font-black text-zinc-400 uppercase tracking-widest">Pincode</label>
+                <input 
+                  value={pincode}
+                  onChange={(e) => setPincode(e.target.value)}
+                  className="w-full bg-zinc-950 border border-zinc-800 rounded-xl p-3 text-xs font-mono text-white focus:outline-none focus:border-orange-500 shadow-inner"
+                  placeholder="e.g. 560058"
+                />
+              </div>
+              <div className="space-y-2">
+                <label className="text-[10px] font-black text-zinc-400 uppercase tracking-widest">Tax PAN</label>
+                <input 
+                  value={pan}
+                  onChange={(e) => setPan(e.target.value)}
+                  className="w-full bg-zinc-950 border border-zinc-800 rounded-xl p-3 text-xs font-mono text-white focus:outline-none focus:border-orange-500 shadow-inner"
+                  placeholder="e.g. ABCDE1234F"
+                />
+              </div>
+              <div className="space-y-2">
+                <label className="text-[10px] font-black text-zinc-400 uppercase tracking-widest">GSTIN Identifier</label>
+                <input 
+                  value={gstin}
+                  onChange={(e) => setGstin(e.target.value)}
+                  className="w-full bg-zinc-950 border border-zinc-800 rounded-xl p-3 text-xs font-mono text-white focus:outline-none focus:border-orange-500 shadow-inner"
+                  placeholder="e.g. 29ABCDE1234F1Z5"
+                />
+              </div>
+              <div className="md:col-span-2 space-y-2">
+                <label className="text-[10px] font-black text-zinc-400 uppercase tracking-widest">Physical Address</label>
+                <input 
+                  value={address}
+                  onChange={(e) => setAddress(e.target.value)}
+                  className="w-full bg-zinc-950 border border-zinc-800 rounded-xl p-3 text-xs font-mono text-white focus:outline-none focus:border-orange-500 shadow-inner"
+                  placeholder="e.g. ಪೀಣ್ಯ ಇಂಡಸ್ಟ್ರಿಯಲ್ ಏರಿಯಾ, ಬೆಂಗಳೂರು"
+                />
+              </div>
+            </div>
+
+            {/* Request Payload Preview */}
+            <div className="bg-zinc-950 border border-zinc-800 rounded-2xl p-4 font-mono text-[10px] text-zinc-400 space-y-2 shadow-inner">
+              <div className="flex items-center justify-between text-zinc-500 border-b border-zinc-800 pb-2">
+                <span className="font-bold uppercase tracking-widest text-[9px]">Request Ingest Payload</span>
+                <span>application/json</span>
+              </div>
+              <pre className="text-orange-400 overflow-x-auto">
+                {JSON.stringify({ 
+                  entity_name: entityName, 
+                  pincode, 
+                  pan, 
+                  gstin, 
+                  address, 
+                  department: 'Factories_&_Boilers',
+                  source_id: 'EXT-AUTO' 
+                }, null, 2)}
               </pre>
             </div>
           </div>
@@ -976,7 +1097,7 @@ function LiveAPIWidgetConsole() {
             onClick={handleTest}
             disabled={loading}
             className={`flex items-center gap-3 px-8 py-4 rounded-2xl text-xs font-black uppercase tracking-widest transition-all shadow-xl active:scale-95 ${
-              activeTab === 'resolve' || activeTab === 'search'
+              activeTab === 'resolve' || activeTab === 'search' || activeTab === 'ingest'
                 ? 'bg-orange-500 hover:bg-orange-600 text-zinc-950 hover:text-white disabled:opacity-50' 
                 : 'bg-zinc-800 hover:bg-zinc-700 text-orange-500 border border-zinc-700 disabled:opacity-50'
             }`}
@@ -1002,7 +1123,7 @@ function LiveAPIWidgetConsole() {
                   </div>
                   <div>
                     <h5 className="text-xs font-black text-white uppercase tracking-wider">Execution Result</h5>
-                    <span className="text-[10px] font-mono text-zinc-400">Status: <span className="text-orange-500 font-bold">{result.error ? 'Error / Limited' : '200 OK'}</span> {reqTime && `• Latency: ${reqTime}ms`}</span>
+                    <span className="text-[10px] font-mono text-zinc-400">Status: <span className="text-orange-500 font-bold">{result.error ? 'Error / Limited' : (result.success ? '201 Created' : '200 OK')}</span> {reqTime && `• Latency: ${reqTime}ms`}</span>
                   </div>
                 </div>
                 <button 
